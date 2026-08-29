@@ -11,6 +11,14 @@ on:
         description: '実行ステップ（games / pitch / highlights / datamart / all。スペース区切りで複数可）'
         required: false
         default: 'all'
+      source:
+        description: '起動元。cron-job.orgからの自動実行時のみ "cron" を指定する（手動実行では空欄のまま）'
+        required: false
+        default: ''
+      game_ids:
+        description: '特定の試合だけ再取得したい場合、試合IDをカンマ区切りで指定（例: 2021039325,2021039330）。空欄なら通常通り日単位で実行'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -53,12 +61,33 @@ jobs:
           echo "date=$TARGET" >> "$GITHUB_OUTPUT"
           echo "対象日: $TARGET"
 
+      - name: 重複実行チェック（cron-job.orgからの自動実行のみ。手動実行は常に実行する）
+        id: check
+        run: |
+          SKIP=false
+          if [ "${{ inputs.source }}" = "cron" ]; then
+            LAST_MSG=$(git log -1 --pretty=%s)
+            if echo "$LAST_MSG" | grep -q "NPB自動更新: ${{ steps.date.outputs.date }}"; then
+              echo "既に ${{ steps.date.outputs.date }} 分は処理済み（手動実行済みの可能性）のためスキップします"
+              SKIP=true
+            fi
+          fi
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+
       - name: NPBデータを取得・更新（1軍）
+        if: steps.check.outputs.skip != 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python scripts/run.py --date ${{ steps.date.outputs.date }} --steps ${{ inputs.steps || 'all' }} --1軍
+        run: |
+          if [ -n "${{ inputs.game_ids }}" ]; then
+            echo "特定試合の再取得モード: ${{ inputs.game_ids }}"
+            python scripts/run.py --steps games pitch datamart ${{ inputs.game_ids }} --date ${{ steps.date.outputs.date }} --1軍
+          else
+            python scripts/run.py --date ${{ steps.date.outputs.date }} --steps ${{ inputs.steps || 'all' }} --1軍
+          fi
 
       - name: 活躍選手0件の日付がないか確認（1軍）
+        if: steps.check.outputs.skip != 'true'
         run: |
           python - <<'PYEOF'
           import json, glob, datetime, os
@@ -106,11 +135,19 @@ jobs:
           TARGET_DATE: ${{ steps.date.outputs.date }}
 
       - name: NPBデータを取得・更新（2軍）
+        if: steps.check.outputs.skip != 'true'
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python scripts/run.py --date ${{ steps.date.outputs.date }} --steps ${{ inputs.steps || 'all' }} --2軍
+        run: |
+          if [ -n "${{ inputs.game_ids }}" ]; then
+            echo "特定試合の再取得モード: ${{ inputs.game_ids }}"
+            python scripts/run.py --steps games pitch datamart ${{ inputs.game_ids }} --date ${{ steps.date.outputs.date }} --2軍
+          else
+            python scripts/run.py --date ${{ steps.date.outputs.date }} --steps ${{ inputs.steps || 'all' }} --2軍
+          fi
 
       - name: 活躍選手0件の日付がないか確認（2軍）
+        if: steps.check.outputs.skip != 'true'
         run: |
           python - <<'PYEOF'
           import json, glob, datetime, os
@@ -158,6 +195,7 @@ jobs:
           TARGET_DATE: ${{ steps.date.outputs.date }}
 
       - name: データ側をコミット&push（baseball-dashboard-data）
+        if: steps.check.outputs.skip != 'true'
         working-directory: data
         run: |
           git config user.name "github-actions[bot]"
@@ -178,6 +216,7 @@ jobs:
           fi
 
       - name: サイト側（docs/）をコミット&push（このリポジトリ自身）
+        if: steps.check.outputs.skip != 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
