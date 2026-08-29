@@ -1,0 +1,235 @@
+name: NPBデータ自動更新
+
+on:
+  schedule:
+    # 日本時間 22:37/23:37/翌0:37（timezoneフィールドで直接JST指定、UTC換算のミスを排除）
+    # ちょうど「◯時0分・30分」はGitHub全体で負荷が集中しやすく、遅延やドロップの原因になる
+    # （GitHub公式ドキュメントで明言されている）ため、あえて半端な分にずらしている。
+    # 22:37が発火しなかった/失敗した場合の再試行として23:37・翌0:37を用意。
+    # 既に当日分がコミット済みなら「重複実行チェック」で自動的に何もせず終わる。
+    - cron: '37 22 * * *'
+      timezone: 'Asia/Tokyo'
+    - cron: '37 23 * * *'
+      timezone: 'Asia/Tokyo'
+    - cron: '37 0 * * *'
+      timezone: 'Asia/Tokyo'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: '対象日付（例: 2026-08-20 / 2026-08-17:2026-08-24 / 空欄なら自動計算）'
+        required: false
+        default: ''
+      steps:
+        description: '実行ステップ（games / pitch / highlights / datamart / all。スペース区切りで複数可）'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+
+
+jobs:
+  update-npb:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリを取得
+        uses: actions/checkout@v4
+
+      - name: Pythonをセットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 依存パッケージをインストール
+        run: pip install -r requirements.txt
+
+      - name: 一時停止スイッチの確認（スケジュール実行のみ）
+        id: pause
+        run: |
+          PAUSED="${{ vars.AUTO_UPDATE_PAUSED }}"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$PAUSED" = "true" ]; then
+            echo "AUTO_UPDATE_PAUSED=true のため、今回の自動実行はスキップします"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 対象日付を計算
+        id: date
+        if: steps.pause.outputs.skip != 'true'
+        run: |
+          if [ -n "${{ inputs.date }}" ]; then
+            TARGET="${{ inputs.date }}"
+          else
+            HOUR=$(TZ='Asia/Tokyo' date +%H)
+            if [ "$HOUR" -lt 12 ]; then
+              # 22:30予定の実行が深夜〜正午前にずれ込んだ場合は「前日」として扱う
+              TARGET=$(TZ='Asia/Tokyo' date -d 'yesterday' +%Y-%m-%d)
+            else
+              TARGET=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
+            fi
+          fi
+          echo "date=$TARGET" >> "$GITHUB_OUTPUT"
+          echo "対象日: $TARGET"
+
+      - name: 重複実行チェック（スケジュール実行のみ）
+        id: check
+        if: steps.pause.outputs.skip != 'true'
+        run: |
+          SKIP=false
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            LAST_MSG=$(git log -1 --pretty=%s)
+            if echo "$LAST_MSG" | grep -q "NPB自動更新(2軍): ${{ steps.date.outputs.date }}"; then
+              echo "既に ${{ steps.date.outputs.date }} 分は処理済みのためスキップします"
+              SKIP=true
+            fi
+          fi
+          echo "skip=$SKIP" >> "$GITHUB_OUTPUT"
+
+      - name: NPBデータを取得・更新（1軍）
+        if: steps.pause.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/run.py --date ${{ steps.date.outputs.date }} --steps ${{ inputs.steps || 'all' }} --1軍
+
+      - name: 活躍選手0件の日付がないか確認（1軍）
+        if: steps.pause.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        run: |
+          python - <<'PYEOF'
+          import json, glob, datetime, os
+
+          steps_arg = os.environ.get("STEPS_ARG", "all")
+          if "highlights" not in steps_arg and steps_arg != "all":
+              raise SystemExit(0)
+
+          target = os.environ.get("TARGET_DATE", "")
+          if ":" in target:
+              d0s, d1s = target.split(":")
+              d0 = datetime.date.fromisoformat(d0s)
+              d1 = datetime.date.fromisoformat(d1s)
+              dates = [(d0 + datetime.timedelta(days=i)).isoformat()
+                       for i in range((d1 - d0).days + 1)]
+          else:
+              dates = [target]
+
+          missing = []
+          for d in dates:
+              found_file = False
+              has_hl = False
+              for path in glob.glob(f"docs/data/プロ野球/*/1軍/*/games/json/{d}.json"):
+                  found_file = True
+                  with open(path, encoding="utf-8") as f:
+                      data = json.load(f)
+                  games = data.get(d) or []
+                  hl = (data.get("highlights") or {}).get(d) or []
+                  if not games:
+                      has_hl = True
+                      break
+                  if hl:
+                      has_hl = True
+                  break
+              if found_file and not has_hl:
+                  missing.append(d)
+
+          if missing:
+              print(f"::warning::【1軍】活躍選手が0件の日付があります: {', '.join(missing)}。--steps highlights で該当日を再実行してください")
+          else:
+              print("活躍選手チェック(1軍): 問題なし")
+          PYEOF
+        env:
+          STEPS_ARG: ${{ inputs.steps || 'all' }}
+          TARGET_DATE: ${{ steps.date.outputs.date }}
+
+      - name: 1軍分をコミット&push
+        if: steps.pause.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data docs
+          if git diff --cached --quiet; then
+            echo "更新なし（1軍データ変化なし）"
+          else
+            git commit -m "NPB自動更新(1軍): ${{ steps.date.outputs.date }} (steps: ${{ inputs.steps || 'all' }})"
+            for i in 1 2 3 4 5; do
+              if git push; then
+                break
+              fi
+              echo "push失敗。リモートの変更を取り込んでリトライします (試行 $i/5)"
+              git pull --rebase origin main
+              sleep 5
+            done
+          fi
+
+      - name: NPBデータを取得・更新（2軍）
+        if: steps.pause.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scripts/run.py --date ${{ steps.date.outputs.date }} --steps ${{ inputs.steps || 'all' }} --2軍
+
+      - name: 活躍選手0件の日付がないか確認（2軍）
+        if: steps.pause.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        run: |
+          python - <<'PYEOF'
+          import json, glob, datetime, os
+
+          steps_arg = os.environ.get("STEPS_ARG", "all")
+          if "highlights" not in steps_arg and steps_arg != "all":
+              raise SystemExit(0)
+
+          target = os.environ.get("TARGET_DATE", "")
+          if ":" in target:
+              d0s, d1s = target.split(":")
+              d0 = datetime.date.fromisoformat(d0s)
+              d1 = datetime.date.fromisoformat(d1s)
+              dates = [(d0 + datetime.timedelta(days=i)).isoformat()
+                       for i in range((d1 - d0).days + 1)]
+          else:
+              dates = [target]
+
+          missing = []
+          for d in dates:
+              found_file = False
+              has_hl = False
+              for path in glob.glob(f"docs/data/プロ野球/*/2軍/*/games/json/{d}.json"):
+                  found_file = True
+                  with open(path, encoding="utf-8") as f:
+                      data = json.load(f)
+                  games = data.get(d) or []
+                  hl = (data.get("highlights") or {}).get(d) or []
+                  if not games:
+                      has_hl = True
+                      break
+                  if hl:
+                      has_hl = True
+                  break
+              if found_file and not has_hl:
+                  missing.append(d)
+
+          if missing:
+              print(f"::warning::【2軍】活躍選手が0件の日付があります: {', '.join(missing)}。--steps highlights で該当日を再実行してください")
+          else:
+              print("活躍選手チェック(2軍): 問題なし")
+          PYEOF
+        env:
+          STEPS_ARG: ${{ inputs.steps || 'all' }}
+          TARGET_DATE: ${{ steps.date.outputs.date }}
+
+      - name: 2軍分をコミット&push
+        if: steps.pause.outputs.skip != 'true' && steps.check.outputs.skip != 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data docs
+          if git diff --cached --quiet; then
+            echo "更新なし（2軍データ変化なし）"
+          else
+            git commit -m "NPB自動更新(2軍): ${{ steps.date.outputs.date }} (steps: ${{ inputs.steps || 'all' }})"
+            for i in 1 2 3 4 5; do
+              if git push; then
+                break
+              fi
+              echo "push失敗。リモートの変更を取り込んでリトライします (試行 $i/5)"
+              git pull --rebase origin main
+              sleep 5
+            done
+          fi
