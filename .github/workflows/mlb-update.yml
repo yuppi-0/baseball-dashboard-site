@@ -1,6 +1,9 @@
 name: MLBデータ自動更新
 
 on:
+  # GitHub自身のschedule機能は時刻通りに発火しない不具合が続いたため廃止。
+  # 代わりにcron-job.org（外部サービス）から、この後のworkflow_dispatchをAPI経由で
+  # 直接叩く方式に切り替えた。
   workflow_dispatch:
     inputs:
       date:
@@ -12,7 +15,7 @@ on:
         required: false
         default: 'all'
       source:
-        description: '起動元。cron-job.orgからの自動実行時のみ "cron" を指定する（手動実行では空欄のまま）'
+        description: 'cron-job.org専用。空欄のままでOK'
         required: false
         default: ''
 
@@ -47,6 +50,9 @@ jobs:
           if [ -n "${{ inputs.date }}" ]; then
             TARGET="${{ inputs.date }}"
           else
+            # run_mlb.py 側が内部で「date-1日」のStatcastを取得し「date」ラベルで
+            # 保存する時差調整ロジックを既に持っているため、ここでは前日にずらさず
+            # 日本時間の「今日」をそのまま渡す。
             TARGET=$(TZ='Asia/Tokyo' date +%Y-%m-%d)
           fi
           echo "date=$TARGET" >> "$GITHUB_OUTPUT"

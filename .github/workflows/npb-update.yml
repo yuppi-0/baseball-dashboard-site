@@ -1,6 +1,9 @@
 name: NPBデータ自動更新
 
 on:
+  # GitHub自身のschedule機能は時刻通りに発火しない不具合が続いたため廃止。
+  # 代わりにcron-job.org（外部サービス）から、この後のworkflow_dispatchをAPI経由で
+  # 直接叩く方式に切り替えた。
   workflow_dispatch:
     inputs:
       date:
@@ -11,12 +14,12 @@ on:
         description: '実行ステップ（games / pitch / highlights / datamart / all。スペース区切りで複数可）'
         required: false
         default: 'all'
-      source:
-        description: '起動元。cron-job.orgからの自動実行時のみ "cron" を指定する（手動実行では空欄のまま）'
-        required: false
-        default: ''
       game_ids:
         description: '特定の試合だけ再取得したい場合、試合IDをカンマ区切りで指定（例: 2021039325,2021039330）。空欄なら通常通り日単位で実行'
+        required: false
+        default: ''
+      source:
+        description: 'cron-job.org専用。空欄のままでOK'
         required: false
         default: ''
 
