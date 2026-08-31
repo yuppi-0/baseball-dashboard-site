@@ -66,6 +66,9 @@ import pandas as pd
 import datetime
 from pybaseball import statcast, playerid_reverse_lookup
 import openpyxl
+
+# LLM入力用xlsx生成（選手詳細カード用のシーズン集計・球種別・コース分布・カウント別パターン）
+from export_llm_input import export_llm_input_xlsx
 from openpyxl.styles import PatternFill, Font, Alignment
 from openpyxl.utils import get_column_letter
 
@@ -2757,9 +2760,29 @@ def main():
                 results.setdefault(date, {})["datamart"] = path
                 print(f"  完了: {os.path.basename(path)}")
 
+    # ── LLM入力用xlsx生成 ──
+    # games_json_dir はループ内の年・game_typeが変わらない限り日付共通のフォルダなので、
+    # 日付ループの外（最後に set_dirs された状態）で1回だけ実行すればよい。
+    print(f"\n--- LLM入力用xlsx生成 ---")
+    path_llm_input = ""
+    try:
+        year = TARGET_DATE[:4]
+        llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", args.game_type, "llm_input")
+        path_llm_input = os.path.join(llm_input_dir, f"投手データ_{year}.xlsx")
+        export_llm_input_xlsx(
+            games_json_dir=GAMES_JSON_DIR,
+            out_path=path_llm_input,
+            # min_ipは指定しない（デフォルト0=全投手を出力）。絞り込みはClaude.aiへのプロンプト側で行う
+        )
+        print(f"  完了: {path_llm_input}")
+    except Exception as e:
+        print(f"  [WARN] LLM入力用xlsx生成失敗: {e}")
+
     # ── 完了サマリー ──
     print("\n" + "=" * 55)
     print("✅ 完了!")
+    if path_llm_input:
+        print(f"  LLM入力用xlsx: {path_llm_input}")
     for date, r in results.items():
         dm = r.get("datamart", "")
         if dm:

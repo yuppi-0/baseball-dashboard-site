@@ -58,6 +58,9 @@ try:
 except ImportError:
     _GENAI_AVAILABLE = False
 
+# LLM入力用xlsx生成（選手詳細カード用のシーズン集計・球種別・コース分布・カウント別パターン）
+from export_llm_input import export_llm_input_xlsx
+
 # %%
 # ==================================================
 # Section 2. 設定（TARGET_DATEだけ変えれば全工程に反映）
@@ -3031,6 +3034,22 @@ def run_all():
     except Exception as e:
         print(f"  [WARN] 選手個人データ出力失敗: {e}")
 
+    print("\n--- Step 6: LLM入力用xlsx生成 ---")
+    path_llm_input = ""
+    try:
+        league_label = "1軍" if _current_league == "ichi" else "2軍"
+        year = TARGET_DATE[:4]
+        llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", league_label, _current_game_type, "llm_input")
+        path_llm_input = os.path.join(llm_input_dir, f"投手データ_{year}.xlsx")
+        export_llm_input_xlsx(
+            games_json_dir=GAMES_JSON_DIR,
+            out_path=path_llm_input,
+            # min_ipは指定しない（デフォルト0=全投手を出力）。絞り込みはClaude.aiへのプロンプト側で行う
+        )
+        print(f"  完了: {path_llm_input}")
+    except Exception as e:
+        print(f"  [WARN] LLM入力用xlsx生成失敗: {e}")
+
     print("\n" + "=" * 50)
     print("✅ 全工程完了!")
     print(f"  試合データ       : {path_all_games}")
@@ -3038,6 +3057,7 @@ def run_all():
     print(f"  活躍選手         : {path_highlights or 'スキップ'}")
     print(f"  データマート     : {path_datamart}")
     print(f"  ダッシュボードJSON: {path_json}")
+    print(f"  LLM入力用xlsx    : {path_llm_input or 'スキップ'}")
     print("=" * 50)
 
 
