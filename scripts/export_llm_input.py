@@ -49,52 +49,86 @@ import pandas as pd
 #   index.html の _doOpenPlayerPage() 相当
 # ==================================================
 
-def load_daily_games(games_json_dir: str) -> dict:
-    """games/json/{date}.json を全部読み込み、{date: [game, ...]} にまとめる"""
+def load_daily_games(games_json_dir: str, verbose: bool = True) -> dict:
+    """games/json/{date}.json を全部読み込み、{date: [game, ...]} にまとめる。
+    壊れた/想定外の形式のファイルやゲームエントリはスキップし、警告を出して処理を継続する。
+    """
     all_data: dict[str, list] = {}
     paths = sorted(glob.glob(os.path.join(games_json_dir, "*.json")))
     if not paths:
         raise FileNotFoundError(f"games json が見つかりません: {games_json_dir}")
 
+    def _add_games(date_key: str, games) -> None:
+        if not isinstance(games, list):
+            if verbose:
+                print(f"  [SKIP] {date_key}: gamesがlistではない型({type(games).__name__})のためスキップ")
+            return
+        valid_games = [g for g in games if isinstance(g, dict)]
+        skipped = len(games) - len(valid_games)
+        if skipped > 0 and verbose:
+            print(f"  [SKIP] {date_key}: dict以外のgameエントリを{skipped}件スキップ")
+        all_data.setdefault(date_key, []).extend(valid_games)
+
     for path in paths:
         date = os.path.splitext(os.path.basename(path))[0]
-        with open(path, "r", encoding="utf-8") as f:
-            payload = json.load(f)
-        # run_dashboard() が書き出す形式: { "2026-04-19": [game, game, ...], "highlights": {...} }
-        # ファイルが日付キー1件だけを持つケース・複数日を含むケースの両方に対応
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                payload = json.load(f)
+        except (json.JSONDecodeError, OSError) as e:
+            if verbose:
+                print(f"  [SKIP] {os.path.basename(path)}: 読み込み失敗({e})")
+            continue
+
+        if not isinstance(payload, dict):
+            if verbose:
+                print(f"  [SKIP] {os.path.basename(path)}: 想定外のトップレベル型({type(payload).__name__})")
+            continue
+
         if date in payload:
-            all_data.setdefault(date, []).extend(payload[date])
+            _add_games(date, payload[date])
         else:
             for k, v in payload.items():
-                if k == "highlights" or k.startswith("_"):
+                if k == "highlights" or (isinstance(k, str) and k.startswith("_")):
                     continue
-                all_data.setdefault(k, []).extend(v)
+                _add_games(k, v)
     return all_data
 
 
 def build_all_pitcher_names(all_data: dict) -> set[str]:
-    """全登場投手名を収集"""
+    """全登場投手名を収集（壊れたエントリはスキップ）"""
     names = set()
     for date, games in all_data.items():
         if date == "highlights" or date.startswith("_"):
             continue
         for g in games:
+            if not isinstance(g, dict):
+                continue
+            pitchers = g.get("pitchers")
+            if not isinstance(pitchers, dict):
+                continue
             for side in ("home", "away"):
-                for p in g.get("pitchers", {}).get(side, []):
-                    if p.get("name"):
+                for p in (pitchers.get(side) or []):
+                    if isinstance(p, dict) and p.get("name"):
                         names.add(p["name"])
     return names
 
 
 def build_appearances(all_data: dict, player_name: str) -> list[dict]:
-    """特定投手の全登板 = appearances（index.htmlのappearances配列と同じ形）"""
+    """特定投手の全登板 = appearances（index.htmlのappearances配列と同じ形）。壊れたエントリはスキップ"""
     appearances = []
     dates = sorted(d for d in all_data.keys() if d != "highlights" and not d.startswith("_"))
     name_lower = player_name.lower()
     for date in dates:
         for g in all_data.get(date, []):
+            if not isinstance(g, dict):
+                continue
+            pitchers = g.get("pitchers")
+            if not isinstance(pitchers, dict):
+                continue
             for side in ("home", "away"):
-                for p in g.get("pitchers", {}).get(side, []):
+                for p in (pitchers.get(side) or []):
+                    if not isinstance(p, dict):
+                        continue
                     if (p.get("name") or "").lower() == name_lower:
                         appearances.append({"date": date, "game": g, "side": side, "player": p})
     return appearances
@@ -121,6 +155,12 @@ def _outs_to_ip_str(outs: int) -> str:
 
 def calc_season_stats(appearances: list[dict]) -> dict:
     """calcSeasonStats(mode='all') のポート。防御率・K-BB%などシーズン集計を1行返す"""
+    appearances = [ap for ap in appearances if isinstance(ap.get("player"), dict)]
+    if not appearances:
+        return {"選手名": None, "登板数": 0, "投球回": "0.0", "奪三振": 0, "与四球": 0,
+                "被安打": 0, "自責点": 0, "防御率": None, "K%": None, "BB%": None, "K-BB%": None,
+                "空振り率": None, "ゾーン外スイング率": None, "ストライク率": None, "ゾーン率": None, "ゴロ率": None}
+
     total_ip_raw = sum(_ip_to_outs(ap["player"].get("ip")) for ap in appearances)
     total_k  = sum(ap["player"].get("k", 0) or 0 for ap in appearances)
     total_bb = sum(ap["player"].get("bb", 0) or 0 for ap in appearances)
@@ -188,15 +228,21 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
     """
     km: dict[str, dict] = {}
     for ap in appearances:
-        player = ap["player"]
+        player = ap.get("player")
+        if not isinstance(player, dict):
+            continue
         if mix_key == "mixVsR":
             src = player.get("mixVsR") or player.get("mix") or []
         elif mix_key == "mixVsL":
             src = player.get("mixVsL") or player.get("mix") or []
         else:
             src = player.get("mix") or []
+        if not isinstance(src, list):
+            continue
 
         for m in src:
+            if not isinstance(m, dict):
+                continue
             key = m.get("key")
             if key not in km:
                 km[key] = {
@@ -232,10 +278,13 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
                 k["gb_cnt"] += 1
             # cbs（カウント別）マージ
             cbs = m.get("cbs") or {}
-            for count_key, cv in cbs.items():
-                cm = k["cbs_merged"][count_key]
-                for f in _CBS_FIELDS:
-                    cm[f] += cv.get(f, 0) or 0
+            if isinstance(cbs, dict):
+                for count_key, cv in cbs.items():
+                    if not isinstance(cv, dict):
+                        continue
+                    cm = k["cbs_merged"][count_key]
+                    for f in _CBS_FIELDS:
+                        cm[f] += cv.get(f, 0) or 0
 
     merged = sorted(km.values(), key=lambda x: -x["count"])
     total = sum(m["count"] for m in merged)
@@ -286,12 +335,16 @@ def aggregate_course_distribution(appearances: list[dict]) -> dict:
     totals = {"R": 0, "L": 0}
 
     for ap in appearances:
-        player = ap["player"]
+        player = ap.get("player")
+        if not isinstance(player, dict):
+            continue
         for side_key, mix_key in (("R", "mixVsR"), ("L", "mixVsL")):
             for m in (player.get(mix_key) or []):
+                if not isinstance(m, dict):
+                    continue
                 for loc in (m.get("locs") or []):
-                    # loc: [x, y, resultCode, inZoneFlag]
-                    if len(loc) < 4 or loc[3] != 1:
+                    # loc: [x, y, resultCode, inZoneFlag, ...]
+                    if not isinstance(loc, list) or len(loc) < 4 or loc[3] != 1:
                         continue
                     x, y = loc[0], loc[1]
                     col = _get_cell(x)
@@ -357,35 +410,39 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
     season_rows, mix_rows, course_rows, count_rows = [], [], [], []
 
     for name in sorted(names):
-        appearances = build_appearances(all_data, name)
-        if not appearances:
+        try:
+            appearances = build_appearances(all_data, name)
+            if not appearances:
+                continue
+
+            season = calc_season_stats(appearances)
+
+            # 投球回フィルタ（例: 10回以上登板した投手のみ対象）
+            ip_num = _ip_to_outs(season["投球回"]) / 3
+            if ip_num < min_ip:
+                continue
+
+            season_rows.append(season)
+
+            season_mix_all = aggregate_season_mix(appearances, "mix")
+            for m in season_mix_all:
+                row = {"選手名": name, **{k: v for k, v in m.items() if k != "_cbs"}}
+                mix_rows.append(row)
+
+            count_rows.extend(build_count_pattern_rows(name, season_mix_all))
+
+            course = aggregate_course_distribution(appearances)
+            for side_key, side_label in (("R", "対右打者"), ("L", "対左打者")):
+                for row in course[side_key]["rows"]:
+                    course_rows.append({
+                        "選手名": name,
+                        "対戦打者": side_label,
+                        "ゾーン内総数": course[side_key]["total_in_zone"],
+                        **row,
+                    })
+        except Exception as e:
+            print(f"  [SKIP] {name}: 集計中にエラーのためスキップ({type(e).__name__}: {e})")
             continue
-
-        season = calc_season_stats(appearances)
-
-        # 投球回フィルタ（例: 10回以上登板した投手のみ対象）
-        ip_num = _ip_to_outs(season["投球回"]) / 3
-        if ip_num < min_ip:
-            continue
-
-        season_rows.append(season)
-
-        season_mix_all = aggregate_season_mix(appearances, "mix")
-        for m in season_mix_all:
-            row = {"選手名": name, **{k: v for k, v in m.items() if k != "_cbs"}}
-            mix_rows.append(row)
-
-        count_rows.extend(build_count_pattern_rows(name, season_mix_all))
-
-        course = aggregate_course_distribution(appearances)
-        for side_key, side_label in (("R", "対右打者"), ("L", "対左打者")):
-            for row in course[side_key]["rows"]:
-                course_rows.append({
-                    "選手名": name,
-                    "対戦打者": side_label,
-                    "ゾーン内総数": course[side_key]["total_in_zone"],
-                    **row,
-                })
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
