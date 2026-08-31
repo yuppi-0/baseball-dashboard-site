@@ -94,8 +94,24 @@ def load_daily_games(games_json_dir: str, verbose: bool = True) -> dict:
     return all_data
 
 
+def _normalize_pitcher_name(name: str) -> str:
+    """
+    表記ゆれ吸収: 'Nola, Aaron' 形式と 'Aaron Nola' 形式が元データに混在しているため、
+    'Last, First' 形式を 'First Last' 形式に統一して同一選手として扱えるようにする。
+    """
+    if not isinstance(name, str):
+        return name
+    name = name.strip()
+    if "," in name:
+        parts = name.split(",", 1)
+        last, first = parts[0].strip(), parts[1].strip()
+        if last and first:
+            return f"{first} {last}"
+    return name
+
+
 def build_all_pitcher_names(all_data: dict) -> set[str]:
-    """全登場投手名を収集（壊れたエントリはスキップ）"""
+    """全登場投手名を収集（表記ゆれを正規化・壊れたエントリはスキップ）"""
     names = set()
     for date, games in all_data.items():
         if date == "highlights" or date.startswith("_"):
@@ -109,15 +125,17 @@ def build_all_pitcher_names(all_data: dict) -> set[str]:
             for side in ("home", "away"):
                 for p in (pitchers.get(side) or []):
                     if isinstance(p, dict) and p.get("name"):
-                        names.add(p["name"])
+                        names.add(_normalize_pitcher_name(p["name"]))
     return names
 
 
 def build_appearances(all_data: dict, player_name: str) -> list[dict]:
-    """特定投手の全登板 = appearances（index.htmlのappearances配列と同じ形）。壊れたエントリはスキップ"""
+    """特定投手の全登板 = appearances（index.htmlのappearances配列と同じ形）。
+    表記ゆれ（'Last, First' / 'First Last'）を正規化してから比較する。壊れたエントリはスキップ。
+    """
     appearances = []
     dates = sorted(d for d in all_data.keys() if d != "highlights" and not d.startswith("_"))
-    name_lower = player_name.lower()
+    name_norm = _normalize_pitcher_name(player_name).lower()
     for date in dates:
         for g in all_data.get(date, []):
             if not isinstance(g, dict):
@@ -129,7 +147,8 @@ def build_appearances(all_data: dict, player_name: str) -> list[dict]:
                 for p in (pitchers.get(side) or []):
                     if not isinstance(p, dict):
                         continue
-                    if (p.get("name") or "").lower() == name_lower:
+                    raw_name = p.get("name") or ""
+                    if _normalize_pitcher_name(raw_name).lower() == name_norm:
                         appearances.append({"date": date, "game": g, "side": side, "player": p})
     return appearances
 
@@ -416,6 +435,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                 continue
 
             season = calc_season_stats(appearances)
+            season["選手名"] = name  # 表記ゆれ正規化後の名前で統一
 
             # 投球回フィルタ（例: 10回以上登板した投手のみ対象）
             ip_num = _ip_to_outs(season["投球回"]) / 3
