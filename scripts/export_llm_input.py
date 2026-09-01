@@ -213,6 +213,23 @@ def calc_season_stats(appearances: list[dict]) -> dict:
             gb_sum += p["gbpct"]
             gb_count += 1
 
+    # MLB限定の高度指標（avgEV/hardHitPct/barrelPct/xwoba/avgSpin/extension/vaa）
+    # NPBデータには存在しないため、appearance側にキーがある分だけ拾う（単純平均。登板ごとの重みは球数ではなくフラットに）
+    _adv_fields = ["avgEV", "hardHitPct", "barrelPct", "xwoba", "avgSpin", "extension", "vaa"]
+    adv_sums = {f: 0.0 for f in _adv_fields}
+    adv_counts = {f: 0 for f in _adv_fields}
+    for ap in appearances:
+        p = ap["player"]
+        for f in _adv_fields:
+            v = p.get(f)
+            if v is not None:
+                adv_sums[f] += v
+                adv_counts[f] += 1
+    adv_out = {
+        f"season_{f}": (round(adv_sums[f] / adv_counts[f], 3) if adv_counts[f] > 0 else None)
+        for f in _adv_fields
+    }
+
     return {
         "選手名":   appearances[0]["player"]["name"] if appearances else None,
         "登板数":   len(appearances),
@@ -230,6 +247,13 @@ def calc_season_stats(appearances: list[dict]) -> dict:
         "ストライク率": round(strike_sum / tot_pitches, 1) if tot_pitches > 0 else None,
         "ゾーン率":  round(zone_sum / tot_pitches, 1) if tot_pitches > 0 else None,
         "ゴロ率":   round(gb_sum / gb_count, 1) if gb_count > 0 else None,
+        "平均被打球速度": adv_out["season_avgEV"],       # MLBのみ。NPBはNone
+        "ハードヒット率": adv_out["season_hardHitPct"],   # MLBのみ
+        "バレル率":      adv_out["season_barrelPct"],     # MLBのみ
+        "xwOBA":        adv_out["season_xwoba"],          # MLBのみ
+        "平均回転数":     adv_out["season_avgSpin"],       # MLBのみ
+        "エクステンション": adv_out["season_extension"],   # MLBのみ
+        "VAA":          adv_out["season_vaa"],             # MLBのみ（縦の入射角）
     }
 
 
@@ -392,6 +416,33 @@ def aggregate_course_distribution(appearances: list[dict]) -> dict:
 # Section 5. カウント別パターン（cbsマージ結果を整形）
 # ==================================================
 
+def merge_lr_split(mix_all: list[dict], mix_vs_r: list[dict], mix_vs_l: list[dict]) -> list[dict]:
+    """
+    球種ごとの対右/対左スタッツを、全体集計(mix_all)の行にマージする。
+    球種評価で「この球種は対左打者にどうか」まで言及できるようにするための追加情報。
+    """
+    r_by_key = {m["球種コード"]: m for m in mix_vs_r}
+    l_by_key = {m["球種コード"]: m for m in mix_vs_l}
+
+    out = []
+    for m in mix_all:
+        row = dict(m)
+        r = r_by_key.get(m["球種コード"])
+        l = l_by_key.get(m["球種コード"])
+        row["対右_投球数"] = r["投球数"] if r else 0
+        row["対右_空振り率"] = r["空振り率"] if r else None
+        row["対右_ゴロ率"] = r["GB%"] if r else None
+        row["対右_H"] = r["H"] if r else 0
+        row["対右_HR"] = r["HR"] if r else 0
+        row["対左_投球数"] = l["投球数"] if l else 0
+        row["対左_空振り率"] = l["空振り率"] if l else None
+        row["対左_ゴロ率"] = l["GB%"] if l else None
+        row["対左_H"] = l["H"] if l else 0
+        row["対左_HR"] = l["HR"] if l else 0
+        out.append(row)
+    return out
+
+
 def build_count_pattern_rows(player_name: str, season_mix: list[dict]) -> list[dict]:
     """season_mix の各球種が持つ _cbs を、カウント別パターンシート用の行に変換"""
     rows = []
@@ -445,7 +496,10 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             season_rows.append(season)
 
             season_mix_all = aggregate_season_mix(appearances, "mix")
-            for m in season_mix_all:
+            season_mix_vs_r = aggregate_season_mix(appearances, "mixVsR")
+            season_mix_vs_l = aggregate_season_mix(appearances, "mixVsL")
+            season_mix_merged = merge_lr_split(season_mix_all, season_mix_vs_r, season_mix_vs_l)
+            for m in season_mix_merged:
                 row = {"選手名": name, **{k: v for k, v in m.items() if k != "_cbs"}}
                 mix_rows.append(row)
 
