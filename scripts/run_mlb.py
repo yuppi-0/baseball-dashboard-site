@@ -2769,12 +2769,17 @@ def main():
         year = TARGET_DATE[:4]
         llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", args.game_type, "llm_input")
         path_llm_input = os.path.join(llm_input_dir, f"投手データ_{year}.xlsx")
+        # 数値JSON（pitcher_cards_numeric）は pitcher-cards.html が直接fetchするので、
+        # 非公開のBASE_DATA_DIRではなく公開側のBASE_PUBLIC_DIRに出力する
+        numeric_json_dir = os.path.join(BASE_PUBLIC_DIR, f"{year}年", args.game_type, "pitcher_cards_numeric")
         export_llm_input_xlsx(
             games_json_dir=GAMES_JSON_DIR,
             out_path=path_llm_input,
             # min_ipは指定しない（デフォルト0=全投手を出力）。絞り込みはClaude.aiへのプロンプト側で行う
+            numeric_json_dir=numeric_json_dir,
         )
         print(f"  完了: {path_llm_input}")
+        print(f"  数値JSON: {numeric_json_dir}")
     except Exception as e:
         print(f"  [WARN] LLM入力用xlsx生成失敗: {e}")
 

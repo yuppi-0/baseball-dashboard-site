@@ -39,6 +39,7 @@ import argparse
 import glob
 import json
 import os
+import re
 from collections import defaultdict
 
 import pandas as pd
@@ -416,6 +417,132 @@ def aggregate_course_distribution(appearances: list[dict]) -> dict:
 # Section 5. カウント別パターン（cbsマージ結果を整形）
 # ==================================================
 
+# ==================================================
+# Section 3.5. 球種別カラースケール（本家ダッシュボードの getScaleColor と同じ仕組み）
+#   役割（先発/中継ぎ）× 球種コード ごとに、全投手・全登板の球種別データから
+#   p15/p30/p40/p60/p70/p85 パーセンタイルを算出し、値がどの階層に入るかを判定する。
+# ==================================================
+
+_COLOR_SCALE_METRICS = ["swstr", "oSwing", "strike", "zone", "gbpct"]
+_COLOR_SCALE_DIR = {"swstr": True, "oSwing": True, "strike": True, "zone": True, "gbpct": True}
+# True = 値が高いほど良い（ティール方向）。dashboardのCOL_SCALE_DIRと同じ定義。
+
+
+def _pitcher_role(player: dict) -> str:
+    role = (player.get("role") or "").strip()
+    return "starter" if role == "先発" else "reliever"
+
+
+def build_pitch_color_scale_stats(all_data: dict) -> dict:
+    """
+    dashboard.html の buildPitchColorScaleStats() のポート。
+    {role: {pitch_key: {metric: {p15,p30,p40,p60,p70,p85}}}} を返す。
+    """
+    by_role: dict[str, dict[str, dict[str, list]]] = {"starter": {}, "reliever": {}}
+
+    for date, games in all_data.items():
+        if date == "highlights" or date.startswith("_"):
+            continue
+        for g in games:
+            if not isinstance(g, dict):
+                continue
+            pitchers = g.get("pitchers")
+            if not isinstance(pitchers, dict):
+                continue
+            for side in ("home", "away"):
+                for p in (pitchers.get(side) or []):
+                    if not isinstance(p, dict):
+                        continue
+                    role_key = _pitcher_role(p)
+                    for m in (p.get("mix") or []):
+                        if not isinstance(m, dict):
+                            continue
+                        key = m.get("key")
+                        if key is None:
+                            continue
+                        bucket = by_role[role_key].setdefault(
+                            key, {metric: [] for metric in _COLOR_SCALE_METRICS}
+                        )
+                        for metric in _COLOR_SCALE_METRICS:
+                            v = m.get(metric)
+                            if v is not None:
+                                bucket[metric].append(float(v))
+
+    def calc_stats(by_key: dict) -> dict:
+        result = {}
+        for pitch_key, val_map in by_key.items():
+            result[pitch_key] = {}
+            for metric, arr in val_map.items():
+                if not arr:
+                    result[pitch_key][metric] = {"p15": 0, "p30": 0, "p40": 0, "p60": 100, "p70": 100, "p85": 100}
+                    continue
+                arr = sorted(arr)
+                n = len(arr)
+                def pct(p):
+                    return arr[min(n - 1, int(n * p / 100))]
+                result[pitch_key][metric] = {
+                    "p15": pct(15), "p30": pct(30), "p40": pct(40),
+                    "p60": pct(60), "p70": pct(70), "p85": pct(85),
+                }
+        return result
+
+    return {
+        "starter": calc_stats(by_role["starter"]),
+        "reliever": calc_stats(by_role["reliever"]),
+    }
+
+
+def get_scale_tier(metric: str, value, stats_for_pitch: dict) -> str | None:
+    """getScaleColor() のランク判定部分のポート。'top15'〜'bot85' または None（色なし）"""
+    if value is None:
+        return None
+    direction = _COLOR_SCALE_DIR.get(metric)
+    if direction is None:
+        return None
+    s = stats_for_pitch.get(metric)
+    if not s:
+        return None
+    v = float(value)
+    if direction:
+        if v >= s["p85"]: return "top15"
+        if v >= s["p70"]: return "top30"
+        if v >= s["p60"]: return "top40"
+        if v >= s["p40"]: return "mid"
+        if v >= s["p30"]: return "bot60"
+        if v >= s["p15"]: return "bot70"
+        return "bot85"
+    else:
+        if v <= s["p15"]: return "top15"
+        if v <= s["p30"]: return "top30"
+        if v <= s["p40"]: return "top40"
+        if v <= s["p60"]: return "mid"
+        if v <= s["p70"]: return "bot60"
+        if v <= s["p85"]: return "bot70"
+        return "bot85"
+
+
+def annotate_mix_rows_with_tiers(mix_rows: list[dict], role_key: str, pitch_scale_stats: dict) -> None:
+    """
+    aggregate_season_mix() が返す行（辞書）に、色付け用の rank_tier を直接追加する（in-place）。
+    キー対応: 空振り率→swstr, ゾーン外スイング率→oSwing, ストライク率→strike, ゾーン率→zone, GB%→gbpct
+    """
+    stats_for_role = pitch_scale_stats.get(role_key, {})
+    field_map = {
+        "空振り率": "swstr",
+        "ゾーン外スイング率": "oSwing",
+        "ストライク率": "strike",
+        "ゾーン率": "zone",
+        "GB%": "gbpct",
+    }
+    for row in mix_rows:
+        pitch_key = row.get("球種コード")
+        stats_for_pitch = stats_for_role.get(pitch_key, {})
+        tiers = {}
+        for field_jp, metric in field_map.items():
+            tiers[field_jp] = get_scale_tier(metric, row.get(field_jp), stats_for_pitch)
+        row["_rank_tier"] = tiers
+
+
 def merge_lr_split(mix_all: list[dict], mix_vs_r: list[dict], mix_vs_l: list[dict]) -> list[dict]:
     """
     球種ごとの対右/対左スタッツを、全体集計(mix_all)の行にマージする。
@@ -472,12 +599,154 @@ def build_count_pattern_rows(player_name: str, season_mix: list[dict]) -> list[d
 # Section 6. メイン: 全投手を対象に4シート分のDataFrameを組み立ててxlsx出力
 # ==================================================
 
+# ==================================================
+# Section 5.5. 試合ログ（1試合=1行。カードの「試合成績」テーブル用）
+# ==================================================
+
+def _single_game_mix_rows(mix_list) -> list[dict]:
+    """1試合ぶんのmix配列を、カード表示用の {name,count,pct,swstr_pct,chase_pct,strike_pct} 形式に整形"""
+    if not isinstance(mix_list, list):
+        return []
+    valid = [m for m in mix_list if isinstance(m, dict)]
+    total = sum((m.get("count") or 0) for m in valid)
+    rows = []
+    for m in sorted(valid, key=lambda x: -(x.get("count") or 0)):
+        count = m.get("count") or 0
+        rows.append({
+            "name": m.get("name"),
+            "count": count,
+            "pct": round(count / total * 100, 1) if total > 0 else 0.0,
+            "swstr_pct": m.get("swstr"),
+            "chase_pct": m.get("oSwing"),
+            "strike_pct": m.get("strike"),
+        })
+    return rows
+
+
+def _single_game_pitch_tiers(mix_rows: list[dict], role_key: str, pitch_scale_stats: dict, key_lookup: dict) -> None:
+    """1試合ぶんのmix行に、season版と同じロジックでランクタグを付与する（in-place）"""
+    stats_for_role = pitch_scale_stats.get(role_key, {})
+    for row in mix_rows:
+        pitch_key = key_lookup.get(row.get("name"))
+        stats_for_pitch = stats_for_role.get(pitch_key, {}) if pitch_key else {}
+        row["空振り率_ランク"] = get_scale_tier("swstr", row.get("swstr_pct"), stats_for_pitch)
+        row["ゾーン外スイング率_ランク"] = get_scale_tier("oSwing", row.get("chase_pct"), stats_for_pitch)
+        row["ストライク率_ランク"] = get_scale_tier("strike", row.get("strike_pct"), stats_for_pitch)
+
+
+def _single_game_course_detail(ap: dict) -> dict:
+    """1試合ぶんのappearanceから、カード表示用のコース分布（対右/対左 9セル pct+count）を作る"""
+    course = aggregate_course_distribution([ap])
+    out = {}
+    for side_key in ("R", "L"):
+        total = course[side_key]["total_in_zone"]
+        cells = [{"pct": r["割合%"], "count": r["球数"]} for r in course[side_key]["rows"]]
+        out["vsR" if side_key == "R" else "vsL"] = {"total": total, "cells": cells}
+    return out
+
+
+def build_game_log_rows(name: str, appearances: list[dict], role_key: str, pitch_scale_stats: dict) -> list[dict]:
+    """投手1人分の試合ログ（1試合=1行）。カードJSONのgame_logにそのまま使える形。"""
+    rows = []
+    # 球種名→球種コードの対応（この投手のseason mixから作る。ランク付けにコードが必要なため）
+    season_mix_all = aggregate_season_mix(appearances, "mix")
+    key_lookup = {m["球種名"]: m["球種コード"] for m in season_mix_all}
+
+    for ap in sorted(appearances, key=lambda a: a["date"]):
+        p = ap["player"]
+        if not isinstance(p, dict):
+            continue
+        game = ap.get("game") or {}
+        side = ap.get("side")
+        opponent_side = "away" if side == "home" else "home"
+        opponent = game.get(opponent_side) if isinstance(game, dict) else None
+
+        pitch_detail_all = _single_game_mix_rows(p.get("mix"))
+        pitch_detail_vsr = _single_game_mix_rows(p.get("mixVsR"))
+        pitch_detail_vsl = _single_game_mix_rows(p.get("mixVsL"))
+        _single_game_pitch_tiers(pitch_detail_all, role_key, pitch_scale_stats, key_lookup)
+        _single_game_pitch_tiers(pitch_detail_vsr, role_key, pitch_scale_stats, key_lookup)
+        _single_game_pitch_tiers(pitch_detail_vsl, role_key, pitch_scale_stats, key_lookup)
+
+        tbf = p.get("tbf") or ((p.get("k") or 0) + (p.get("bb") or 0) + (p.get("h") or 0))
+        k_pct = round((p.get("k") or 0) / tbf * 100, 1) if tbf else None
+        bb_pct = round((p.get("bb") or 0) / tbf * 100, 1) if tbf else None
+        kbb_pct = round(((p.get("k") or 0) - (p.get("bb") or 0)) / tbf * 100, 1) if tbf else None
+
+        rows.append({
+            "date": ap["date"],
+            "opponent": f"vs {opponent}" if opponent else None,
+            "result": p.get("result"),
+            "swstr_pct": p.get("swstr"),
+            "chase_pct": p.get("oSwing"),
+            "strike_pct": p.get("strike"),
+            "zone_pct": p.get("zone"),
+            "kbb_pct": kbb_pct,
+            "k_pct": k_pct,
+            "bb_pct": bb_pct,
+            "gb_pct": p.get("gbpct"),
+            "ip": p.get("ip"),
+            "pitches": p.get("pitches"),
+            "k": p.get("k"),
+            "bb": p.get("bb"),
+            "h": p.get("h"),
+            "er": p.get("er"),
+            "pitch_detail": {"all": pitch_detail_all, "vsR": pitch_detail_vsr, "vsL": pitch_detail_vsl},
+            "course_detail": _single_game_course_detail(ap),
+        })
+    return rows
+
+
+def compute_rankings(season_rows: list[dict]) -> dict:
+    """
+    シーズン集計の全投手分から、防御率・K-BB%・ゴロ率の順位を算出する。
+    戻り値: {選手名: {"era":{"rank":n,"total":m}, "k_bb_pct":{...}, "gb_pct":{...}}}
+    """
+    specs = [
+        ("防御率", "era", False),      # 低いほど良い
+        ("K-BB%", "k_bb_pct", True),   # 高いほど良い
+        ("ゴロ率", "gb_pct", True),    # 高いほど良い
+    ]
+    result = {row["選手名"]: {} for row in season_rows}
+    for jp_key, out_key, higher_is_better in specs:
+        valid = [(row["選手名"], row[jp_key]) for row in season_rows if row.get(jp_key) is not None]
+        valid.sort(key=lambda x: -x[1] if higher_is_better else x[1])
+        total = len(valid)
+        for rank, (name, _) in enumerate(valid, start=1):
+            result[name][out_key] = {"rank": rank, "total": total}
+    return result
+
+
+def determine_pitcher_role(appearances: list[dict]) -> str:
+    """登板ごとのroleの最頻値で、その投手のシーズンを通した役割を決める"""
+    from collections import Counter
+    roles = [ap["player"].get("role") for ap in appearances if isinstance(ap.get("player"), dict)]
+    roles = [r for r in roles if r]
+    if not roles:
+        return "starter"
+    most_common = Counter(roles).most_common(1)[0][0]
+    return "starter" if most_common == "先発" else "reliever"
+
+
 def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.0,
-                           target_names: list[str] | None = None) -> str:
+                           target_names: list[str] | None = None,
+                           numeric_json_dir: str | None = None) -> str:
+    """
+    numeric_json_dir を指定すると、xlsxに加えて選手ごとの数値データJSON
+    （pitcher_cards_numeric/{選手ID}.json）と選手一覧 index.json も書き出す。
+    これらはLLMの解釈テキストを含まない「数値だけ」のデータで、pitcher-cards.html側が
+    LLM出力（バッチJSON）とブラウザ内でマージして使う。
+    """
     all_data = load_daily_games(games_json_dir)
     names = set(target_names) if target_names else build_all_pitcher_names(all_data)
 
-    season_rows, mix_rows, course_rows, count_rows = [], [], [], []
+    print("  球種別カラースケール（パーセンタイル）を算出中...")
+    pitch_scale_stats = build_pitch_color_scale_stats(all_data)
+
+    season_rows, mix_rows, course_rows, count_rows, gamelog_rows = [], [], [], [], []
+    numeric_cards: dict[str, dict] = {}  # {選手名: numeric card dict}（xlsx書き出し後、rankings付与してからJSON化）
+
+    tier_fields = ["空振り率", "ゾーン外スイング率", "ストライク率", "ゾーン率", "GB%"]
 
     for name in sorted(names):
         try:
@@ -493,15 +762,36 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             if ip_num < min_ip:
                 continue
 
+            role_key = determine_pitcher_role(appearances)
+            season["役割"] = "先発" if role_key == "starter" else "中継ぎ"
             season_rows.append(season)
+
+            # 直近の登板からチーム名を推定（home/awayどちら側だったかで判定）
+            last_ap = appearances[-1]
+            last_game = last_ap.get("game") or {}
+            team = last_game.get(last_ap.get("side")) if isinstance(last_game, dict) else None
 
             season_mix_all = aggregate_season_mix(appearances, "mix")
             season_mix_vs_r = aggregate_season_mix(appearances, "mixVsR")
             season_mix_vs_l = aggregate_season_mix(appearances, "mixVsL")
             season_mix_merged = merge_lr_split(season_mix_all, season_mix_vs_r, season_mix_vs_l)
+            annotate_mix_rows_with_tiers(season_mix_merged, role_key, pitch_scale_stats)
+
+            pitch_numeric_rows = []
             for m in season_mix_merged:
-                row = {"選手名": name, **{k: v for k, v in m.items() if k != "_cbs"}}
+                tiers = m.get("_rank_tier", {})
+                row = {"選手名": name, **{k: v for k, v in m.items() if k not in ("_cbs", "_rank_tier")}}
+                for f in tier_fields:
+                    row[f + "_ランク"] = tiers.get(f)
                 mix_rows.append(row)
+                pitch_numeric_rows.append({
+                    "name": m.get("球種名"),
+                    "count": m.get("投球数"),
+                    "pct": m.get("投球割合%"),
+                    "swstr_pct_rank": tiers.get("空振り率"),
+                    "chase_pct_rank": tiers.get("ゾーン外スイング率"),
+                    "strike_pct_rank": tiers.get("ストライク率"),
+                })
 
             count_rows.extend(build_count_pattern_rows(name, season_mix_all))
 
@@ -514,9 +804,57 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                         "ゾーン内総数": course[side_key]["total_in_zone"],
                         **row,
                     })
+
+            # 試合ログ（1試合=1行。pitch_detail/course_detailはネスト構造なのでJSON文字列として保持）
+            game_log_dicts = build_game_log_rows(name, appearances, role_key, pitch_scale_stats)
+            for g in game_log_dicts:
+                gamelog_rows.append({
+                    "選手名": name,
+                    "日付": g["date"], "対戦": g["opponent"], "結果": g["result"],
+                    "空振り率": g["swstr_pct"], "ボール球SW%": g["chase_pct"],
+                    "ストライク率": g["strike_pct"], "ゾーン率": g["zone_pct"],
+                    "K-BB%": g["kbb_pct"], "K%": g["k_pct"], "BB%": g["bb_pct"], "ゴロ率": g["gb_pct"],
+                    "投球回": g["ip"], "球数": g["pitches"], "奪三振": g["k"], "与四球": g["bb"],
+                    "被安打": g["h"], "自責点": g["er"],
+                    "pitch_detail_json": json.dumps(g["pitch_detail"], ensure_ascii=False),
+                    "course_detail_json": json.dumps(g["course_detail"], ensure_ascii=False),
+                })
+
+            if numeric_json_dir:
+                numeric_cards[name] = {
+                    "name": name,
+                    "team": team,
+                    "role": season["役割"],
+                    "games": season["登板数"],
+                    "innings": season["投球回"],
+                    "era": season["防御率"],
+                    "k_bb_pct": season["K-BB%"],
+                    "gb_pct": season["ゴロ率"],
+                    "swstr_pct_season": season["空振り率"],
+                    "chase_pct_season": season["ゾーン外スイング率"],
+                    "strike_pct_season": season["ストライク率"],
+                    "zone_pct_season": season["ゾーン率"],
+                    "kbb_pct_season": season["K-BB%"],
+                    "k_pct_season": season["K%"],
+                    "bb_pct_season": season["BB%"],
+                    "pitch_evaluations_numeric": pitch_numeric_rows,
+                    "game_log": game_log_dicts,
+                    # rankingsはこの後、全選手分揃ってから付与する
+                }
         except Exception as e:
             print(f"  [SKIP] {name}: 集計中にエラーのためスキップ({type(e).__name__}: {e})")
             continue
+
+    # 順位（防御率・K-BB%・ゴロ率）を算出し、シーズン集計に列として付与
+    rankings = compute_rankings(season_rows)
+    for row in season_rows:
+        rk = rankings.get(row["選手名"], {})
+        row["防御率_順位"] = rk.get("era", {}).get("rank")
+        row["防御率_順位_母数"] = rk.get("era", {}).get("total")
+        row["K-BB%_順位"] = rk.get("k_bb_pct", {}).get("rank")
+        row["K-BB%_順位_母数"] = rk.get("k_bb_pct", {}).get("total")
+        row["ゴロ率_順位"] = rk.get("gb_pct", {}).get("rank")
+        row["ゴロ率_順位_母数"] = rk.get("gb_pct", {}).get("total")
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
@@ -524,8 +862,28 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
         pd.DataFrame(mix_rows).to_excel(writer, sheet_name="球種別詳細", index=False)
         pd.DataFrame(course_rows).to_excel(writer, sheet_name="コース分布", index=False)
         pd.DataFrame(count_rows).to_excel(writer, sheet_name="カウント別パターン", index=False)
+        pd.DataFrame(gamelog_rows).to_excel(writer, sheet_name="試合ログ", index=False)
+
+    if numeric_json_dir:
+        os.makedirs(numeric_json_dir, exist_ok=True)
+        index_players = []
+        for name, card in numeric_cards.items():
+            card["rankings"] = rankings.get(name, {})
+            player_id = _slugify_name(name)
+            with open(os.path.join(numeric_json_dir, f"{player_id}.json"), "w", encoding="utf-8") as f:
+                json.dump(card, f, ensure_ascii=False)
+            index_players.append({"id": player_id, "name": name, "team": card.get("team"), "role": card.get("role")})
+        with open(os.path.join(numeric_json_dir, "index.json"), "w", encoding="utf-8") as f:
+            json.dump({"players": index_players}, f, ensure_ascii=False, indent=2)
+        print(f"  数値JSON: {len(index_players)}選手分を {numeric_json_dir} に出力")
 
     return out_path
+
+
+def _slugify_name(name: str) -> str:
+    """選手名からファイル名用のIDを作る（英数字以外はアンダースコアに置換）"""
+    s = re.sub(r"[^\w]+", "_", name.strip().lower())
+    return s.strip("_") or "unknown"
 
 
 # ==================================================
@@ -538,6 +896,8 @@ def parse_args():
     p.add_argument("--out", required=True, help="出力xlsxのパス")
     p.add_argument("--min-ip", type=float, default=0.0, help="この投球回以上の投手のみ対象にする（デフォルト0=全員）")
     p.add_argument("--players", nargs="*", default=None, help="対象選手名を絞り込む場合はスペース区切りで指定（省略時は全投手）")
+    p.add_argument("--numeric-json-dir", default=None,
+                    help="指定すると、選手ごとの数値データJSON（pitcher_cards_numeric/配下）とindex.jsonも出力する")
     return p.parse_args()
 
 
@@ -548,5 +908,6 @@ if __name__ == "__main__":
         out_path=args.out,
         min_ip=args.min_ip,
         target_names=args.players,
+        numeric_json_dir=args.numeric_json_dir,
     )
     print(f"✅ 出力完了: {out}")
