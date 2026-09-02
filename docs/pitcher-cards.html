@@ -28,9 +28,9 @@
     font-family: -apple-system, "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
     min-height:100vh;
   }
-  .app{ display:flex; flex-direction:column; max-width:1100px; margin:0 auto; min-height:100vh; }
+  .app{ display:flex; flex-direction:column; min-height:100vh; }
   header{
-    padding:20px 20px 14px; border-bottom:1px solid var(--border);
+    padding:20px 24px 14px; border-bottom:1px solid var(--border);
     display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
   }
   header h1{ font-size:17px; margin:0; font-weight:700; color:var(--text-bright); letter-spacing:0.01em; }
@@ -48,8 +48,16 @@
 
   .body-layout{ display:flex; flex:1; min-height:0; }
   .sidebar{
-    width:280px; flex-shrink:0; border-right:1px solid var(--border);
-    display:flex; flex-direction:column; max-height:calc(100vh - 70px);
+    width:260px; flex-shrink:0; border-right:1px solid var(--border);
+    display:flex; flex-direction:column;
+    position:sticky; top:0; height:100vh; max-height:100vh;
+  }
+  .filter-box{ padding:10px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+  .filter-row{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
+  .filter-row input[type="checkbox"]{ accent-color:var(--blue); }
+  .filter-row input[type="number"]{
+    width:56px; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:6px;
+    color:var(--text); font-size:11px; padding:3px 6px; outline:none;
   }
   .search-box{ padding:14px; border-bottom:1px solid var(--border); }
   .search-box input{
@@ -192,7 +200,7 @@
 
   @media (max-width:720px){
     .body-layout{ flex-direction:column; }
-    .sidebar{ width:100%; max-height:220px; border-right:none; border-bottom:1px solid var(--border); }
+    .sidebar{ width:100%; max-height:260px; height:auto; position:static; border-right:none; border-bottom:1px solid var(--border); }
     main{ padding:14px; }
   }
 </style>
@@ -216,6 +224,17 @@
     <aside class="sidebar">
       <div class="search-box">
         <input id="searchInput" type="text" placeholder="選手名で検索">
+      </div>
+      <div class="filter-box">
+        <label class="filter-row">
+          <input id="aiOnlyFilter" type="checkbox">
+          AIコメントがある選手のみ
+        </label>
+        <label class="filter-row">
+          投球回
+          <input id="minIpFilter" type="number" min="0" step="1" placeholder="0">
+          回以上
+        </label>
       </div>
       <div class="player-list" id="playerList">
         <div class="empty-list">読み込み中…</div>
@@ -251,6 +270,12 @@ const playerListEl = el("#playerList");
 const mainContentEl = el("#mainContent");
 const searchInputEl = el("#searchInput");
 const teamSelectEl = el("#teamSelect");
+const aiOnlyFilterEl = el("#aiOnlyFilter");
+const minIpFilterEl = el("#minIpFilter");
+
+// AIコメントがある選手名の集合。リーグを開いたときに一度だけバッチ全件を読んで作る
+let playersWithLlmData = new Set();
+let llmDataLoaded = false;
 
 function escapeHtml(s){
   return String(s ?? "").replace(/[&<>"']/g, c => ({
@@ -262,6 +287,9 @@ async function loadPlayerIndex(league){
   playerListEl.innerHTML = '<div class="empty-list">読み込み中…</div>';
   mainContentEl.innerHTML = '<div class="placeholder">左の一覧から選手を選んでください</div>';
   activePlayerId = null;
+  llmDataLoaded = false;
+  playersWithLlmData = new Set();
+  aiOnlyFilterEl.checked = false;
   try{
     // 選手一覧は「数値データ」側のindex.jsonを正とする（LLM解釈がまだない選手も一覧には出す）
     const res = await fetch(`${LEAGUE_PATHS[league].numeric}/index.json`, { cache: "no-store" });
@@ -396,10 +424,14 @@ async function selectPlayer(id, name){
 function applyFilters(){
   const q = (searchInputEl.value || "").trim().toLowerCase();
   const team = teamSelectEl.value;
+  const aiOnly = aiOnlyFilterEl.checked;
+  const minIp = parseFloat(minIpFilterEl.value);
   return allPlayers.filter(p => {
     const matchesQuery = !q || (p.name || "").toLowerCase().includes(q);
     const matchesTeam = !team || p.team === team;
-    return matchesQuery && matchesTeam;
+    const matchesAi = !aiOnly || playersWithLlmData.has(p.name);
+    const matchesIp = isNaN(minIp) || (p.innings_num != null && p.innings_num >= minIp);
+    return matchesQuery && matchesTeam && matchesAi && matchesIp;
   });
 }
 
@@ -410,6 +442,44 @@ searchInputEl.addEventListener("input", () => {
 teamSelectEl.addEventListener("change", () => {
   renderPlayerList(applyFilters());
 });
+
+minIpFilterEl.addEventListener("input", () => {
+  renderPlayerList(applyFilters());
+});
+
+aiOnlyFilterEl.addEventListener("change", async () => {
+  if(aiOnlyFilterEl.checked && !llmDataLoaded){
+    aiOnlyFilterEl.disabled = true;
+    await loadAllLlmPlayerNames();
+    aiOnlyFilterEl.disabled = false;
+  }
+  renderPlayerList(applyFilters());
+});
+
+// リーグ内の全バッチファイルを読み、「AI解釈テキストがある選手名」の集合を作る（1回だけキャッシュ）
+async function loadAllLlmPlayerNames(){
+  playersWithLlmData = new Set();
+  try{
+    const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
+    if(idxRes.ok){
+      const idx = await idxRes.json();
+      const files = idx.batches || [];
+      await Promise.all(files.map(async file => {
+        try{
+          const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
+          if(!res.ok) return;
+          const batch = await res.json();
+          const list = Array.isArray(batch) ? batch : [batch];
+          list.forEach(entry => {
+            const n = entry["選手名"] || entry.player_name || entry.name;
+            if(n) playersWithLlmData.add(n);
+          });
+        }catch(e){ /* このバッチはスキップ */ }
+      }));
+    }
+  }catch(e){ /* バッチ一覧が無ければ空のまま */ }
+  llmDataLoaded = true;
+}
 
 document.querySelectorAll(".league-toggle button").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -573,14 +643,14 @@ function renderCard(d){
       e.stopPropagation();
       const idx = toggle.dataset.gidx;
       const hand = btn.dataset.hand;
-      const game = d.game_log[idx];
-      if(!game || !game.pitch_detail) return;
+      const pitchDetail = idx === "season" ? d.season_pitch_detail : (d.game_log[idx] || {}).pitch_detail;
+      if(!pitchDetail) return;
 
       toggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
       const wrap = mainContentEl.querySelector(`.pmix-wrap[data-gidx="${idx}"]`);
-      if(wrap) wrap.innerHTML = pitchDetailTableHtml(game.pitch_detail[hand]);
+      if(wrap) wrap.innerHTML = pitchDetailTableHtml(pitchDetail[hand]);
     });
   });
 }
@@ -702,13 +772,44 @@ function buildGameLogTable(d){
   ];
   const colCount = 3 + cols.length;
 
+  // 行1つぶんの詳細パネル（試合ログ・シーズン行どちらからも呼べる共通処理）
+  function buildDetailRow(gidx, basicChipsHtml, pitchDetail, courseDetail){
+    const hasPitchDetail = pitchDetail && (pitchDetail.all || pitchDetail.vsR || pitchDetail.vsL);
+    const hasCourseDetail = courseDetail && (courseDetail.vsR || courseDetail.vsL);
+    if(!basicChipsHtml && !hasPitchDetail && !hasCourseDetail) return "";
+
+    const pitchSection = hasPitchDetail ? `
+      <div class="hand-toggle" data-gidx="${gidx}">
+        <button class="hand-btn active" data-hand="all">全体</button>
+        <button class="hand-btn" data-hand="vsR">対右</button>
+        <button class="hand-btn" data-hand="vsL">対左</button>
+      </div>
+      <div class="pmix-wrap" data-gidx="${gidx}">
+        ${pitchDetailTableHtml(pitchDetail.all)}
+      </div>
+    ` : "";
+
+    const courseSection = hasCourseDetail ? courseDistributionHtml(courseDetail) : "";
+
+    return `
+      <tr class="row-detail" data-gdetail="${gidx}" style="display:none">
+        <td colspan="${colCount}">
+          ${basicChipsHtml || ""}
+          ${pitchSection}
+          ${courseSection}
+        </td>
+      </tr>
+    `;
+  }
+
+  const seasonHasDetail = d.season_pitch_detail || d.season_course_detail;
   const seasonRow = `
-    <tr class="row-season">
+    <tr class="row-game row-season" data-gidx="season">
       <td>シーズン</td><td>―</td>
       <td>${d.games ?? "-"}登板 ${d.innings ?? "-"}回</td>
       ${cols.map(c => `<td>${d[c.key + "_season"] != null ? d[c.key + "_season"] + "%" : "-"}</td>`).join("")}
     </tr>
-  `;
+  ` + (seasonHasDetail ? buildDetailRow("season", "", d.season_pitch_detail, d.season_course_detail) : "");
 
   const gameRows = d.game_log.map((g, i) => {
     const hasBasicDetail = g.ip != null || g.pitches != null || g.k != null || g.bb != null || g.h != null || g.er != null;
@@ -726,46 +827,18 @@ function buildGameLogTable(d){
       </tr>
     `;
 
-    const hasPitchDetail = g.pitch_detail && (g.pitch_detail.all || g.pitch_detail.vsR || g.pitch_detail.vsL);
-    const hasCourseDetail = g.course_detail && (g.course_detail.vsR || g.course_detail.vsL);
+    const basicChips = hasBasicDetail ? `
+      <div class="gamelog-detail">
+        ${g.ip != null ? `<span><b>${g.ip}</b>回</span>` : ""}
+        ${g.pitches != null ? `<span><b>${g.pitches}</b>球</span>` : ""}
+        ${g.k != null ? `<span><b>${g.k}</b>K</span>` : ""}
+        ${g.bb != null ? `<span><b>${g.bb}</b>BB</span>` : ""}
+        ${g.h != null ? `<span><b>${g.h}</b>安打</span>` : ""}
+        ${g.er != null ? `<span><b>${g.er}</b>自責点</span>` : ""}
+      </div>
+    ` : "";
 
-    let detail = "";
-    if(hasBasicDetail || hasPitchDetail || hasCourseDetail){
-      const basicChips = hasBasicDetail ? `
-        <div class="gamelog-detail">
-          ${g.ip != null ? `<span><b>${g.ip}</b>回</span>` : ""}
-          ${g.pitches != null ? `<span><b>${g.pitches}</b>球</span>` : ""}
-          ${g.k != null ? `<span><b>${g.k}</b>K</span>` : ""}
-          ${g.bb != null ? `<span><b>${g.bb}</b>BB</span>` : ""}
-          ${g.h != null ? `<span><b>${g.h}</b>安打</span>` : ""}
-          ${g.er != null ? `<span><b>${g.er}</b>自責点</span>` : ""}
-        </div>
-      ` : "";
-
-      const pitchSection = hasPitchDetail ? `
-        <div class="hand-toggle" data-gidx="${i}">
-          <button class="hand-btn active" data-hand="all">全体</button>
-          <button class="hand-btn" data-hand="vsR">対右</button>
-          <button class="hand-btn" data-hand="vsL">対左</button>
-        </div>
-        <div class="pmix-wrap" data-gidx="${i}">
-          ${pitchDetailTableHtml(g.pitch_detail.all)}
-        </div>
-      ` : "";
-
-      const courseSection = hasCourseDetail ? courseDistributionHtml(g.course_detail) : "";
-
-      detail = `
-        <tr class="row-detail" data-gdetail="${i}" style="display:none">
-          <td colspan="${colCount}">
-            ${basicChips}
-            ${pitchSection}
-            ${courseSection}
-          </td>
-        </tr>
-      `;
-    }
-    return row + detail;
+    return row + buildDetailRow(i, basicChips, g.pitch_detail, g.course_detail);
   }).join("");
 
   return `
