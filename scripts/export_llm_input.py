@@ -634,15 +634,36 @@ def _single_game_pitch_tiers(mix_rows: list[dict], role_key: str, pitch_scale_st
         row["ストライク率_ランク"] = get_scale_tier("strike", row.get("strike_pct"), stats_for_pitch)
 
 
-def _single_game_course_detail(ap: dict) -> dict:
-    """1試合ぶんのappearanceから、カード表示用のコース分布（対右/対左 9セル pct+count）を作る"""
-    course = aggregate_course_distribution([ap])
+def _course_result_to_detail(course_result: dict) -> dict:
+    """aggregate_course_distribution()の戻り値を、カード表示用の対右/対左9セル pct+count 形式に整形する"""
     out = {}
     for side_key in ("R", "L"):
-        total = course[side_key]["total_in_zone"]
-        cells = [{"pct": r["割合%"], "count": r["球数"]} for r in course[side_key]["rows"]]
+        total = course_result[side_key]["total_in_zone"]
+        cells = [{"pct": r["割合%"], "count": r["球数"]} for r in course_result[side_key]["rows"]]
         out["vsR" if side_key == "R" else "vsL"] = {"total": total, "cells": cells}
     return out
+
+
+def _single_game_course_detail(ap: dict) -> dict:
+    """1試合ぶんのappearanceから、カード表示用のコース分布（対右/対左 9セル pct+count）を作る"""
+    return _course_result_to_detail(aggregate_course_distribution([ap]))
+
+
+def build_season_pitch_detail(season_mix_all, season_mix_vs_r, season_mix_vs_l,
+                               role_key: str, pitch_scale_stats: dict, key_lookup: dict) -> dict:
+    """シーズン全体の球種詳細を、試合ごとの球種詳細と同じ {all, vsR, vsL} 形式で作る"""
+    def _fmt(mix_list):
+        rows = [{
+            "name": m["球種名"],
+            "count": m["投球数"],
+            "pct": m["投球割合%"],
+            "swstr_pct": m["空振り率"],
+            "chase_pct": m["ゾーン外スイング率"],
+            "strike_pct": m["ストライク率"],
+        } for m in mix_list]
+        _single_game_pitch_tiers(rows, role_key, pitch_scale_stats, key_lookup)
+        return rows
+    return {"all": _fmt(season_mix_all), "vsR": _fmt(season_mix_vs_r), "vsL": _fmt(season_mix_vs_l)}
 
 
 def build_game_log_rows(name: str, appearances: list[dict], role_key: str, pitch_scale_stats: dict) -> list[dict]:
@@ -805,6 +826,13 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                         **row,
                     })
 
+            # シーズン全体の球種詳細（全体/対右/対左）とコース分布（試合ごとの行と同じ形式）
+            key_lookup = {m["球種名"]: m["球種コード"] for m in season_mix_all}
+            season_pitch_detail = build_season_pitch_detail(
+                season_mix_all, season_mix_vs_r, season_mix_vs_l, role_key, pitch_scale_stats, key_lookup
+            )
+            season_course_detail = _course_result_to_detail(course)
+
             # 試合ログ（1試合=1行。pitch_detail/course_detailはネスト構造なのでJSON文字列として保持）
             game_log_dicts = build_game_log_rows(name, appearances, role_key, pitch_scale_stats)
             for g in game_log_dicts:
@@ -838,6 +866,8 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                     "k_pct_season": season["K%"],
                     "bb_pct_season": season["BB%"],
                     "pitch_evaluations_numeric": pitch_numeric_rows,
+                    "season_pitch_detail": season_pitch_detail,
+                    "season_course_detail": season_course_detail,
                     "game_log": game_log_dicts,
                     # rankingsはこの後、全選手分揃ってから付与する
                 }
@@ -872,7 +902,11 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             player_id = _slugify_name(name)
             with open(os.path.join(numeric_json_dir, f"{player_id}.json"), "w", encoding="utf-8") as f:
                 json.dump(card, f, ensure_ascii=False)
-            index_players.append({"id": player_id, "name": name, "team": card.get("team"), "role": card.get("role")})
+            ip_float = _ip_to_outs(card.get("innings")) / 3
+            index_players.append({
+                "id": player_id, "name": name, "team": card.get("team"), "role": card.get("role"),
+                "innings": card.get("innings"), "innings_num": round(ip_float, 1),
+            })
         with open(os.path.join(numeric_json_dir, "index.json"), "w", encoding="utf-8") as f:
             json.dump({"players": index_players}, f, ensure_ascii=False, indent=2)
         print(f"  数値JSON: {len(index_players)}選手分を {numeric_json_dir} に出力")
