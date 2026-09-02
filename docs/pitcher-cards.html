@@ -23,15 +23,16 @@
     --amber-text: #FCD34D;
   }
   * { box-sizing: border-box; }
+  html, body{ height:100%; margin:0; overflow:hidden; }
   body{
-    margin:0; background:var(--bg); color:var(--text);
+    background:var(--bg); color:var(--text);
     font-family: -apple-system, "Hiragino Sans", "Helvetica Neue", Arial, sans-serif;
-    min-height:100vh;
   }
-  .app{ display:flex; flex-direction:column; min-height:100vh; }
+  .app{ display:flex; flex-direction:column; height:100vh; }
   header{
     padding:20px 24px 14px; border-bottom:1px solid var(--border);
     display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    flex-shrink:0;
   }
   header h1{ font-size:17px; margin:0; font-weight:700; color:var(--text-bright); letter-spacing:0.01em; }
   .league-toggle{ display:flex; gap:6px; background:var(--panel); border-radius:8px; padding:3px; }
@@ -49,8 +50,7 @@
   .body-layout{ display:flex; flex:1; min-height:0; }
   .sidebar{
     width:260px; flex-shrink:0; border-right:1px solid var(--border);
-    display:flex; flex-direction:column;
-    position:sticky; top:0; height:100vh; max-height:100vh;
+    display:flex; flex-direction:column; height:100%;
   }
   .filter-box{ padding:10px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
   .filter-row{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
@@ -79,7 +79,7 @@
   main{ flex:1; overflow-y:auto; padding:20px; display:flex; justify-content:center; }
   .placeholder{ color:var(--text-dim); font-size:13px; padding-top:60px; text-align:center; width:100%; }
 
-  .card{ width:100%; max-width:520px; text-align:left; }
+  .card{ width:100%; max-width:920px; text-align:left; }
   .p-header{ display:flex; align-items:center; gap:12px; margin-bottom:14px; text-align:left; }
   .p-avatar{
     width:44px; height:44px; border-radius:10px; background:#1E3A5F; color:#93C5FD;
@@ -88,7 +88,7 @@
   .p-name{ font-size:18px; font-weight:700; color:var(--text-bright); }
   .p-meta{ font-size:12px; color:var(--text-dim); margin-top:2px; }
 
-  .stat-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px; }
+  .stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:16px; }
   .stat-box{ background:var(--panel); border-radius:8px; padding:10px 6px; text-align:center; }
   .stat-box .label{ font-size:10px; color:var(--text-dim); margin-bottom:3px; }
   .stat-box .value{ font-size:16px; font-weight:700; }
@@ -170,18 +170,51 @@
   .pmix-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; }
 
   /* コース分布グリッド（本家と同じ強度スケール） */
-  .course-wrap{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:6px; }
+  .course-wrap{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
   .course-block .ctitle{ font-size:9px; color:var(--text-dim); font-family:'DM Mono',monospace; margin-bottom:5px; }
-  .course-grid-table{ border-collapse:collapse; font-family:'DM Mono',monospace; }
-  .course-grid-table td{
-    width:52px; height:42px; text-align:center; vertical-align:middle; padding:0;
-    border:1px solid rgba(255,255,255,0.08);
-  }
+  .hm-grid-table, .course-grid-table{ border-collapse:collapse; font-family:'DM Mono',monospace; }
+  .hm-grid-table td, .course-grid-table td{ vertical-align:middle; padding:0; }
   .course-cell-top{ font-size:12px; font-weight:700; line-height:1.3; }
   .course-cell-bot{ font-size:9px; line-height:1.1; }
   .gamelog-table .cell-good{ background:rgba(16,185,129,0.18); color:var(--green-text); border-radius:4px; }
   .gamelog-table .cell-bad{ background:rgba(248,113,113,0.18); color:var(--red-text); border-radius:4px; }
   .gamelog-scroll{ overflow-x:auto; }
+  .gamelog-table .cmp-checkbox{ accent-color:var(--blue); cursor:pointer; }
+  .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; width:32px; }
+
+  /* 比較パネル（試合ログの下部に表示） */
+  #comparePanel{ margin-top:14px; }
+  .hm-controls{
+    background:var(--panel-alt); border-radius:10px; padding:10px 12px; margin-bottom:12px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .hm-controls-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .hm-controls-label{ font-size:10px; color:var(--text-dim); font-weight:700; flex-shrink:0; width:28px; }
+  .hm-btn-group{ display:flex; gap:4px; flex-wrap:wrap; }
+  .hm-filter-btn{
+    border:1px solid rgba(255,255,255,0.1); background:transparent; color:var(--text-dim);
+    font-size:10.5px; font-weight:600; padding:4px 10px; border-radius:5px; cursor:pointer;
+  }
+  .hm-filter-btn.active{ border-color:rgba(148,163,184,0.8); background:rgba(148,163,184,0.2); color:#fff; }
+  .hm-pitch-row{ border-top:1px solid rgba(148,163,184,0.12); padding-top:8px; }
+  .hm-pitch-btn{
+    display:inline-flex; align-items:center; gap:5px; border:1px solid rgba(255,255,255,0.1);
+    background:transparent; color:var(--text-dim); font-size:10.5px; font-weight:600;
+    padding:4px 10px; border-radius:5px; cursor:pointer;
+  }
+  .hm-pitch-btn.active{ border-color:rgba(148,163,184,0.6); background:rgba(148,163,184,0.15); color:#fff; }
+  .hm-pdot{ width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+  .compare-blocks{ display:flex; flex-direction:column; gap:16px; }
+  .compare-block{
+    background:var(--panel); border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:12px 14px;
+  }
+  .compare-block-title{ font-size:12.5px; font-weight:700; color:var(--text-bright); margin-bottom:10px; }
+  .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
+  .hm-canvas-block{ flex:1; min-width:220px; max-width:320px; }
+  .hm-canvas-title{ font-size:9px; color:var(--text-dim); text-align:center; margin-bottom:4px; }
+  .hm-canvas-block canvas{ width:100%; height:auto; border-radius:8px; background:#070E1A; }
+
 
   .pitch-row{
     width:100%; background:none; border:none; display:flex; align-items:center; gap:8px;
@@ -199,9 +232,11 @@
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
 
   @media (max-width:720px){
+    html, body{ overflow:auto; }
+    .app{ height:auto; min-height:100vh; }
     .body-layout{ flex-direction:column; }
-    .sidebar{ width:100%; max-height:260px; height:auto; position:static; border-right:none; border-bottom:1px solid var(--border); }
-    main{ padding:14px; }
+    .sidebar{ width:100%; max-height:260px; height:auto; border-right:none; border-bottom:1px solid var(--border); }
+    main{ padding:14px; overflow-y:visible; }
   }
 </style>
 </head>
@@ -519,6 +554,8 @@ function renderCard(d){
   const stats = [
     { label: "防御率", value: d.era, color: (d.era != null && d.era < 3.5) ? "var(--green-text)" : "var(--red-text)", rankKey: "era" },
     { label: "K-BB%", value: d.k_bb_pct != null ? d.k_bb_pct + "%" : "-", color: "var(--green-text)", rankKey: "k_bb_pct" },
+    { label: "K%", value: d.k_pct_season != null ? d.k_pct_season + "%" : "-", color: "var(--green-text)", rankKey: "k_pct" },
+    { label: "BB%", value: d.bb_pct_season != null ? d.bb_pct_season + "%" : "-", color: "var(--red-text)", rankKey: "bb_pct" },
     { label: "ゴロ率", value: d.gb_pct != null ? d.gb_pct + "%" : "-", color: "var(--green-text)", rankKey: "gb_pct" },
     { label: "決め球", value: d.signature_pitch || "-", color: "var(--blue-text)", small: true }
   ];
@@ -625,32 +662,17 @@ function renderCard(d){
     });
   });
 
-  // 試合ログ: 行クリックで詳細開閉
-  mainContentEl.querySelectorAll(".row-game[data-gidx]").forEach(row => {
-    row.addEventListener("click", () => {
-      const idx = row.dataset.gidx;
-      const detail = mainContentEl.querySelector(`.row-detail[data-gdetail="${idx}"]`);
-      if(!detail) return;
-      detail.style.display = detail.style.display === "none" ? "table-row" : "none";
-    });
-  });
-
-  // 試合詳細内: 全体/対右/対左 切り替え
-  mainContentEl.querySelectorAll(".hand-toggle").forEach(toggle => {
-    toggle.addEventListener("click", (e) => {
-      const btn = e.target.closest(".hand-btn");
-      if(!btn) return;
-      e.stopPropagation();
-      const idx = toggle.dataset.gidx;
-      const hand = btn.dataset.hand;
-      const pitchDetail = idx === "season" ? d.season_pitch_detail : (d.game_log[idx] || {}).pitch_detail;
-      if(!pitchDetail) return;
-
-      toggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-
-      const wrap = mainContentEl.querySelector(`.pmix-wrap[data-gidx="${idx}"]`);
-      if(wrap) wrap.innerHTML = pitchDetailTableHtml(pitchDetail[hand]);
+  // 試合ログ: 比較チェックボックス
+  compareSelectedKeys = new Set(); // 選手が変わったら比較選択はリセット
+  window._hmResultFilter = "all";
+  window._hmSplitMode = "9";
+  window._hmSelectedPitchKeys = null;
+  mainContentEl.querySelectorAll(".cmp-checkbox").forEach(cb => {
+    cb.addEventListener("change", () => {
+      const gidx = cb.dataset.gidx;
+      if(cb.checked) compareSelectedKeys.add(gidx);
+      else compareSelectedKeys.delete(gidx);
+      renderComparePanel(d);
     });
   });
 }
@@ -664,7 +686,6 @@ function cellClass(value, goodDir, threshold){
 }
 
 // ── 球種詳細テーブル（本家ダッシュボードと同じ列構成・パーセンタイル色付け）──
-// export_llm_input.py 側で算出した _ランク（top15〜bot85）を、本家と同じ色にマッピングする
 const PMIX_METRICS = [
   { key:"swstr_pct",  tierKey:"空振り率_ランク",         label:"空振り率" },
   { key:"chase_pct",  tierKey:"ゾーン外スイング率_ランク", label:"ボール球SW%" },
@@ -673,13 +694,8 @@ const PMIX_METRICS = [
   { key:"gb_pct",     tierKey:"GB%_ランク",              label:"ゴロ率" }
 ];
 const TIER_COLOR = {
-  top15: "rgba(18,165,178,0.40)",
-  top30: "rgba(18,165,178,0.25)",
-  top40: "rgba(18,165,178,0.12)",
-  mid:   "",
-  bot60: "rgba(238,122,151,0.10)",
-  bot70: "rgba(238,122,151,0.18)",
-  bot85: "rgba(238,122,151,0.38)"
+  top15: "rgba(18,165,178,0.40)", top30: "rgba(18,165,178,0.25)", top40: "rgba(18,165,178,0.12)",
+  mid: "", bot60: "rgba(238,122,151,0.10)", bot70: "rgba(238,122,151,0.18)", bot85: "rgba(238,122,151,0.38)"
 };
 
 function pitchDetailTableHtml(pitches){
@@ -688,10 +704,9 @@ function pitchDetailTableHtml(pitches){
   }
   const tc = pitches.reduce((s,m)=>s+(m.count||0), 0);
   const wavg = (key) => tc>0 ? (pitches.reduce((s,m)=>s+((m[key]||0)*(m.count||0)),0)/tc).toFixed(1) : "—";
-
-  const rows = pitches.map(p => `
+  const rows = pitches.map((p,i) => `
     <tr>
-      <td><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(pitches.indexOf(p))}"></span>${escapeHtml(p.name)}</span></td>
+      <td><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(i)}"></span>${escapeHtml(p.name)}</span></td>
       <td>${p.count ?? "—"}</td>
       <td>${p.pct != null ? p.pct + "%" : "—"}</td>
       ${PMIX_METRICS.map(m => {
@@ -702,46 +717,100 @@ function pitchDetailTableHtml(pitches){
       }).join("")}
     </tr>
   `).join("");
-
   return `
     <div class="pmix-scroll">
       <table class="pmix-table">
-        <thead><tr>
-          <th>球種</th><th>投球数</th><th>投球割合</th>
-          ${PMIX_METRICS.map(m => `<th>${m.label}</th>`).join("")}
-        </tr></thead>
+        <thead><tr><th>球種</th><th>投球数</th><th>投球割合</th>${PMIX_METRICS.map(m => `<th>${m.label}</th>`).join("")}</tr></thead>
         <tbody>${rows}</tbody>
-        <tfoot><tr>
-          <td>合計</td>
-          <td>${tc}</td><td>100%</td>
-          ${PMIX_METRICS.map(m => `<td>${wavg(m.key)}%</td>`).join("")}
-        </tr></tfoot>
+        <tfoot><tr><td>合計</td><td>${tc}</td><td>100%</td>${PMIX_METRICS.map(m => `<td>${wavg(m.key)}%</td>`).join("")}</tr></tfoot>
       </table>
     </div>
   `;
 }
 
-// ── コース分布グリッド（本家の強度スケールをそのまま再現）──
-// cells: 9要素の {pct, count} 配列（投手視点、左上→右下）
-function courseGridHtml(label, cellsData){
-  if(!cellsData || !cellsData.cells || !cellsData.cells.length) return "";
-  const cells = cellsData.cells;
-  const maxCnt = Math.max(...cells.map(c => c.count || 0), 1);
+const PITCH_COLORS = ["#34D399","#FB923C","#F87171","#EC4899","#A78BFA","#60A5FA","#FBBF24","#22D3EE"];
+function pitchColor(i){ return PITCH_COLORS[i % PITCH_COLORS.length]; }
+
+// ============================================================
+// コース分布（本家ダッシュボードの _hmFilterLocs / グリッド計算 / _drawZoneHeatmapMulti を移植）
+// ============================================================
+
+const HM_RESULT_OPTIONS = [
+  { key:"all",    label:"全て" }, { key:"swing",  label:"スイング" }, { key:"swstr",  label:"空振り" },
+  { key:"ground", label:"ゴロアウト" }, { key:"fly",    label:"フライアウト" }, { key:"hit",    label:"単打" },
+  { key:"xbh",    label:"長打" }, { key:"hr",     label:"HR" }, { key:"take",   label:"見逃し" }
+];
+
+// グローバルなフィルター状態（比較パネル内の全ブロックで共有）
+window._hmResultFilter = window._hmResultFilter || "all";
+window._hmSplitMode = window._hmSplitMode || "9";
+window._hmSelectedPitchKeys = window._hmSelectedPitchKeys || null; // null=全球種
+
+function hmFilterLocs(locs, resultFilter){
+  return (locs || []).filter(loc => {
+    const [x, y, flag, inZone, rtype] = loc;
+    if(resultFilter === "all") return true;
+    if(resultFilter === "swstr")  return flag === 1;
+    if(resultFilter === "swing")  return flag >= 0;
+    if(resultFilter === "take")   return flag === -1;
+    if(resultFilter === "ground") return rtype === 1;
+    if(resultFilter === "fly")    return rtype === 2;
+    if(resultFilter === "hit")    return rtype === 3;
+    if(resultFilter === "xbh")    return rtype === 4 || rtype === 5;
+    if(resultFilter === "hr")     return rtype === 5;
+    return true;
+  });
+}
+
+function hmGetCell(v, edges){
+  for(let i=0;i<edges.length-1;i++){ if(v >= edges[i] && v < edges[i+1]) return i; }
+  return v < edges[0] ? 0 : edges.length-2;
+}
+
+// pitchLocsMap: {球種コード: {name,color,locsR,locsL}} → 指定した打者方向の、フィルター適用済み結合locs配列
+function hmCombinedLocs(pitchLocsMap, isBatterRight){
+  const locsKey = isBatterRight ? "locsR" : "locsL";
+  const keys = Object.keys(pitchLocsMap).filter(k => !window._hmSelectedPitchKeys || window._hmSelectedPitchKeys.has(k));
+  return keys.flatMap(k => hmFilterLocs(pitchLocsMap[k][locsKey] || [], window._hmResultFilter));
+}
+
+function hmBuildGridHtml(label, locs){
+  const ZONE = 1.0, OUTER = 1.67;
+  const edges9  = [-ZONE, -ZONE/3, ZONE/3, ZONE];
+  const edges25 = [-OUTER, -ZONE, -ZONE/3, ZONE/3, ZONE, OUTER];
+  const mode = window._hmSplitMode;
+  const edges = mode === "9" ? edges9 : edges25;
+  const N = edges.length - 1;
+
+  const zoneLocs = mode === "9" ? locs.filter(l => l[3] === 1) : locs;
+  const denom = zoneLocs.length;
+  const counts = Array.from({length:N}, () => new Array(N).fill(0));
+  zoneLocs.forEach(([x,y]) => { counts[hmGetCell(-y, edges)][hmGetCell(x, edges)]++; });
+  const maxCnt = Math.max(...counts.flat(), 1);
+  const CW = mode === "9" ? 54 : 34, CH = mode === "9" ? 44 : 28;
+  const fs = mode === "9" ? "12px" : "10px", fsSub = mode === "9" ? "9px" : "8px";
+
   let html = `<div class="course-block">
-    <div class="ctitle">${escapeHtml(label)}（${cellsData.total ?? "-"}球 ゾーン内）— 投手視点</div>
-    <table class="course-grid-table"><tbody>`;
-  for(let r = 0; r < 3; r++){
+    <div class="ctitle">${escapeHtml(label)}（${mode==='9' ? denom+'球 ゾーン内' : locs.length+'球'}）— 投手視点</div>
+    <table class="hm-grid-table"><tbody>`;
+  for(let r=0;r<N;r++){
     html += "<tr>";
-    for(let c = 0; c < 3; c++){
-      const cell = cells[r*3+c] || { pct: 0, count: 0 };
-      const intensity = (cell.count || 0) / maxCnt;
-      const bgAlpha = (0.05 + intensity * 0.7).toFixed(2);
-      const bg = cell.count > 0 ? `rgba(59,130,246,${bgAlpha})` : "rgba(59,130,246,0.03)";
-      const textCol = intensity > 0.25 ? "#fff" : (cell.count > 0 ? "var(--text)" : "var(--text-dim)");
-      const subCol = intensity > 0.25 ? "rgba(255,255,255,0.75)" : "var(--text-dim)";
-      html += `<td style="background:${bg}">
-        <div class="course-cell-top" style="color:${textCol}">${cell.pct != null ? cell.pct + "%" : "0.0%"}</div>
-        <div class="course-cell-bot" style="color:${subCol}">${cell.count > 0 ? cell.count : ""}</div>
+    for(let c=0;c<N;c++){
+      const cnt = counts[r][c];
+      const pct = denom>0 ? (cnt/denom*100).toFixed(1) : "0.0";
+      const inZone = mode==="9" ? true : (c>=1&&c<=3&&r>=1&&r<=3);
+      const intensity = cnt / maxCnt;
+      const bgAlpha = (0.05 + intensity*0.7).toFixed(2);
+      const bg = cnt>0 ? (inZone?`rgba(59,130,246,${bgAlpha})`:`rgba(100,116,139,${bgAlpha})`) : (inZone?"rgba(59,130,246,0.03)":"rgba(255,255,255,0.01)");
+      const textCol = intensity>0.25 ? "#fff" : (cnt>0?"var(--text)":"var(--text-dim)");
+      const subCol = intensity>0.25 ? "rgba(255,255,255,0.75)" : "var(--text-dim)";
+      const bT = (mode==="25"&&r===1)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
+      const bL = (mode==="25"&&c===1)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
+      const bB = (mode==="25"&&r===3)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
+      const bR = (mode==="25"&&c===3)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
+      html += `<td style="width:${CW}px;height:${CH}px;text-align:center;border-top:${bT};border-left:${bL};border-bottom:${bB};border-right:${bR};background:${bg};vertical-align:middle;padding:0">
+        <div style="font-size:${fs};font-weight:700;line-height:1.3;color:${textCol}">${cnt>0?pct+'%':'·'}</div>
+        ${cnt>0?`<div style="font-size:${fsSub};line-height:1.1;color:${subCol}">${cnt}</div>`:""}
       </td>`;
     }
     html += "</tr>";
@@ -750,13 +819,122 @@ function courseGridHtml(label, cellsData){
   return html;
 }
 
-function courseDistributionHtml(courseDetail){
-  if(!courseDetail) return "";
-  return `<div class="course-wrap">
-    ${courseGridHtml("対右打者", courseDetail.vsR)}
-    ${courseGridHtml("対左打者", courseDetail.vsL)}
-  </div>`;
+// 本家 _drawZoneHeatmapMulti の移植（バッターシルエット込み）
+function hmDrawHeatmap(canvasId, locs, isBatterRight){
+  const canvas = document.getElementById(canvasId);
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const RANGE = 1.75, BAT_W = 42, PAD_TOP=6, PAD_BTM=28;
+  const PAD_L = isBatterRight ? 10 : BAT_W+6;
+  const PAD_R = isBatterRight ? BAT_W+6 : 10;
+  const drawW = W-PAD_L-PAD_R, drawH = H-PAD_TOP-PAD_BTM;
+  const toX = x => PAD_L + (x+RANGE)/(RANGE*2)*drawW;
+  const toY = y => PAD_TOP + (1-(y+RANGE)/(RANGE*2))*drawH;
+
+  ctx.fillStyle = "#070E1A"; ctx.fillRect(0,0,W,H);
+
+  const sigma = (drawW/(RANGE*2))*0.075*2;
+  const BASE_LOCS = 150;
+  const _scale = locs.length > BASE_LOCS ? Math.sqrt(BASE_LOCS/locs.length) : 1.0;
+  const dotScale = Math.max(0.7,_scale), alphaScale = Math.max(0.5,_scale);
+
+  ctx.save(); ctx.beginPath(); ctx.rect(PAD_L,PAD_TOP,drawW,drawH); ctx.clip();
+  const dotR = Math.max(2.5, sigma*0.55*dotScale);
+  const a0 = +(0.85*alphaScale).toFixed(2), a1 = +(0.55*alphaScale).toFixed(2);
+  locs.forEach(loc => {
+    const [x,y] = loc;
+    const pc = hexToRgb(loc._color || "#3B82F6");
+    const px = x;
+    const BALL_COMPRESS = 0.42, SZ = 1.0;
+    const compress = v => { if(Math.abs(v)<=SZ) return v; const sign=v>0?1:-1; return sign*(SZ+(Math.abs(v)-SZ)*BALL_COMPRESS); };
+    const cx2 = toX(compress(px)), cy2 = toY(compress(y));
+    const grd = ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,dotR*2.2);
+    grd.addColorStop(0,`rgba(${pc.r},${pc.g},${pc.b},${a0})`);
+    grd.addColorStop(0.4,`rgba(${pc.r},${pc.g},${pc.b},${a1})`);
+    grd.addColorStop(1,`rgba(${pc.r},${pc.g},${pc.b},0)`);
+    ctx.fillStyle = grd; ctx.beginPath(); ctx.arc(cx2,cy2,dotR*2.2,0,Math.PI*2); ctx.fill();
+  });
+  ctx.restore();
+
+  const zx1=toX(-1),zx2=toX(1),zy1=toY(1),zy2=toY(-1);
+  ctx.strokeStyle="rgba(255,255,255,0.55)"; ctx.lineWidth=1.5; ctx.strokeRect(zx1,zy1,zx2-zx1,zy2-zy1);
+  ctx.strokeStyle="rgba(255,255,255,0.18)"; ctx.lineWidth=0.8;
+  [toX(-1/3),toX(1/3)].forEach(x=>{ctx.beginPath();ctx.moveTo(x,zy1);ctx.lineTo(x,zy2);ctx.stroke();});
+  [toY(1/3),toY(-1/3)].forEach(y=>{ctx.beginPath();ctx.moveTo(zx1,y);ctx.lineTo(zx2,y);ctx.stroke();});
+
+  const plateY=toY(-1.0)+2, plW=zx2-zx1;
+  ctx.strokeStyle="rgba(255,255,255,0.35)"; ctx.lineWidth=1.2;
+  ctx.beginPath();
+  ctx.moveTo(zx1,plateY); ctx.lineTo(zx2,plateY);
+  ctx.moveTo(zx1,plateY); ctx.lineTo(zx1+plW*0.15,plateY+8);
+  ctx.lineTo(zx1+plW*0.5,plateY+11); ctx.lineTo(zx2-plW*0.15,plateY+8); ctx.lineTo(zx2,plateY);
+  ctx.stroke();
+
+  const batCX = isBatterRight ? toX(1)+BAT_W*0.5 : toX(-1)-BAT_W*0.5;
+  const batBotY = toY(-1.0)+4, s = 0.88;
+  ctx.save(); ctx.translate(batCX,batBotY);
+  if(!isBatterRight) ctx.scale(-1,1);
+  ctx.fillStyle = "rgba(148,163,184,0.55)"; ctx.strokeStyle = "rgba(148,163,184,0.55)";
+  ctx.lineJoin = "round"; ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(-12*s,0); ctx.lineTo(-14*s,-25*s); ctx.lineTo(-7*s,-25*s); ctx.lineTo(-5*s,-14*s);
+  ctx.lineTo(-1*s,-25*s); ctx.lineTo(5*s,-25*s); ctx.lineTo(2*s,0); ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-13*s,-23*s); ctx.lineTo(-14*s,-48*s); ctx.lineTo(-4*s,-48*s); ctx.lineTo(-2*s,-23*s);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-9*s,-56*s,7*s,8*s,0,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(-4*s,-54*s,4*s,5*s,0.3,0,Math.PI); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-13*s,-44*s); ctx.lineTo(-24*s,-35*s); ctx.lineWidth=7*s; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-14*s,-44*s); ctx.lineTo(-7*s,-33*s); ctx.lineWidth=5*s; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-7*s,-33*s); ctx.lineTo(10*s,-14*s); ctx.lineWidth=3.5*s;
+  ctx.strokeStyle="rgba(148,163,184,0.35)"; ctx.stroke();
+  ctx.beginPath(); ctx.arc(10*s,-14*s,2.5*s,0,Math.PI*2); ctx.fillStyle="rgba(148,163,184,0.4)"; ctx.fill();
+  ctx.restore();
 }
+
+function hexToRgb(hex){
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return m ? { r:parseInt(m[1],16), g:parseInt(m[2],16), b:parseInt(m[3],16) } : { r:59,g:130,b:246 };
+}
+
+// 球種フィルターボタン + 結果フィルタータブ + 9/25分割トグル（比較パネル全体で共有・1セットだけ表示）
+function hmControlsHtml(allPitchKeysMap){
+  const pitchBtns = Object.entries(allPitchKeysMap).map(([key, info]) => `
+    <button class="hm-pitch-btn ${!window._hmSelectedPitchKeys || window._hmSelectedPitchKeys.has(key) ? 'active' : ''}" data-pkey="${key}">
+      <span class="hm-pdot" style="background:${info.color}"></span>${escapeHtml(info.name)}
+    </button>
+  `).join("");
+  return `
+    <div class="hm-controls">
+      <div class="hm-controls-row">
+        <span class="hm-controls-label">結果</span>
+        <div class="hm-btn-group">
+          ${HM_RESULT_OPTIONS.map(o => `<button class="hm-filter-btn ${window._hmResultFilter===o.key?'active':''}" data-result="${o.key}">${o.label}</button>`).join("")}
+        </div>
+      </div>
+      <div class="hm-controls-row">
+        <span class="hm-controls-label">分割</span>
+        <div class="hm-btn-group">
+          <button class="hm-filter-btn ${window._hmSplitMode==='9'?'active':''}" data-split="9">9分割</button>
+          <button class="hm-filter-btn ${window._hmSplitMode==='25'?'active':''}" data-split="25">25分割</button>
+        </div>
+      </div>
+      <div class="hm-controls-row hm-pitch-row">
+        <button class="hm-pitch-btn ${!window._hmSelectedPitchKeys ? 'active' : ''}" data-pkey="__all__">全球種</button>
+        ${pitchBtns}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================================
+// 試合ログテーブル + 比較パネル
+// ============================================================
+
+let compareSelectedKeys = new Set(); // "season" | 数字(game index、文字列)
 
 function buildGameLogTable(d){
   if(!d.game_log || !d.game_log.length) return "";
@@ -770,97 +948,176 @@ function buildGameLogTable(d){
     { key: "bb_pct", label: "BB%", good: "low", th: 8 },
     { key: "gb_pct", label: "ゴロ率", good: "high", th: 42 }
   ];
-  const colCount = 3 + cols.length;
 
-  // 行1つぶんの詳細パネル（試合ログ・シーズン行どちらからも呼べる共通処理）
-  function buildDetailRow(gidx, basicChipsHtml, pitchDetail, courseDetail){
-    const hasPitchDetail = pitchDetail && (pitchDetail.all || pitchDetail.vsR || pitchDetail.vsL);
-    const hasCourseDetail = courseDetail && (courseDetail.vsR || courseDetail.vsL);
-    if(!basicChipsHtml && !hasPitchDetail && !hasCourseDetail) return "";
+  const chk = (gidx) => `<input type="checkbox" class="cmp-checkbox" data-gidx="${gidx}" ${compareSelectedKeys.has(gidx)?"checked":""}>`;
 
-    const pitchSection = hasPitchDetail ? `
-      <div class="hand-toggle" data-gidx="${gidx}">
-        <button class="hand-btn active" data-hand="all">全体</button>
-        <button class="hand-btn" data-hand="vsR">対右</button>
-        <button class="hand-btn" data-hand="vsL">対左</button>
-      </div>
-      <div class="pmix-wrap" data-gidx="${gidx}">
-        ${pitchDetailTableHtml(pitchDetail.all)}
-      </div>
-    ` : "";
-
-    const courseSection = hasCourseDetail ? courseDistributionHtml(courseDetail) : "";
-
-    return `
-      <tr class="row-detail" data-gdetail="${gidx}" style="display:none">
-        <td colspan="${colCount}">
-          ${basicChipsHtml || ""}
-          ${pitchSection}
-          ${courseSection}
-        </td>
-      </tr>
-    `;
-  }
-
-  const seasonHasDetail = d.season_pitch_detail || d.season_course_detail;
   const seasonRow = `
-    <tr class="row-game row-season" data-gidx="season">
+    <tr class="row-game" data-gidx="season">
+      <td>${chk("season")}</td>
       <td>シーズン</td><td>―</td>
       <td>${d.games ?? "-"}登板 ${d.innings ?? "-"}回</td>
       ${cols.map(c => `<td>${d[c.key + "_season"] != null ? d[c.key + "_season"] + "%" : "-"}</td>`).join("")}
     </tr>
-  ` + (seasonHasDetail ? buildDetailRow("season", "", d.season_pitch_detail, d.season_course_detail) : "");
+  `;
 
-  const gameRows = d.game_log.map((g, i) => {
-    const hasBasicDetail = g.ip != null || g.pitches != null || g.k != null || g.bb != null || g.h != null || g.er != null;
-
-    const row = `
-      <tr class="row-game" data-gidx="${i}">
-        <td>${escapeHtml(g.date || "")}</td>
-        <td>${escapeHtml(g.opponent || "")}</td>
-        <td>${escapeHtml(g.result || "")}</td>
-        ${cols.map(c => {
-          const v = g[c.key];
-          const cls = cellClass(v, c.good, c.th);
-          return `<td class="${cls}">${v != null ? v + "%" : "-"}</td>`;
-        }).join("")}
-      </tr>
-    `;
-
-    const basicChips = hasBasicDetail ? `
-      <div class="gamelog-detail">
-        ${g.ip != null ? `<span><b>${g.ip}</b>回</span>` : ""}
-        ${g.pitches != null ? `<span><b>${g.pitches}</b>球</span>` : ""}
-        ${g.k != null ? `<span><b>${g.k}</b>K</span>` : ""}
-        ${g.bb != null ? `<span><b>${g.bb}</b>BB</span>` : ""}
-        ${g.h != null ? `<span><b>${g.h}</b>安打</span>` : ""}
-        ${g.er != null ? `<span><b>${g.er}</b>自責点</span>` : ""}
-      </div>
-    ` : "";
-
-    return row + buildDetailRow(i, basicChips, g.pitch_detail, g.course_detail);
-  }).join("");
+  const gameRows = d.game_log.map((g, i) => `
+    <tr class="row-game" data-gidx="${i}">
+      <td>${chk(String(i))}</td>
+      <td>${escapeHtml(g.date || "")}</td>
+      <td>${escapeHtml(g.opponent || "")}</td>
+      <td>${escapeHtml(g.result || "")}</td>
+      ${cols.map(c => {
+        const v = g[c.key];
+        const cls = cellClass(v, c.good, c.th);
+        return `<td class="${cls}">${v != null ? v + "%" : "-"}</td>`;
+      }).join("")}
+    </tr>
+  `).join("");
 
   return `
     <div class="section section-gamelog">
-      ${sectionHeader({ bar:"var(--amber)", label:`${d.season_label || "シーズン"}成績`, labelColor:"var(--text-bright)", sub:`${d.games ?? "-"}試合・行タップで詳細` })}
+      ${sectionHeader({ bar:"var(--amber)", label:`${d.season_label || "シーズン"}成績`, labelColor:"var(--text-bright)", sub:`${d.games ?? "-"}試合・チェックで比較` })}
       <div class="section-body">
         <div class="gamelog-scroll">
           <table class="gamelog-table">
             <thead><tr>
-              <th>日付</th><th>対戦</th><th>結果</th>
+              <th>比較</th><th>日付</th><th>対戦</th><th>結果</th>
               ${cols.map(c => `<th>${c.label}</th>`).join("")}
             </tr></thead>
             <tbody>${seasonRow}${gameRows}</tbody>
           </table>
         </div>
+        <div id="comparePanel"></div>
       </div>
     </div>
   `;
 }
 
-const PITCH_COLORS = ["#34D399","#FB923C","#F87171","#EC4899","#A78BFA","#60A5FA","#FBBF24","#22D3EE"];
-function pitchColor(i){ return PITCH_COLORS[i % PITCH_COLORS.length]; }
+// 選択中のキーに対応する {pitch_detail, course_locs, label} を取得
+function getRowDataFor(d, gidx){
+  if(gidx === "season"){
+    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs };
+  }
+  const g = d.game_log[parseInt(gidx,10)];
+  if(!g) return null;
+  return { label: `${g.date || ""} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs };
+}
+
+function renderComparePanel(d){
+  const panel = document.getElementById("comparePanel");
+  if(!panel) return;
+  const keys = [...compareSelectedKeys];
+  if(!keys.length){ panel.innerHTML = ""; return; }
+
+  // 全選択ぶんに登場する球種の集合（球種フィルターボタン用）
+  const allPitchKeysMap = {};
+  keys.forEach(k => {
+    const rd = getRowDataFor(d, k);
+    if(rd && rd.courseLocs) Object.entries(rd.courseLocs).forEach(([pkey, info]) => { allPitchKeysMap[pkey] = info; });
+  });
+
+  const blocksHtml = keys.map(gidx => {
+    const rd = getRowDataFor(d, gidx);
+    if(!rd) return "";
+    const pitchDetail = rd.pitchDetail || {};
+    const courseLocs = rd.courseLocs || {};
+    const locsR = hmCombinedLocs(courseLocs, true);
+    const locsL = hmCombinedLocs(courseLocs, false);
+    const canvasIdR = `hmcanvas-${gidx}-R`, canvasIdL = `hmcanvas-${gidx}-L`;
+
+    return `
+      <div class="compare-block" data-cmp-gidx="${gidx}">
+        <div class="compare-block-title">${escapeHtml(rd.label)}</div>
+        ${pitchDetail.all ? `
+          <div class="hand-toggle" data-gidx="${gidx}">
+            <button class="hand-btn active" data-hand="all">全体</button>
+            <button class="hand-btn" data-hand="vsR">対右</button>
+            <button class="hand-btn" data-hand="vsL">対左</button>
+          </div>
+          <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(pitchDetail.all)}</div>
+        ` : ""}
+        <div class="course-wrap">
+          ${hmBuildGridHtml("対右打者", locsR)}
+          ${hmBuildGridHtml("対左打者", locsL)}
+        </div>
+        <div class="hm-canvas-wrap">
+          <div class="hm-canvas-block">
+            <div class="hm-canvas-title">対右打者</div>
+            <canvas id="${canvasIdR}" width="300" height="300"></canvas>
+          </div>
+          <div class="hm-canvas-block">
+            <div class="hm-canvas-title">対左打者</div>
+            <canvas id="${canvasIdL}" width="300" height="300"></canvas>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  panel.innerHTML = `
+    ${hmControlsHtml(allPitchKeysMap)}
+    <div class="compare-blocks">${blocksHtml}</div>
+  `;
+
+  // canvas描画（DOM挿入後に実行する必要がある）
+  keys.forEach(gidx => {
+    const rd = getRowDataFor(d, gidx);
+    if(!rd || !rd.courseLocs) return;
+    const buildColored = (isR) => {
+      const out = [];
+      Object.entries(rd.courseLocs).forEach(([pkey, info]) => {
+        if(window._hmSelectedPitchKeys && !window._hmSelectedPitchKeys.has(pkey)) return;
+        const raw = hmFilterLocs((isR ? info.locsR : info.locsL) || [], window._hmResultFilter);
+        raw.forEach(loc => { const l = loc.slice(); l._color = info.color; out.push(l); });
+      });
+      return out;
+    };
+    hmDrawHeatmap(`hmcanvas-${gidx}-R`, buildColored(true), true);
+    hmDrawHeatmap(`hmcanvas-${gidx}-L`, buildColored(false), false);
+  });
+
+  wireComparePanelEvents(d);
+}
+
+function wireComparePanelEvents(d){
+  const panel = document.getElementById("comparePanel");
+  if(!panel) return;
+
+  panel.querySelectorAll(".hm-filter-btn[data-result]").forEach(btn => {
+    btn.addEventListener("click", () => { window._hmResultFilter = btn.dataset.result; renderComparePanel(d); });
+  });
+  panel.querySelectorAll(".hm-filter-btn[data-split]").forEach(btn => {
+    btn.addEventListener("click", () => { window._hmSplitMode = btn.dataset.split; renderComparePanel(d); });
+  });
+  panel.querySelectorAll(".hm-pitch-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const pkey = btn.dataset.pkey;
+      if(pkey === "__all__"){ window._hmSelectedPitchKeys = null; }
+      else{
+        if(!window._hmSelectedPitchKeys) window._hmSelectedPitchKeys = new Set(Object.keys(
+          (function(){ const m={}; [...compareSelectedKeys].forEach(k=>{const rd=getRowDataFor(d,k); if(rd&&rd.courseLocs) Object.keys(rd.courseLocs).forEach(pk=>m[pk]=1);}); return m; })()
+        ));
+        if(window._hmSelectedPitchKeys.has(pkey)) window._hmSelectedPitchKeys.delete(pkey);
+        else window._hmSelectedPitchKeys.add(pkey);
+      }
+      renderComparePanel(d);
+    });
+  });
+  panel.querySelectorAll(".hand-toggle").forEach(toggle => {
+    toggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".hand-btn");
+      if(!btn) return;
+      const idx = toggle.dataset.gidx;
+      const hand = btn.dataset.hand;
+      const rd = getRowDataFor(d, idx);
+      if(!rd || !rd.pitchDetail) return;
+      toggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const wrap = panel.querySelector(`.pmix-wrap[data-gidx="${idx}"]`);
+      if(wrap) wrap.innerHTML = pitchDetailTableHtml(rd.pitchDetail[hand]);
+    });
+  });
+}
 
 // 初期ロード
 loadPlayerIndex(currentLeague);
