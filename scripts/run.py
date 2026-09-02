@@ -3040,7 +3040,7 @@ def run_all():
         league_label = "1軍" if _current_league == "ichi" else "2軍"
         year = TARGET_DATE[:4]
         llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", league_label, _current_game_type, "llm_input")
-        path_llm_input = os.path.join(llm_input_dir, f"投手データ_{year}.xlsx")
+        path_llm_input = os.path.join(llm_input_dir, f"プロ野球{league_label}_投手データ_{year}.xlsx")
         # 数値JSON（pitcher_cards_numeric）は pitcher-cards.html が直接fetchするので、
         # 非公開のBASE_DATA_DIRではなく公開側のBASE_PUBLIC_DIRに出力する
         numeric_json_dir = os.path.join(

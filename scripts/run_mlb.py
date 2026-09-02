@@ -2768,7 +2768,7 @@ def main():
     try:
         year = TARGET_DATE[:4]
         llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", args.game_type, "llm_input")
-        path_llm_input = os.path.join(llm_input_dir, f"投手データ_{year}.xlsx")
+        path_llm_input = os.path.join(llm_input_dir, f"MLB_投手データ_{year}.xlsx")
         # 数値JSON（pitcher_cards_numeric）は pitcher-cards.html が直接fetchするので、
         # 非公開のBASE_DATA_DIRではなく公開側のBASE_PUBLIC_DIRに出力する
         numeric_json_dir = os.path.join(BASE_PUBLIC_DIR, f"{year}年", args.game_type, "pitcher_cards_numeric")
