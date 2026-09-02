@@ -634,6 +634,53 @@ def _single_game_pitch_tiers(mix_rows: list[dict], role_key: str, pitch_scale_st
         row["ストライク率_ランク"] = get_scale_tier("strike", row.get("strike_pct"), stats_for_pitch)
 
 
+_PITCH_COLOR_MAP = {
+    "FF": "#3B82F6", "SL": "#F59E0B", "CU": "#10B981", "FK": "#F87171",
+    "CH": "#A78BFA", "SI": "#22D3EE", "CT": "#FB923C", "SP": "#2DD4BF",
+    "FS": "#2DD4BF", "SH": "#F472B6", "ST": "#2DD4BF",
+}
+
+
+def _extract_locs_from_appearances(appearances: list[dict]) -> dict:
+    """
+    複数登板ぶんのappearancesから、球種コードごとに {name, color, locsR, locsL} を集める。
+    本家ダッシュボードの _drawZoneHeatmapMulti に渡す pitchLocsMap と同じ形式。
+    locは [x, y, flag, inZone, rtype, isStrike] の6要素に切り詰める（余分なフィールドは捨てる）。
+    """
+    out: dict[str, dict] = {}
+    for ap in appearances:
+        player = ap.get("player")
+        if not isinstance(player, dict):
+            continue
+        for side_key, mix_key in (("locsR", "mixVsR"), ("locsL", "mixVsL")):
+            for m in (player.get(mix_key) or []):
+                if not isinstance(m, dict):
+                    continue
+                key = m.get("key")
+                if key is None:
+                    continue
+                if key not in out:
+                    out[key] = {
+                        "name": m.get("name"),
+                        "color": _PITCH_COLOR_MAP.get(key, "#94A3B8"),
+                        "locsR": [], "locsL": [],
+                    }
+                for loc in (m.get("locs") or []):
+                    if isinstance(loc, list) and len(loc) >= 6:
+                        out[key][side_key].append(loc[:6])
+    return out
+
+
+def build_season_course_locs(appearances: list[dict]) -> dict:
+    """シーズン全体ぶんの球種別コース座標（pitchLocsMap形式）"""
+    return _extract_locs_from_appearances(appearances)
+
+
+def _single_game_course_locs(ap: dict) -> dict:
+    """1試合ぶんの球種別コース座標（pitchLocsMap形式）"""
+    return _extract_locs_from_appearances([ap])
+
+
 def _course_result_to_detail(course_result: dict) -> dict:
     """aggregate_course_distribution()の戻り値を、カード表示用の対右/対左9セル pct+count 形式に整形する"""
     out = {}
@@ -714,18 +761,21 @@ def build_game_log_rows(name: str, appearances: list[dict], role_key: str, pitch
             "er": p.get("er"),
             "pitch_detail": {"all": pitch_detail_all, "vsR": pitch_detail_vsr, "vsL": pitch_detail_vsl},
             "course_detail": _single_game_course_detail(ap),
+            "course_locs": _single_game_course_locs(ap),
         })
     return rows
 
 
 def compute_rankings(season_rows: list[dict]) -> dict:
     """
-    シーズン集計の全投手分から、防御率・K-BB%・ゴロ率の順位を算出する。
-    戻り値: {選手名: {"era":{"rank":n,"total":m}, "k_bb_pct":{...}, "gb_pct":{...}}}
+    シーズン集計の全投手分から、防御率・K-BB%・K%・BB%・ゴロ率の順位を算出する。
+    戻り値: {選手名: {"era":{"rank":n,"total":m}, "k_bb_pct":{...}, "k_pct":{...}, "bb_pct":{...}, "gb_pct":{...}}}
     """
     specs = [
         ("防御率", "era", False),      # 低いほど良い
         ("K-BB%", "k_bb_pct", True),   # 高いほど良い
+        ("K%", "k_pct", True),         # 高いほど良い
+        ("BB%", "bb_pct", False),      # 低いほど良い
         ("ゴロ率", "gb_pct", True),    # 高いほど良い
     ]
     result = {row["選手名"]: {} for row in season_rows}
@@ -832,6 +882,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                 season_mix_all, season_mix_vs_r, season_mix_vs_l, role_key, pitch_scale_stats, key_lookup
             )
             season_course_detail = _course_result_to_detail(course)
+            season_course_locs = build_season_course_locs(appearances)
 
             # 試合ログ（1試合=1行。pitch_detail/course_detailはネスト構造なのでJSON文字列として保持）
             game_log_dicts = build_game_log_rows(name, appearances, role_key, pitch_scale_stats)
@@ -868,6 +919,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                     "pitch_evaluations_numeric": pitch_numeric_rows,
                     "season_pitch_detail": season_pitch_detail,
                     "season_course_detail": season_course_detail,
+                    "season_course_locs": season_course_locs,
                     "game_log": game_log_dicts,
                     # rankingsはこの後、全選手分揃ってから付与する
                 }
@@ -875,7 +927,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             print(f"  [SKIP] {name}: 集計中にエラーのためスキップ({type(e).__name__}: {e})")
             continue
 
-    # 順位（防御率・K-BB%・ゴロ率）を算出し、シーズン集計に列として付与
+    # 順位（防御率・K-BB%・K%・BB%・ゴロ率）を算出し、シーズン集計に列として付与
     rankings = compute_rankings(season_rows)
     for row in season_rows:
         rk = rankings.get(row["選手名"], {})
@@ -883,6 +935,10 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
         row["防御率_順位_母数"] = rk.get("era", {}).get("total")
         row["K-BB%_順位"] = rk.get("k_bb_pct", {}).get("rank")
         row["K-BB%_順位_母数"] = rk.get("k_bb_pct", {}).get("total")
+        row["K%_順位"] = rk.get("k_pct", {}).get("rank")
+        row["K%_順位_母数"] = rk.get("k_pct", {}).get("total")
+        row["BB%_順位"] = rk.get("bb_pct", {}).get("rank")
+        row["BB%_順位_母数"] = rk.get("bb_pct", {}).get("total")
         row["ゴロ率_順位"] = rk.get("gb_pct", {}).get("rank")
         row["ゴロ率_順位_母数"] = rk.get("gb_pct", {}).get("total")
 
