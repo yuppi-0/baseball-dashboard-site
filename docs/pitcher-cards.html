@@ -330,6 +330,15 @@ function escapeHtml(s){
   }[c]));
 }
 
+// GitHub Pages（Fastly CDN）は index.json/バッチJSONのようなファイルを
+// 数分間エッジキャッシュすることがあり、fetchの cache:"no-store" は
+// ブラウザ側キャッシュにしか効かずCDNのキャッシュには効かない。
+// そのため「更新直後は404のまま」に見えることがある → URLに毎回変わる
+// クエリを付けて、CDNから見て別URL（=キャッシュ未使用）として取得する。
+function bust(url){
+  return `${url}${url.includes("?") ? "&" : "?"}_=${Date.now()}`;
+}
+
 async function loadPlayerIndex(league){
   playerListEl.innerHTML = '<div class="empty-list">読み込み中…</div>';
   mainContentEl.innerHTML = '<div class="placeholder">左の一覧から選手を選んでください</div>';
@@ -339,7 +348,7 @@ async function loadPlayerIndex(league){
   aiOnlyFilterEl.checked = false;
   try{
     // 選手一覧は「数値データ」側のindex.jsonを正とする（LLM解釈がまだない選手も一覧には出す）
-    const res = await fetch(`${LEAGUE_PATHS[league].numeric}/index.json`, { cache: "no-store" });
+    const res = await fetch(bust(`${LEAGUE_PATHS[league].numeric}/index.json`), { cache: "no-store" });
     if(!res.ok) throw new Error(`index.json の取得に失敗しました (${res.status})`);
     const data = await res.json();
     allPlayers = data.players || [];
@@ -394,14 +403,14 @@ async function findLlmDataForPlayer(playerName){
   const charCodes = [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" ");
   debugLog.push(`探している名前: ${JSON.stringify(playerName)} / 文字コード: ${charCodes}`);
   try{
-    const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
+    const idxRes = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/index.json`), { cache: "no-store" });
     if(!idxRes.ok){ debugLog.push(`index.json取得失敗: ${idxRes.status}`); return { data: null, debugLog }; }
     const idx = await idxRes.json();
     const files = (idx.batches || []).slice().sort().reverse(); // ファイル名降順 = 新しい順
     debugLog.push(`バッチファイル一覧: ${JSON.stringify(files)}`);
     for(const file of files){
       try{
-        const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
+        const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/${file}`), { cache: "no-store" });
         if(!res.ok) continue;
         const batch = await res.json();
         const entries = normalizeBatchEntries(batch);
@@ -478,7 +487,7 @@ async function selectPlayer(id, name){
   renderPlayerList(applyFilters());
   mainContentEl.innerHTML = '<div class="placeholder">読み込み中…</div>';
   try{
-    const res = await fetch(`${LEAGUE_PATHS[currentLeague].numeric}/${id}.json`, { cache: "no-store" });
+    const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].numeric}/${id}.json`), { cache: "no-store" });
     if(!res.ok) throw new Error(`選手データの取得に失敗しました (${res.status})`);
     const numeric = await res.json();
     const { data: llm, debugLog } = await findLlmDataForPlayer(name || numeric.name);
@@ -539,13 +548,13 @@ aiOnlyFilterEl.addEventListener("change", async () => {
 async function loadAllLlmPlayerNames(){
   playersWithLlmData = new Set();
   try{
-    const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
+    const idxRes = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/index.json`), { cache: "no-store" });
     if(idxRes.ok){
       const idx = await idxRes.json();
       const files = idx.batches || [];
       await Promise.all(files.map(async file => {
         try{
-          const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
+          const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/${file}`), { cache: "no-store" });
           if(!res.ok) return;
           const batch = await res.json();
           normalizeBatchEntries(batch).forEach(e => {
