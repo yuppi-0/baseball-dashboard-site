@@ -3092,7 +3092,7 @@ def run_all():
 import argparse
 
 # 使用できるステップ（json は datamart に自動付与されるため単独指定不要）
-STEP_CHOICES = ["all", "games", "pitch", "highlights", "datamart"]
+STEP_CHOICES = ["all", "games", "pitch", "highlights", "datamart", "llm_input"]
 
 STEP_LABELS = {
     "games"     : "Step1 試合データ取得",
