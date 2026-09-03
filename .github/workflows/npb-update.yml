@@ -11,7 +11,7 @@ on:
         required: false
         default: ''
       steps:
-        description: '実行ステップ（games / pitch / highlights / datamart / all。スペース区切りで複数可）'
+        description: '実行ステップ（games / pitch / highlights / datamart / llm_input / all。スペース区切りで複数可。datamartを含む場合はllm_inputが自動付与されます）'
         required: false
         default: 'all'
       game_ids:
