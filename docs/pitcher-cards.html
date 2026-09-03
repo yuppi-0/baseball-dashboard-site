@@ -218,9 +218,12 @@
   .compare-block{
     background:var(--panel); border:1px solid rgba(148,163,184,0.15); border-radius:10px; padding:12px 14px;
   }
-  .compare-block-title{ font-size:12.5px; font-weight:700; color:var(--text-bright); margin-bottom:10px; }
+  .compare-block-title{ font-size:12.5px; font-weight:700; color:var(--text-bright); margin-bottom:2px; }
+  .compare-block-summary{ font-size:11px; color:var(--text-dim); font-family:'DM Mono',monospace; margin-bottom:10px; }
+  .course-row{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:6px; }
+  .course-pair{ display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
   .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
-  .hm-canvas-block{ flex:1; min-width:220px; max-width:320px; }
+  .hm-canvas-block{ width:150px; flex-shrink:0; }
   .hm-canvas-title{ font-size:9px; color:var(--text-dim); text-align:center; margin-bottom:4px; }
   .hm-canvas-block canvas{ width:100%; height:auto; border-radius:8px; background:#070E1A; }
 
@@ -387,26 +390,33 @@ function normalizeBatchEntries(batch){
 }
 
 async function findLlmDataForPlayer(playerName){
-  console.log("[LLM検索] 探している名前:", JSON.stringify(playerName), "文字コード:", [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" "));
+  const debugLog = [];
+  const charCodes = [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" ");
+  debugLog.push(`探している名前: ${JSON.stringify(playerName)} / 文字コード: ${charCodes}`);
   try{
     const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
-    if(!idxRes.ok){ console.log("[LLM検索] index.json取得失敗:", idxRes.status); return null; }
+    if(!idxRes.ok){ debugLog.push(`index.json取得失敗: ${idxRes.status}`); return { data: null, debugLog }; }
     const idx = await idxRes.json();
     const files = (idx.batches || []).slice().sort().reverse(); // ファイル名降順 = 新しい順
-    console.log("[LLM検索] バッチファイル一覧:", files);
+    debugLog.push(`バッチファイル一覧: ${JSON.stringify(files)}`);
     for(const file of files){
       try{
         const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
         if(!res.ok) continue;
         const batch = await res.json();
         const entries = normalizeBatchEntries(batch);
-        console.log(`[LLM検索] ${file} 内の選手名:`, entries.map(e => JSON.stringify(e.name)));
+        const namesWithCodes = entries.map(e => {
+          const cc = e.name ? [...e.name].map(c=>c.codePointAt(0).toString(16)).join(" ") : "";
+          return `${JSON.stringify(e.name)} [${cc}]`;
+        });
+        debugLog.push(`${file} 内の選手名: ${namesWithCodes.join(" / ")}`);
         const hit = entries.find(e => e.name === playerName);
-        if(hit){ console.log("[LLM検索] ヒット:", file); return hit.data; }
+        if(hit){ debugLog.push(`ヒット: ${file}`); return { data: hit.data, debugLog }; }
       }catch(e){ continue; }
     }
-    console.log("[LLM検索] どのバッチにも見つかりませんでした");
-  }catch(e){ /* バッチ一覧自体がまだ無い場合は静かに諦める */ }
+    debugLog.push("どのバッチにも見つかりませんでした");
+  }catch(e){ debugLog.push(`エラー: ${e.message}`); }
+  return { data: null, debugLog };
   return null;
 }
 
@@ -450,6 +460,10 @@ function mergeCardData(numeric, llm){
     k_pct_season: numeric.k_pct_season,
     bb_pct_season: numeric.bb_pct_season,
     gb_pct_season: numeric.gb_pct,
+    k: numeric.k,
+    bb: numeric.bb,
+    season_pitch_detail: numeric.season_pitch_detail,
+    season_course_locs: numeric.season_course_locs,
     player_type: llm.player_type || null,
     strengths: llm.strengths || [],
     weaknesses: llm.weaknesses || [],
@@ -467,14 +481,19 @@ async function selectPlayer(id, name){
     const res = await fetch(`${LEAGUE_PATHS[currentLeague].numeric}/${id}.json`, { cache: "no-store" });
     if(!res.ok) throw new Error(`選手データの取得に失敗しました (${res.status})`);
     const numeric = await res.json();
-    const llm = await findLlmDataForPlayer(name || numeric.name);
+    const { data: llm, debugLog } = await findLlmDataForPlayer(name || numeric.name);
     const merged = mergeCardData(numeric, llm);
     renderCard(merged);
     if(!llm){
+      const debugHtml = debugLog.map(line => `<div>${escapeHtml(line)}</div>`).join("");
       mainContentEl.insertAdjacentHTML("afterbegin",
         `<div style="font-size:11px;color:var(--text-dim);margin-bottom:10px">
           ※ この選手のAI解釈テキストはまだ生成されていません（数値データのみ表示中）
-        </div>`);
+        </div>
+        <details style="margin-bottom:14px;font-size:10px;color:var(--text-dim)">
+          <summary style="cursor:pointer;color:var(--blue-text)">デバッグ情報を見る（うまく表示されない時にサポートへ共有してください）</summary>
+          <div style="margin-top:6px;padding:8px;background:var(--panel);border-radius:6px;font-family:monospace;white-space:pre-wrap;word-break:break-all">${debugHtml}</div>
+        </details>`);
     }
   }catch(e){
     mainContentEl.innerHTML = `<div class="error">カードを読み込めませんでした。<br>(${escapeHtml(e.message)})</div>`;
@@ -687,7 +706,7 @@ function renderCard(d){
     });
   });
 
-  // 試合ログ: 比較チェックボックス（行全体クリックでも切り替え可能に）
+  // 試合ログ: 行クリック＝この行だけ選んで比較パネルへスクロール／チェックボックス＝複数比較に追加・削除
   compareSelectedKeys = new Set(); // 選手が変わったら比較選択はリセット
   window._hmResultFilter = "all";
   window._hmSplitMode = "9";
@@ -704,11 +723,17 @@ function renderCard(d){
     cb.addEventListener("change", () => toggleCompareRow(cb.dataset.gidx, cb));
   });
   mainContentEl.querySelectorAll(".gamelog-table tbody tr.row-game").forEach(row => {
-    row.addEventListener("click", () => {
-      const cb = row.querySelector(".cmp-checkbox");
-      if(!cb) return;
-      cb.checked = !cb.checked;
-      toggleCompareRow(cb.dataset.gidx, cb);
+    row.addEventListener("click", (e) => {
+      if(e.target.closest(".cmp-checkbox")) return; // チェックボックス自体のクリックはここでは扱わない
+      const gidx = row.dataset.gidx;
+      // この行だけを選択状態にし（既存の比較選択は置き換え）、チェックボックスの見た目も同期する
+      compareSelectedKeys = new Set([gidx]);
+      mainContentEl.querySelectorAll(".cmp-checkbox").forEach(cb => {
+        cb.checked = (cb.dataset.gidx === gidx);
+      });
+      renderComparePanel(d);
+      const panel = document.getElementById("comparePanel");
+      if(panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 }
@@ -740,6 +765,7 @@ function pitchDetailTableHtml(pitches){
   }
   const tc = pitches.reduce((s,m)=>s+(m.count||0), 0);
   const wavg = (key) => tc>0 ? (pitches.reduce((s,m)=>s+((m[key]||0)*(m.count||0)),0)/tc).toFixed(1) : "—";
+  const maxVel = pitches.reduce((mx,m) => (m.max_vel != null && m.max_vel > mx) ? m.max_vel : mx, 0);
   const rows = pitches.map((p,i) => `
     <tr>
       <td><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(i)}"></span>${escapeHtml(p.name)}</span></td>
@@ -751,14 +777,16 @@ function pitchDetailTableHtml(pitches){
         const bg = tier ? (TIER_COLOR[tier] || "") : "";
         return `<td style="background:${bg}">${v != null ? v + "%" : "—"}</td>`;
       }).join("")}
+      <td>${p.avg_vel != null ? p.avg_vel + "km/h" : "—"}</td>
+      <td>${p.max_vel != null ? p.max_vel + "km/h" : "—"}</td>
     </tr>
   `).join("");
   return `
     <div class="pmix-scroll">
       <table class="pmix-table">
-        <thead><tr><th>球種</th><th>投球数</th><th>投球割合</th>${PMIX_METRICS.map(m => `<th>${m.label}</th>`).join("")}</tr></thead>
+        <thead><tr><th>球種</th><th>投球数</th><th>投球割合</th>${PMIX_METRICS.map(m => `<th>${m.label}</th>`).join("")}<th>平均球速</th><th>最高球速</th></tr></thead>
         <tbody>${rows}</tbody>
-        <tfoot><tr><td>合計</td><td>${tc}</td><td>100%</td>${PMIX_METRICS.map(m => `<td>${wavg(m.key)}%</td>`).join("")}</tr></tfoot>
+        <tfoot><tr><td>合計</td><td>${tc}</td><td>100%</td>${PMIX_METRICS.map(m => `<td>${wavg(m.key)}%</td>`).join("")}<td>—</td><td>${maxVel > 0 ? maxVel + "km/h" : "—"}</td></tr></tfoot>
       </table>
     </div>
   `;
@@ -1029,14 +1057,18 @@ function buildGameLogTable(d){
   `;
 }
 
-// 選択中のキーに対応する {pitch_detail, course_locs, label} を取得
+// 選択中のキーに対応する {pitch_detail, course_locs, label, summary} を取得
 function getRowDataFor(d, gidx){
   if(gidx === "season"){
-    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs };
+    const summary = `${d.games ?? "-"}登板 ${d.innings ?? "-"}回 防${d.era ?? "-"} ${d.k ?? "-"}K ${d.bb ?? "-"}BB`;
+    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs, summary };
   }
   const g = d.game_log[parseInt(gidx,10)];
   if(!g) return null;
-  return { label: `${g.date || ""} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs };
+  const summary = (g.ip != null || g.pitches != null)
+    ? `${g.ip ?? "-"}回 ${g.pitches ?? "-"}球 ${g.k ?? "-"}K ${g.bb ?? "-"}BB ${g.h ?? "-"}(${g.er ?? "-"})`
+    : "";
+  return { label: `${g.date || ""} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary };
 }
 
 function renderComparePanel(d){
@@ -1051,6 +1083,7 @@ function renderComparePanel(d){
     const rd = getRowDataFor(d, k);
     if(rd && rd.courseLocs) Object.entries(rd.courseLocs).forEach(([pkey, info]) => { allPitchKeysMap[pkey] = info; });
   });
+  const controlsHtml = hmControlsHtml(allPitchKeysMap);
 
   const blocksHtml = keys.map(gidx => {
     const rd = getRowDataFor(d, gidx);
@@ -1064,6 +1097,7 @@ function renderComparePanel(d){
     return `
       <div class="compare-block" data-cmp-gidx="${gidx}">
         <div class="compare-block-title">${escapeHtml(rd.label)}</div>
+        ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
         ${pitchDetail.all ? `
           <div class="hand-toggle" data-gidx="${gidx}">
             <button class="hand-btn active" data-hand="all">全体</button>
@@ -1072,28 +1106,28 @@ function renderComparePanel(d){
           </div>
           <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(pitchDetail.all)}</div>
         ` : ""}
-        <div class="course-wrap">
-          ${hmBuildGridHtml("対右打者", locsR)}
-          ${hmBuildGridHtml("対左打者", locsL)}
-        </div>
-        <div class="hm-canvas-wrap">
-          <div class="hm-canvas-block">
-            <div class="hm-canvas-title">対右打者</div>
-            <canvas id="${canvasIdR}" width="300" height="300"></canvas>
+        <div class="course-row">
+          <div class="course-pair">
+            ${hmBuildGridHtml("対右打者", locsR)}
+            <div class="hm-canvas-block">
+              <div class="hm-canvas-title">対右打者 配球</div>
+              <canvas id="${canvasIdR}" width="300" height="300"></canvas>
+            </div>
           </div>
-          <div class="hm-canvas-block">
-            <div class="hm-canvas-title">対左打者</div>
-            <canvas id="${canvasIdL}" width="300" height="300"></canvas>
+          <div class="course-pair">
+            ${hmBuildGridHtml("対左打者", locsL)}
+            <div class="hm-canvas-block">
+              <div class="hm-canvas-title">対左打者 配球</div>
+              <canvas id="${canvasIdL}" width="300" height="300"></canvas>
+            </div>
           </div>
         </div>
       </div>
     `;
   }).join("");
 
-  panel.innerHTML = `
-    ${hmControlsHtml(allPitchKeysMap)}
-    <div class="compare-blocks">${blocksHtml}</div>
-  `;
+  // フィルター（結果・分割・球種）は、コース系マトリックスの直上に1セットだけ表示する
+  panel.innerHTML = `<div class="compare-blocks">${controlsHtml}${blocksHtml}</div>`;
 
   // canvas描画（DOM挿入後に実行する必要がある）
   keys.forEach(gidx => {
