@@ -371,6 +371,21 @@ function renderPlayerList(players){
 
 // ── LLMバッチを新しい順に検索し、該当選手のデータを見つけたら返す（見つからなければnull）──
 // バッチファイル名は日付時刻順にソートできる形式（例: 20260901_1400.json）を前提とする
+// バッチのJSONを {選手名: データ} のペア配列に正規化する。
+// 対応形式: ① [{"選手名":"...",...}, ...]（配列形式） ② {"選手名":{...}, "選手名":{...}}（オブジェクト形式）
+function normalizeBatchEntries(batch){
+  if(Array.isArray(batch)){
+    return batch.map(entry => {
+      const n = entry["選手名"] || entry.player_name || entry.name;
+      return { name: n, data: entry };
+    });
+  }
+  if(batch && typeof batch === "object"){
+    return Object.entries(batch).map(([name, data]) => ({ name, data }));
+  }
+  return [];
+}
+
 async function findLlmDataForPlayer(playerName){
   try{
     const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
@@ -382,12 +397,9 @@ async function findLlmDataForPlayer(playerName){
         const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
         if(!res.ok) continue;
         const batch = await res.json();
-        const list = Array.isArray(batch) ? batch : [batch];
-        const hit = list.find(entry => {
-          const n = entry["選手名"] || entry.player_name || entry.name;
-          return n === playerName;
-        });
-        if(hit) return hit;
+        const entries = normalizeBatchEntries(batch);
+        const hit = entries.find(e => e.name === playerName);
+        if(hit) return hit.data;
       }catch(e){ continue; }
     }
   }catch(e){ /* バッチ一覧自体がまだ無い場合は静かに諦める */ }
@@ -513,10 +525,8 @@ async function loadAllLlmPlayerNames(){
           const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
           if(!res.ok) return;
           const batch = await res.json();
-          const list = Array.isArray(batch) ? batch : [batch];
-          list.forEach(entry => {
-            const n = entry["選手名"] || entry.player_name || entry.name;
-            if(n) playersWithLlmData.add(n);
+          normalizeBatchEntries(batch).forEach(e => {
+            if(e.name) playersWithLlmData.add(e.name);
           });
         }catch(e){ /* このバッチはスキップ */ }
       }));
