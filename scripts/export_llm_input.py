@@ -720,7 +720,7 @@ def build_game_log_rows(name: str, appearances: list[dict], role_key: str, pitch
     season_mix_all = aggregate_season_mix(appearances, "mix")
     key_lookup = {m["球種名"]: m["球種コード"] for m in season_mix_all}
 
-    for ap in sorted(appearances, key=lambda a: a["date"]):
+    for ap in sorted(appearances, key=lambda a: a["date"], reverse=True):
         p = ap["player"]
         if not isinstance(p, dict):
             continue
@@ -744,7 +744,7 @@ def build_game_log_rows(name: str, appearances: list[dict], role_key: str, pitch
         rows.append({
             "date": ap["date"],
             "opponent": f"vs {opponent}" if opponent else None,
-            "result": p.get("result"),
+            "result": p.get("result") or "ND",
             "swstr_pct": p.get("swstr"),
             "chase_pct": p.get("oSwing"),
             "strike_pct": p.get("strike"),
