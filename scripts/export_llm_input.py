@@ -604,7 +604,7 @@ def build_count_pattern_rows(player_name: str, season_mix: list[dict]) -> list[d
 # ==================================================
 
 def _single_game_mix_rows(mix_list) -> list[dict]:
-    """1試合ぶんのmix配列を、カード表示用の {name,count,pct,swstr_pct,chase_pct,strike_pct} 形式に整形"""
+    """1試合ぶんのmix配列を、カード表示用の球種行形式に整形（ゾーン率・ゴロ率・球速も含む）"""
     if not isinstance(mix_list, list):
         return []
     valid = [m for m in mix_list if isinstance(m, dict)]
@@ -619,6 +619,10 @@ def _single_game_mix_rows(mix_list) -> list[dict]:
             "swstr_pct": m.get("swstr"),
             "chase_pct": m.get("oSwing"),
             "strike_pct": m.get("strike"),
+            "zone_pct": m.get("zone"),
+            "gb_pct": m.get("gbpct"),
+            "avg_vel": m.get("vel"),
+            "max_vel": m.get("maxVel"),
         })
     return rows
 
@@ -707,6 +711,10 @@ def build_season_pitch_detail(season_mix_all, season_mix_vs_r, season_mix_vs_l,
             "swstr_pct": m["空振り率"],
             "chase_pct": m["ゾーン外スイング率"],
             "strike_pct": m["ストライク率"],
+            "zone_pct": m["ゾーン率"],
+            "gb_pct": m.get("GB%"),
+            "avg_vel": m.get("平均球速"),
+            "max_vel": m.get("最高球速"),
         } for m in mix_list]
         _single_game_pitch_tiers(rows, role_key, pitch_scale_stats, key_lookup)
         return rows
@@ -909,6 +917,8 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                     "era": season["防御率"],
                     "k_bb_pct": season["K-BB%"],
                     "gb_pct": season["ゴロ率"],
+                    "k": season["奪三振"],
+                    "bb": season["与四球"],
                     "swstr_pct_season": season["空振り率"],
                     "chase_pct_season": season["ゾーン外スイング率"],
                     "strike_pct_season": season["ストライク率"],
