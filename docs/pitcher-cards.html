@@ -387,33 +387,27 @@ function normalizeBatchEntries(batch){
 }
 
 async function findLlmDataForPlayer(playerName){
-  const debugLog = [];
-  const charCodes = [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" ");
-  debugLog.push(`探している名前: ${JSON.stringify(playerName)} / 文字コード: ${charCodes}`);
+  console.log("[LLM検索] 探している名前:", JSON.stringify(playerName), "文字コード:", [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" "));
   try{
     const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
-    if(!idxRes.ok){ debugLog.push(`index.json取得失敗: ${idxRes.status}`); return { data: null, debugLog }; }
+    if(!idxRes.ok){ console.log("[LLM検索] index.json取得失敗:", idxRes.status); return null; }
     const idx = await idxRes.json();
     const files = (idx.batches || []).slice().sort().reverse(); // ファイル名降順 = 新しい順
-    debugLog.push(`バッチファイル一覧: ${JSON.stringify(files)}`);
+    console.log("[LLM検索] バッチファイル一覧:", files);
     for(const file of files){
       try{
         const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
         if(!res.ok) continue;
         const batch = await res.json();
         const entries = normalizeBatchEntries(batch);
-        const namesWithCodes = entries.map(e => {
-          const cc = e.name ? [...e.name].map(c=>c.codePointAt(0).toString(16)).join(" ") : "";
-          return `${JSON.stringify(e.name)} [${cc}]`;
-        });
-        debugLog.push(`${file} 内の選手名: ${namesWithCodes.join(" / ")}`);
+        console.log(`[LLM検索] ${file} 内の選手名:`, entries.map(e => JSON.stringify(e.name)));
         const hit = entries.find(e => e.name === playerName);
-        if(hit){ debugLog.push(`ヒット: ${file}`); return { data: hit.data, debugLog }; }
+        if(hit){ console.log("[LLM検索] ヒット:", file); return hit.data; }
       }catch(e){ continue; }
     }
-    debugLog.push("どのバッチにも見つかりませんでした");
-  }catch(e){ debugLog.push(`エラー: ${e.message}`); }
-  return { data: null, debugLog };
+    console.log("[LLM検索] どのバッチにも見つかりませんでした");
+  }catch(e){ /* バッチ一覧自体がまだ無い場合は静かに諦める */ }
+  return null;
 }
 
 // ── 数値データ(numeric) + LLM解釈テキスト(llm) をブラウザ内でマージする ──
@@ -473,19 +467,14 @@ async function selectPlayer(id, name){
     const res = await fetch(`${LEAGUE_PATHS[currentLeague].numeric}/${id}.json`, { cache: "no-store" });
     if(!res.ok) throw new Error(`選手データの取得に失敗しました (${res.status})`);
     const numeric = await res.json();
-    const { data: llm, debugLog } = await findLlmDataForPlayer(name || numeric.name);
+    const llm = await findLlmDataForPlayer(name || numeric.name);
     const merged = mergeCardData(numeric, llm);
     renderCard(merged);
     if(!llm){
-      const debugHtml = debugLog.map(line => `<div>${escapeHtml(line)}</div>`).join("");
       mainContentEl.insertAdjacentHTML("afterbegin",
         `<div style="font-size:11px;color:var(--text-dim);margin-bottom:10px">
           ※ この選手のAI解釈テキストはまだ生成されていません（数値データのみ表示中）
-        </div>
-        <details style="margin-bottom:14px;font-size:10px;color:var(--text-dim)">
-          <summary style="cursor:pointer;color:var(--blue-text)">デバッグ情報を見る（うまく表示されない時にサポートへ共有してください）</summary>
-          <div style="margin-top:6px;padding:8px;background:var(--panel);border-radius:6px;font-family:monospace;white-space:pre-wrap;word-break:break-all">${debugHtml}</div>
-        </details>`);
+        </div>`);
     }
   }catch(e){
     mainContentEl.innerHTML = `<div class="error">カードを読み込めませんでした。<br>(${escapeHtml(e.message)})</div>`;
