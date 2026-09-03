@@ -3100,6 +3100,7 @@ STEP_LABELS = {
     "highlights": "Step3 活躍選手選出",
     "datamart"  : "Step4 データマート&JSON作成",
     "json"      : "Step4 ダッシュボードJSON生成",
+    "llm_input" : "Step5 LLM入力用xlsx生成",
 
 }
 
@@ -3254,7 +3255,7 @@ def run_steps(steps: list[str], target_game_ids: list[str] | None = None,
     type_label   = _current_game_type
 
     # FULL_ORDER（新しいステップ順）
-    FULL_ORDER = ["games", "pitch", "highlights", "datamart"]
+    FULL_ORDER = ["games", "pitch", "highlights", "datamart", "llm_input"]
 
     # "all" → 全ステップ
     if "all" in steps:
@@ -3265,11 +3266,13 @@ def run_steps(steps: list[str], target_game_ids: list[str] | None = None,
 
     # 自動付与ルール
 
-
     # games/pitch/highlights がある → datamart を自動付与
     if any(s in steps for s in ["games", "pitch", "highlights"]):
         if "datamart" not in steps:
             steps.append("datamart")
+    # datamart がある → llm_input も自動付与（シーズン全体のxlsx/数値JSONを最新化するため）
+    if "datamart" in steps and "llm_input" not in steps:
+        steps.append("llm_input")
     # 並び替え
     steps = [s for s in FULL_ORDER if s in set(steps)]
 
@@ -3346,6 +3349,24 @@ def run_steps(steps: list[str], target_game_ids: list[str] | None = None,
                 if path and os.path.exists(path):
                     path_json = run_dashboard(path, path_pitch=path_pitch)
                     results["json"] = path_json
+
+        elif step == "llm_input":
+            try:
+                year = TARGET_DATE[:4]
+                llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", league_label, _current_game_type, "llm_input")
+                path_llm_input = os.path.join(llm_input_dir, f"プロ野球{league_label}_投手データ_{year}.xlsx")
+                numeric_json_dir = os.path.join(
+                    BASE_PUBLIC_DIR, f"{year}年", league_label, _current_game_type, "pitcher_cards_numeric"
+                )
+                export_llm_input_xlsx(
+                    games_json_dir=GAMES_JSON_DIR,
+                    out_path=path_llm_input,
+                    numeric_json_dir=numeric_json_dir,
+                )
+                results["llm_input"] = path_llm_input
+                print(f"  数値JSON: {numeric_json_dir}")
+            except Exception as e:
+                print(f"  [WARN] {STEP_LABELS[step]} に失敗しました: {e}")
 
 
 
