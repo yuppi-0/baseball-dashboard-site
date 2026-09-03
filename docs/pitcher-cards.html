@@ -387,21 +387,25 @@ function normalizeBatchEntries(batch){
 }
 
 async function findLlmDataForPlayer(playerName){
+  console.log("[LLM検索] 探している名前:", JSON.stringify(playerName), "文字コード:", [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" "));
   try{
     const idxRes = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/index.json`, { cache: "no-store" });
-    if(!idxRes.ok) return null;
+    if(!idxRes.ok){ console.log("[LLM検索] index.json取得失敗:", idxRes.status); return null; }
     const idx = await idxRes.json();
     const files = (idx.batches || []).slice().sort().reverse(); // ファイル名降順 = 新しい順
+    console.log("[LLM検索] バッチファイル一覧:", files);
     for(const file of files){
       try{
         const res = await fetch(`${LEAGUE_PATHS[currentLeague].batches}/${file}`, { cache: "no-store" });
         if(!res.ok) continue;
         const batch = await res.json();
         const entries = normalizeBatchEntries(batch);
+        console.log(`[LLM検索] ${file} 内の選手名:`, entries.map(e => JSON.stringify(e.name)));
         const hit = entries.find(e => e.name === playerName);
-        if(hit) return hit.data;
+        if(hit){ console.log("[LLM検索] ヒット:", file); return hit.data; }
       }catch(e){ continue; }
     }
+    console.log("[LLM検索] どのバッチにも見つかりませんでした");
   }catch(e){ /* バッチ一覧自体がまだ無い場合は静かに諦める */ }
   return null;
 }
