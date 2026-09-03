@@ -148,6 +148,15 @@
   .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
+
+  /* 比較・日付・対戦の3列を横スクロール時も固定表示 */
+  .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; }
+  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:96px; z-index:2; }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:132px; width:80px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .gamelog-table th:nth-child(1), .gamelog-table th:nth-child(2), .gamelog-table th:nth-child(3){ background:var(--panel-alt); z-index:3; }
+  .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ background:var(--panel); }
+  .gamelog-table .row-season td:nth-child(1), .gamelog-table .row-season td:nth-child(2), .gamelog-table .row-season td:nth-child(3){ background:#111F33; }
+  .gamelog-table .row-game:hover td:nth-child(1), .gamelog-table .row-game:hover td:nth-child(2), .gamelog-table .row-game:hover td:nth-child(3){ background:#16233a; }
   .gamelog-detail{ display:flex; flex-wrap:wrap; gap:14px; font-size:11px; color:var(--text-dim); margin-bottom:10px; }
   .gamelog-detail b{ color:var(--text-bright); font-size:12px; }
 
@@ -560,18 +569,20 @@ function renderCard(d){
     { label: "決め球", value: d.signature_pitch || "-", color: "var(--blue-text)", small: true }
   ];
 
-  const pitchesHtml = (d.pitch_evaluations || []).map((p, i) => `
+  const pitchesHtml = (d.pitch_evaluations || []).map((p, i) => {
+    const isOpen = i < 3; // 投球割合が高い上位3球種はデフォルトで開く（配列は既に使用数降順）
+    return `
     <button class="pitch-row" data-idx="${i}">
       <span class="pdot" style="background:${pitchColor(i)}"></span>
       <span class="pname" style="color:${pitchColor(i)}">${escapeHtml(p.name)}</span>
       <span class="pcount">${p.count != null ? p.count + '球・' : ''}${p.pct != null ? p.pct + '%' : ''}</span>
       ${p.tag ? `<span class="ptag" style="background:rgba(59,130,246,0.18);color:var(--blue-text)">${escapeHtml(p.tag)}</span>` : ""}
-      <span class="chev">︾</span>
+      <span class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</span>
     </button>
-    <div class="pitch-body" data-body="${i}" style="display:none">
+    <div class="pitch-body" data-body="${i}" style="display:${isOpen ? 'block' : 'none'}">
       ${bulletsHtml(p.bullets, "var(--text-dim)")}
     </div>
-  `).join("");
+  `;}).join("");
 
   const gameLogHtml = buildGameLogTable(d);
 
@@ -662,17 +673,28 @@ function renderCard(d){
     });
   });
 
-  // 試合ログ: 比較チェックボックス
+  // 試合ログ: 比較チェックボックス（行全体クリックでも切り替え可能に）
   compareSelectedKeys = new Set(); // 選手が変わったら比較選択はリセット
   window._hmResultFilter = "all";
   window._hmSplitMode = "9";
   window._hmSelectedPitchKeys = null;
+
+  function toggleCompareRow(gidx, cb){
+    if(cb.checked) compareSelectedKeys.add(gidx);
+    else compareSelectedKeys.delete(gidx);
+    renderComparePanel(d);
+  }
+
   mainContentEl.querySelectorAll(".cmp-checkbox").forEach(cb => {
-    cb.addEventListener("change", () => {
-      const gidx = cb.dataset.gidx;
-      if(cb.checked) compareSelectedKeys.add(gidx);
-      else compareSelectedKeys.delete(gidx);
-      renderComparePanel(d);
+    cb.addEventListener("click", (e) => e.stopPropagation()); // 行クリックとの二重発火を防ぐ
+    cb.addEventListener("change", () => toggleCompareRow(cb.dataset.gidx, cb));
+  });
+  mainContentEl.querySelectorAll(".gamelog-table tbody tr.row-game").forEach(row => {
+    row.addEventListener("click", () => {
+      const cb = row.querySelector(".cmp-checkbox");
+      if(!cb) return;
+      cb.checked = !cb.checked;
+      toggleCompareRow(cb.dataset.gidx, cb);
     });
   });
 }
