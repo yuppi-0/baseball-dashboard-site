@@ -524,6 +524,12 @@ async function selectPlayer(id, name){
   activePlayerId = id;
   renderPlayerList(applyFilters());
   mainContentEl.innerHTML = '<div class="placeholder">読み込み中…</div>';
+  // 選手を切り替えたら、前の選手で選んでいた比較チェックボックス／フィルターは引き継がない
+  compareSelectedKeys = new Set();
+  compareHand = "all";
+  window._hmResultFilter = "all";
+  window._hmSplitMode = "9";
+  window._hmSelectedPitchKeys = null;
   try{
     const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].numeric}/${id}.json`), { cache: "no-store" });
     if(!res.ok) throw new Error(`選手データの取得に失敗しました (${res.status})`);
@@ -800,13 +806,37 @@ function formatSeasonResult(d){
 }
 
 // ── 球種詳細テーブル（本家ダッシュボードと同じ列構成・パーセンタイル色付け）──
-const PMIX_METRICS = [
-  { key:"swstr_pct",  tierKey:"空振り率_ランク",         label:"空振り率" },
-  { key:"chase_pct",  tierKey:"ゾーン外スイング率_ランク", label:"ボール球SW%" },
-  { key:"strike_pct", tierKey:"ストライク率_ランク",       label:"ストライク率" },
-  { key:"zone_pct",   tierKey:"ゾーン率_ランク",          label:"ゾーン率" },
-  { key:"gb_pct",     tierKey:"GB%_ランク",              label:"ゴロ率" }
+// currentLeagueに応じて表示する指標を切り替える（MLB独自指標はNPBデータには存在しないため）
+const PMIX_METRICS_BASE = [
+  { key:"swstr_pct",  tierKey:"空振り率_ランク",         label:"空振り率",      unit:"%",   decimals:1 },
+  { key:"chase_pct",  tierKey:"ゾーン外スイング率_ランク", label:"ボール球SW%",   unit:"%",   decimals:1 },
+  { key:"strike_pct", tierKey:"ストライク率_ランク",       label:"ストライク率",  unit:"%",   decimals:1 },
+  { key:"zone_pct",   tierKey:"ゾーン率_ランク",          label:"ゾーン率",      unit:"%",   decimals:1 },
+  { key:"gb_pct",     tierKey:"GB%_ランク",              label:"ゴロ率",        unit:"%",   decimals:1 },
 ];
+const PMIX_METRICS_VEL = [
+  { key:"avg_vel", tierKey:"平均球速_ランク", label:"平均球速", unit:"km/h", decimals:1 },
+  { key:"max_vel", tierKey:"最高球速_ランク", label:"最高球速", unit:"km/h", decimals:1 },
+];
+const PMIX_METRICS_MLB_EXTRA = [
+  { key:"xwoba",       tierKey:"xwOBA_ランク",     label:"xwOBA",         unit:"",    decimals:3 },
+  { key:"avg_spin",    tierKey:"回転数_ランク",     label:"回転数",         unit:"rpm", decimals:0 },
+  { key:"spin_axis",   tierKey:"回転軸_ランク",     label:"回転軸",         unit:"°",   decimals:0 },
+  { key:"active_spin", tierKey:"回転効率_ランク",   label:"回転効率(近似)", unit:"%",   decimals:1 },
+  { key:"vaa",         tierKey:"VAA_ランク",        label:"VAA",           unit:"°",   decimals:1 },
+  { key:"ivb",         tierKey:"縦変化量_ランク",   label:"縦変化量",       unit:"cm",  decimals:1 },
+  { key:"hb",          tierKey:"横変化量_ランク",   label:"横変化量",       unit:"cm",  decimals:1 },
+  { key:"ext",         tierKey:"Extension_ランク",  label:"Extension",     unit:"m",   decimals:2 },
+];
+function currentPmixMetrics(){
+  return currentLeague === "mlb"
+    ? [...PMIX_METRICS_BASE, ...PMIX_METRICS_VEL, ...PMIX_METRICS_MLB_EXTRA]
+    : [...PMIX_METRICS_BASE, ...PMIX_METRICS_VEL];
+}
+function fmtMetricVal(m, v){
+  if(v == null || Number.isNaN(v)) return "—";
+  return (+v).toFixed(m.decimals) + (m.unit || "");
+}
 const TIER_COLOR = {
   top15: "rgba(18,165,178,0.40)", top30: "rgba(18,165,178,0.25)", top40: "rgba(18,165,178,0.12)",
   mid: "", bot60: "rgba(238,122,151,0.10)", bot70: "rgba(238,122,151,0.18)", bot85: "rgba(238,122,151,0.38)"
@@ -816,30 +846,36 @@ function pitchDetailTableHtml(pitches){
   if(!pitches || !pitches.length){
     return `<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:12px">データなし</div>`;
   }
+  const metrics = currentPmixMetrics();
   const tc = pitches.reduce((s,m)=>s+(m.count||0), 0);
-  const wavg = (key) => tc>0 ? (pitches.reduce((s,m)=>s+((m[key]||0)*(m.count||0)),0)/tc).toFixed(1) : "—";
+  const wavg = (key) => {
+    const withVal = pitches.filter(m => m[key] != null);
+    const wsum = withVal.reduce((s,m)=>s+(m.count||0), 0);
+    return wsum > 0 ? withVal.reduce((s,m)=>s+(m[key]*(m.count||0)), 0) / wsum : null;
+  };
   const maxVel = pitches.reduce((mx,m) => (m.max_vel != null && m.max_vel > mx) ? m.max_vel : mx, 0);
   const rows = pitches.map((p,i) => `
     <tr>
       <td><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(i)}"></span>${escapeHtml(p.name)}</span></td>
       <td>${p.count ?? "—"}</td>
       <td>${p.pct != null ? p.pct + "%" : "—"}</td>
-      ${PMIX_METRICS.map(m => {
+      ${metrics.map(m => {
         const v = p[m.key];
         const tier = p[m.tierKey];
         const bg = tier ? (TIER_COLOR[tier] || "") : "";
-        return `<td style="background:${bg}">${v != null ? v + "%" : "—"}</td>`;
+        return `<td style="background:${bg}">${fmtMetricVal(m, v)}</td>`;
       }).join("")}
-      <td>${p.avg_vel != null ? p.avg_vel + "km/h" : "—"}</td>
-      <td>${p.max_vel != null ? p.max_vel + "km/h" : "—"}</td>
     </tr>
   `).join("");
   return `
     <div class="pmix-scroll">
       <table class="pmix-table">
-        <thead><tr><th>球種</th><th>投球数</th><th>投球割合</th>${PMIX_METRICS.map(m => `<th>${m.label}</th>`).join("")}<th>平均球速</th><th>最高球速</th></tr></thead>
+        <thead><tr><th>球種</th><th>投球数</th><th>投球割合</th>${metrics.map(m => `<th>${m.label}</th>`).join("")}</tr></thead>
         <tbody>${rows}</tbody>
-        <tfoot><tr><td>合計</td><td>${tc}</td><td>100%</td>${PMIX_METRICS.map(m => `<td>${wavg(m.key)}%</td>`).join("")}<td>—</td><td>${maxVel > 0 ? maxVel + "km/h" : "—"}</td></tr></tfoot>
+        <tfoot><tr><td>合計</td><td>${tc}</td><td>100%</td>${metrics.map(m => {
+          if(m.key === "max_vel") return `<td>${maxVel > 0 ? maxVel + "km/h" : "—"}</td>`;
+          return `<td>${fmtMetricVal(m, wavg(m.key))}</td>`;
+        }).join("")}</tr></tfoot>
       </table>
     </div>
   `;
@@ -848,10 +884,15 @@ function pitchDetailTableHtml(pitches){
 const PITCH_COLORS = ["#34D399","#FB923C","#F87171","#EC4899","#A78BFA","#60A5FA","#FBBF24","#22D3EE"];
 function pitchColor(i){ return PITCH_COLORS[i % PITCH_COLORS.length]; }
 
-// ── 複数選択時：球種ごとに「投球数」「投球割合」を選択項目の数だけ横並びで比較するテーブル ──
+// ── 複数選択時：指標ごとに、選択項目の数だけ横並びで比較するテーブル ──
 // entries: [{label, pitches}]（pitchesは pitchDetailTableHtml に渡すのと同じ球種配列）
 function buildPitchCompareTable(entries){
   if(!entries.length) return "";
+  const metrics = [
+    { key:"count", label:"投球数", isCount:true },
+    { key:"pct",   label:"投球割合", isPct:true },
+    ...currentPmixMetrics(),
+  ];
   // 球種の並び順：先に選んだ項目の投球数が多い順 → 以後の項目にしか無い球種は末尾に追加
   const order = [];
   const seen = new Set();
@@ -860,13 +901,23 @@ function buildPitchCompareTable(entries){
   }));
   const colorFor = (name) => pitchColor(order.indexOf(name));
 
+  const cellsFor = (metric, perEntry) => perEntry.map((p,i) => {
+    const sep = i === 0 ? "grp-sep" : "";
+    if(!p) return `<td class="${sep}">—</td>`;
+    if(metric.isCount) return `<td class="${sep}">${p.count ?? "—"}</td>`;
+    if(metric.isPct)   return `<td class="${sep}">${p.pct != null ? p.pct + "%" : "—"}</td>`;
+    const v = p[metric.key];
+    const tier = p[metric.tierKey];
+    const bg = tier ? (TIER_COLOR[tier] || "") : "";
+    return `<td class="${sep}" style="background:${bg}">${fmtMetricVal(metric, v)}</td>`;
+  }).join("");
+
   const rows = order.map(name => {
-    const cells = entries.map(e => (e.pitches || []).find(p => p.name === name) || null);
+    const perEntry = entries.map(e => (e.pitches || []).find(p => p.name === name) || null);
     return `
       <tr>
         <td><span class="pmix-pname"><span class="pmix-dot" style="background:${colorFor(name)}"></span>${escapeHtml(name)}</span></td>
-        ${cells.map((p,i) => `<td class="${i===0?'grp-sep':''}">${p ? (p.count ?? "—") : "—"}</td>`).join("")}
-        ${cells.map((p,i) => `<td class="${i===0?'grp-sep':''}">${p && p.pct != null ? p.pct + "%" : "—"}</td>`).join("")}
+        ${metrics.map(m => cellsFor(m, perEntry)).join("")}
       </tr>
     `;
   }).join("");
@@ -874,8 +925,12 @@ function buildPitchCompareTable(entries){
   const totalRow = `
     <tr>
       <td>合計</td>
-      ${entries.map((e,i) => `<td class="${i===0?'grp-sep':''}">${(e.pitches||[]).reduce((s,p)=>s+(p.count||0),0)}</td>`).join("")}
-      ${entries.map((e,i) => `<td class="${i===0?'grp-sep':''}">${(e.pitches||[]).length ? "100%" : "—"}</td>`).join("")}
+      ${metrics.map(m => entries.map((e,i) => {
+        const sep = i === 0 ? "grp-sep" : "";
+        if(m.isCount) return `<td class="${sep}">${(e.pitches||[]).reduce((s,p)=>s+(p.count||0),0)}</td>`;
+        if(m.isPct)   return `<td class="${sep}">${(e.pitches||[]).length ? "100%" : "—"}</td>`;
+        return `<td class="${sep}">—</td>`;
+      }).join("")).join("")}
     </tr>
   `;
 
@@ -886,12 +941,10 @@ function buildPitchCompareTable(entries){
         <thead>
           <tr>
             <th rowspan="2">球種</th>
-            <th colspan="${n}" class="grp-sep">投球数</th>
-            <th colspan="${n}" class="grp-sep">投球割合</th>
+            ${metrics.map(m => `<th colspan="${n}" class="grp-sep">${m.label}</th>`).join("")}
           </tr>
           <tr>
-            ${entries.map((e,i) => `<th class="${i===0?'grp-sep':''}">${escapeHtml(e.label)}</th>`).join("")}
-            ${entries.map((e,i) => `<th class="${i===0?'grp-sep':''}">${escapeHtml(e.label)}</th>`).join("")}
+            ${metrics.map(() => entries.map((e,i) => `<th class="${i===0?'grp-sep':''}">${escapeHtml(e.label)}</th>`).join("")).join("")}
           </tr>
         </thead>
         <tbody>${rows}${totalRow}</tbody>
