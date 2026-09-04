@@ -13,8 +13,8 @@
       "name": "AJ Blubaugh",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "84.1",
-      "innings_num": 84.3
+      "innings": "85.1",
+      "innings_num": 85.3
     },
     {
       "id": "aj_smith_shawver",
@@ -133,8 +133,8 @@
       "name": "Albert Suárez",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "51.0",
-      "innings_num": 51.0
+      "innings": "52.0",
+      "innings_num": 52.0
     },
     {
       "id": "alec_gamboa",
@@ -205,8 +205,8 @@
       "name": "Alex Vesia",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "47.2",
-      "innings_num": 47.7
+      "innings": "48.2",
+      "innings_num": 48.7
     },
     {
       "id": "alimber_santa",
@@ -429,8 +429,8 @@
       "name": "Aroldis Chapman",
       "team": "BOS",
       "role": "中継ぎ",
-      "innings": "45.0",
-      "innings_num": 45.0
+      "innings": "46.0",
+      "innings_num": 46.0
     },
     {
       "id": "austin_hedges",
@@ -541,16 +541,16 @@
       "name": "Bennett Sousa",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "20.0",
-      "innings_num": 20.0
+      "innings": "21.0",
+      "innings_num": 21.0
     },
     {
       "id": "blade_tidwell",
       "name": "Blade Tidwell",
       "team": "SF",
-      "role": "中継ぎ",
-      "innings": "37.1",
-      "innings_num": 37.3
+      "role": "先発",
+      "innings": "42.1",
+      "innings_num": 42.3
     },
     {
       "id": "blake_adams",
@@ -677,8 +677,8 @@
       "name": "Brandon Eisert",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "34.0",
-      "innings_num": 34.0
+      "innings": "34.2",
+      "innings_num": 34.7
     },
     {
       "id": "brandon_leibrandt",
@@ -725,8 +725,8 @@
       "name": "Brandon Young",
       "team": "BAL",
       "role": "先発",
-      "innings": "123.0",
-      "innings_num": 123.0
+      "innings": "129.2",
+      "innings_num": 129.7
     },
     {
       "id": "brandyn_garcia",
@@ -885,8 +885,8 @@
       "name": "Brock Stewart",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "19.0",
-      "innings_num": 19.0
+      "innings": "19.2",
+      "innings_num": 19.7
     },
     {
       "id": "brooks_kriske",
@@ -917,8 +917,8 @@
       "name": "Bryan Abreu",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "50.2",
-      "innings_num": 50.7
+      "innings": "51.2",
+      "innings_num": 51.7
     },
     {
       "id": "bryan_baker",
@@ -1053,8 +1053,8 @@
       "name": "Cade Gibson",
       "team": "MIA",
       "role": "中継ぎ",
-      "innings": "38.0",
-      "innings_num": 38.0
+      "innings": "39.0",
+      "innings_num": 39.0
     },
     {
       "id": "cade_horton",
@@ -1085,16 +1085,16 @@
       "name": "Cade Winquest",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "2.2",
-      "innings_num": 2.7
+      "innings": "3.2",
+      "innings_num": 3.7
     },
     {
       "id": "cal_quantrill",
       "name": "Cal Quantrill",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "90.1",
-      "innings_num": 90.3
+      "innings": "97.1",
+      "innings_num": 97.3
     },
     {
       "id": "caleb_ferguson",
@@ -1225,6 +1225,14 @@
       "innings_num": 0.3
     },
     {
+      "id": "carlos_hernández",
+      "name": "Carlos Hernández",
+      "team": "CLE",
+      "role": "中継ぎ",
+      "innings": "1.0",
+      "innings_num": 1.0
+    },
+    {
       "id": "carlos_rodriguez",
       "name": "Carlos Rodriguez",
       "team": "MIL",
@@ -1245,8 +1253,8 @@
       "name": "Carlos Vargas",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "7.1",
-      "innings_num": 7.3
+      "innings": "8.1",
+      "innings_num": 8.3
     },
     {
       "id": "carmen_mlodzinski",
@@ -1301,8 +1309,8 @@
       "name": "Casey Legumina",
       "team": "TB",
       "role": "中継ぎ",
-      "innings": "60.0",
-      "innings_num": 60.0
+      "innings": "63.0",
+      "innings_num": 63.0
     },
     {
       "id": "casey_mize",
@@ -1397,8 +1405,8 @@
       "name": "Chase Silseth",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "51.0",
-      "innings_num": 51.0
+      "innings": "52.0",
+      "innings_num": 52.0
     },
     {
       "id": "chase_solesky",
@@ -1461,8 +1469,8 @@
       "name": "Chris Roycroft",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "28.1",
-      "innings_num": 28.3
+      "innings": "30.0",
+      "innings_num": 30.0
     },
     {
       "id": "chris_sale",
@@ -1629,8 +1637,8 @@
       "name": "Colin Holderman",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "51.0",
-      "innings_num": 51.0
+      "innings": "51.1",
+      "innings_num": 51.3
     },
     {
       "id": "colin_rea",
@@ -1725,16 +1733,16 @@
       "name": "Craig Kimbrel",
       "team": "KC",
       "role": "中継ぎ",
-      "innings": "37.2",
-      "innings_num": 37.7
+      "innings": "38.1",
+      "innings_num": 38.3
     },
     {
       "id": "craig_yoho",
       "name": "Craig Yoho",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "31.0",
-      "innings_num": 31.0
+      "innings": "32.1",
+      "innings_num": 32.3
     },
     {
       "id": "cristian_javier",
@@ -1765,8 +1773,8 @@
       "name": "DL Hall",
       "team": "MIL",
       "role": "中継ぎ",
-      "innings": "46.0",
-      "innings_num": 46.0
+      "innings": "47.0",
+      "innings_num": 47.0
     },
     {
       "id": "dan_altavilla",
@@ -1869,8 +1877,8 @@
       "name": "Dax Fulton",
       "team": "MIA",
       "role": "中継ぎ",
-      "innings": "16.0",
-      "innings_num": 16.0
+      "innings": "16.2",
+      "innings_num": 16.7
     },
     {
       "id": "dean_kremer",
@@ -2085,16 +2093,16 @@
       "name": "Edgardo Henriquez",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "52.2",
-      "innings_num": 52.7
+      "innings": "53.0",
+      "innings_num": 53.0
     },
     {
       "id": "eduard_bazardo",
       "name": "Eduard Bazardo",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "59.1",
-      "innings_num": 59.3
+      "innings": "60.1",
+      "innings_num": 60.3
     },
     {
       "id": "eduardo_rivera",
@@ -2261,8 +2269,8 @@
       "name": "Erik Miller",
       "team": "BOS",
       "role": "中継ぎ",
-      "innings": "44.0",
-      "innings_num": 44.0
+      "innings": "45.0",
+      "innings_num": 45.0
     },
     {
       "id": "erik_sabrowski",
@@ -2309,8 +2317,8 @@
       "name": "Evan Phillips",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "17.2",
-      "innings_num": 17.7
+      "innings": "18.2",
+      "innings_num": 18.7
     },
     {
       "id": "evan_sisk",
@@ -2373,8 +2381,8 @@
       "name": "Gabe Speier",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "36.2",
-      "innings_num": 36.7
+      "innings": "37.2",
+      "innings_num": 37.7
     },
     {
       "id": "gabriel_hughes",
@@ -2437,8 +2445,8 @@
       "name": "Garrett Whitlock",
       "team": "BOS",
       "role": "中継ぎ",
-      "innings": "44.2",
-      "innings_num": 44.7
+      "innings": "45.2",
+      "innings_num": 45.7
     },
     {
       "id": "gary_gill_hill",
@@ -2509,8 +2517,8 @@
       "name": "George Soriano",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "56.2",
-      "innings_num": 56.7
+      "innings": "57.2",
+      "innings_num": 57.7
     },
     {
       "id": "gerardo_carrillo",
@@ -2581,8 +2589,8 @@
       "name": "Grant Wolfram",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "40.0",
-      "innings_num": 40.0
+      "innings": "40.1",
+      "innings_num": 40.3
     },
     {
       "id": "grayson_rodriguez",
@@ -2693,16 +2701,16 @@
       "name": "Hoby Milner",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "36.0",
-      "innings_num": 36.0
+      "innings": "37.0",
+      "innings_num": 37.0
     },
     {
       "id": "hogan_harris",
       "name": "Hogan Harris",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "57.2",
-      "innings_num": 57.7
+      "innings": "58.2",
+      "innings_num": 58.7
     },
     {
       "id": "huascar_brazobán",
@@ -2733,8 +2741,8 @@
       "name": "Hunter Brown",
       "team": "HOU",
       "role": "先発",
-      "innings": "73.0",
-      "innings_num": 73.0
+      "innings": "79.0",
+      "innings_num": 79.0
     },
     {
       "id": "hunter_cranton",
@@ -2757,8 +2765,8 @@
       "name": "Hunter Gaddis",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "46.1",
-      "innings_num": 46.3
+      "innings": "46.2",
+      "innings_num": 46.7
     },
     {
       "id": "hunter_greene",
@@ -2908,9 +2916,9 @@
       "id": "jack_perkins",
       "name": "Jack Perkins",
       "team": "ATH",
-      "role": "中継ぎ",
-      "innings": "89.2",
-      "innings_num": 89.7
+      "role": "先発",
+      "innings": "92.2",
+      "innings_num": 92.7
     },
     {
       "id": "jack_ralston",
@@ -3013,8 +3021,8 @@
       "name": "Jake Bennett",
       "team": "BOS",
       "role": "先発",
-      "innings": "93.1",
-      "innings_num": 93.3
+      "innings": "99.1",
+      "innings_num": 99.3
     },
     {
       "id": "jake_bird",
@@ -3069,8 +3077,8 @@
       "name": "Jakob Junis",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "45.0",
-      "innings_num": 45.0
+      "innings": "46.0",
+      "innings_num": 46.0
     },
     {
       "id": "jalen_beeks",
@@ -3725,8 +3733,8 @@
       "name": "José Soriano",
       "team": "TOR",
       "role": "先発",
-      "innings": "148.0",
-      "innings_num": 148.0
+      "innings": "152.2",
+      "innings_num": 152.7
     },
     {
       "id": "josé_suarez",
@@ -3741,8 +3749,8 @@
       "name": "José Urquidy",
       "team": "CWS",
       "role": "中継ぎ",
-      "innings": "23.2",
-      "innings_num": 23.7
+      "innings": "24.2",
+      "innings_num": 24.7
     },
     {
       "id": "jovani_morán",
@@ -3861,8 +3869,8 @@
       "name": "Kade Anderson",
       "team": "SEA",
       "role": "先発",
-      "innings": "10.0",
-      "innings_num": 10.0
+      "innings": "15.0",
+      "innings_num": 15.0
     },
     {
       "id": "kade_morris",
@@ -3965,8 +3973,8 @@
       "name": "Kevin Gausman",
       "team": "CHC",
       "role": "先発",
-      "innings": "154.2",
-      "innings_num": 154.7
+      "innings": "161.2",
+      "innings_num": 161.7
     },
     {
       "id": "kevin_ginkel",
@@ -3997,8 +4005,8 @@
       "name": "Khristian Curtis",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "8.0",
-      "innings_num": 8.0
+      "innings": "11.0",
+      "innings_num": 11.0
     },
     {
       "id": "kirby_yates",
@@ -4149,8 +4157,8 @@
       "name": "Lake Bachar",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "74.0",
-      "innings_num": 74.0
+      "innings": "76.0",
+      "innings_num": 76.0
     },
     {
       "id": "lance_mccullers_jr",
@@ -4213,8 +4221,8 @@
       "name": "Logan Henderson",
       "team": "MIL",
       "role": "先発",
-      "innings": "75.1",
-      "innings_num": 75.3
+      "innings": "82.1",
+      "innings_num": 82.3
     },
     {
       "id": "logan_vanwey",
@@ -4253,8 +4261,8 @@
       "name": "Louis Varland",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "68.1",
-      "innings_num": 68.3
+      "innings": "69.1",
+      "innings_num": 69.3
     },
     {
       "id": "lucas_erceg",
@@ -4293,8 +4301,8 @@
       "name": "Luis Castillo",
       "team": "CWS",
       "role": "先発",
-      "innings": "120.1",
-      "innings_num": 120.3
+      "innings": "124.1",
+      "innings_num": 124.3
     },
     {
       "id": "luis_curvelo",
@@ -4309,8 +4317,8 @@
       "name": "Luis De León",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "1.0",
-      "innings_num": 1.0
+      "innings": "1.2",
+      "innings_num": 1.7
     },
     {
       "id": "luis_garcía",
@@ -4341,8 +4349,8 @@
       "name": "Luis Medina",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "61.0",
-      "innings_num": 61.0
+      "innings": "62.1",
+      "innings_num": 62.3
     },
     {
       "id": "luis_mey",
@@ -4421,8 +4429,8 @@
       "name": "Luke Weaver",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "52.0",
-      "innings_num": 52.0
+      "innings": "53.0",
+      "innings_num": 53.0
     },
     {
       "id": "lyon_richardson",
@@ -4525,8 +4533,8 @@
       "name": "Mason Fluharty",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "54.1",
-      "innings_num": 54.3
+      "innings": "55.1",
+      "innings_num": 55.3
     },
     {
       "id": "mason_miller",
@@ -4541,8 +4549,8 @@
       "name": "Mason Montgomery",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "56.2",
-      "innings_num": 56.7
+      "innings": "57.2",
+      "innings_num": 57.7
     },
     {
       "id": "matt_brash",
@@ -4557,8 +4565,8 @@
       "name": "Matt Festa",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "55.1",
-      "innings_num": 55.3
+      "innings": "56.1",
+      "innings_num": 56.3
     },
     {
       "id": "matt_gage",
@@ -4789,8 +4797,8 @@
       "name": "Michael Wacha",
       "team": "KC",
       "role": "先発",
-      "innings": "169.0",
-      "innings_num": 169.0
+      "innings": "175.0",
+      "innings_num": 175.0
     },
     {
       "id": "mick_abel",
@@ -4901,8 +4909,8 @@
       "name": "Nate Pearson",
       "team": "KC",
       "role": "中継ぎ",
-      "innings": "33.2",
-      "innings_num": 33.7
+      "innings": "35.0",
+      "innings_num": 35.0
     },
     {
       "id": "nate_savino",
@@ -5261,8 +5269,8 @@
       "name": "Quinn Mathews",
       "team": "STL",
       "role": "先発",
-      "innings": "19.2",
-      "innings_num": 19.7
+      "innings": "24.2",
+      "innings_num": 24.7
     },
     {
       "id": "rafael_flores_jr",
@@ -5349,8 +5357,8 @@
       "name": "Reiver Sanmartin",
       "team": "SF",
       "role": "中継ぎ",
-      "innings": "16.1",
-      "innings_num": 16.3
+      "innings": "17.2",
+      "innings_num": 17.7
     },
     {
       "id": "reynaldo_lópez",
@@ -5429,8 +5437,8 @@
       "name": "Riley O'Brien",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "53.0",
-      "innings_num": 53.0
+      "innings": "53.1",
+      "innings_num": 53.3
     },
     {
       "id": "robbie_ray",
@@ -5597,8 +5605,8 @@
       "name": "Ryan Rolison",
       "team": "CHC",
       "role": "中継ぎ",
-      "innings": "49.0",
-      "innings_num": 49.0
+      "innings": "50.0",
+      "innings_num": 50.0
     },
     {
       "id": "ryan_thompson",
@@ -5613,8 +5621,8 @@
       "name": "Ryan Walker",
       "team": "SF",
       "role": "中継ぎ",
-      "innings": "30.2",
-      "innings_num": 30.7
+      "innings": "31.2",
+      "innings_num": 31.7
     },
     {
       "id": "ryan_watson",
@@ -5653,8 +5661,8 @@
       "name": "Ryan Zeferjahn",
       "team": "CHC",
       "role": "中継ぎ",
-      "innings": "60.2",
-      "innings_num": 60.7
+      "innings": "61.2",
+      "innings_num": 61.7
     },
     {
       "id": "ryne_nelson",
@@ -5669,8 +5677,8 @@
       "name": "Ryne Stanek",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "51.2",
-      "innings_num": 51.7
+      "innings": "52.2",
+      "innings_num": 52.7
     },
     {
       "id": "sam_aldegheri",
@@ -5741,8 +5749,8 @@
       "name": "Sandy Alcantara",
       "team": "MIA",
       "role": "先発",
-      "innings": "186.1",
-      "innings_num": 186.3
+      "innings": "192.0",
+      "innings_num": 192.0
     },
     {
       "id": "scott_barlow",
@@ -5757,8 +5765,8 @@
       "name": "Scott Blewett",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "23.0",
-      "innings_num": 23.0
+      "innings": "25.0",
+      "innings_num": 25.0
     },
     {
       "id": "sean_burke",
@@ -5869,8 +5877,8 @@
       "name": "Shane McClanahan",
       "team": "TB",
       "role": "先発",
-      "innings": "112.0",
-      "innings_num": 112.0
+      "innings": "117.0",
+      "innings_num": 117.0
     },
     {
       "id": "shane_smith",
@@ -5965,8 +5973,8 @@
       "name": "Spencer Miles",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "82.2",
-      "innings_num": 82.7
+      "innings": "84.0",
+      "innings_num": 84.0
     },
     {
       "id": "spencer_strider",
@@ -5989,8 +5997,8 @@
       "name": "Steven Cruz",
       "team": "KC",
       "role": "中継ぎ",
-      "innings": "48.2",
-      "innings_num": 48.7
+      "innings": "49.2",
+      "innings_num": 49.7
     },
     {
       "id": "steven_matz",
@@ -6053,8 +6061,8 @@
       "name": "Tanner Bibee",
       "team": "CLE",
       "role": "先発",
-      "innings": "159.2",
-      "innings_num": 159.7
+      "innings": "163.2",
+      "innings_num": 163.7
     },
     {
       "id": "tanner_gordon",
@@ -6093,8 +6101,8 @@
       "name": "Tarik Skubal",
       "team": "LAD",
       "role": "先発",
-      "innings": "126.1",
-      "innings_num": 126.3
+      "innings": "131.2",
+      "innings_num": 131.7
     },
     {
       "id": "tatsuya_imai",
@@ -6157,8 +6165,8 @@
       "name": "Tim Herrin",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "48.1",
-      "innings_num": 48.3
+      "innings": "49.1",
+      "innings_num": 49.3
     },
     {
       "id": "tim_hill",
@@ -6245,8 +6253,8 @@
       "name": "Trent Harris",
       "team": "SF",
       "role": "中継ぎ",
-      "innings": "12.0",
-      "innings_num": 12.0
+      "innings": "13.0",
+      "innings_num": 13.0
     },
     {
       "id": "trent_thornton",
@@ -6285,8 +6293,8 @@
       "name": "Trevor Richards",
       "team": "CWS",
       "role": "中継ぎ",
-      "innings": "64.1",
-      "innings_num": 64.3
+      "innings": "65.1",
+      "innings_num": 65.3
     },
     {
       "id": "trevor_rogers",
@@ -6461,8 +6469,8 @@
       "name": "Tyler Rogers",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "60.1",
-      "innings_num": 60.3
+      "innings": "61.1",
+      "innings_num": 61.3
     },
     {
       "id": "tyler_samaniego",
@@ -6477,8 +6485,8 @@
       "name": "Tyler Schweitzer",
       "team": "CWS",
       "role": "中継ぎ",
-      "innings": "29.1",
-      "innings_num": 29.3
+      "innings": "31.1",
+      "innings_num": 31.3
     },
     {
       "id": "tyler_tolbert",
@@ -6509,8 +6517,8 @@
       "name": "Tyler Zuber",
       "team": "MIA",
       "role": "中継ぎ",
-      "innings": "32.0",
-      "innings_num": 32.0
+      "innings": "32.1",
+      "innings_num": 32.3
     },
     {
       "id": "tyron_guerrero",
@@ -6749,8 +6757,8 @@
       "name": "Yennier Cano",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "43.0",
-      "innings_num": 43.0
+      "innings": "43.1",
+      "innings_num": 43.3
     },
     {
       "id": "yerry_de_los_santos",
@@ -6781,8 +6789,8 @@
       "name": "Yohan Ramírez",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "71.0",
-      "innings_num": 71.0
+      "innings": "72.0",
+      "innings_num": 72.0
     },
     {
       "id": "yoshinobu_yamamoto",
