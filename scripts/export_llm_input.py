@@ -297,6 +297,15 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
                     "hits": 0, "hr": 0,
                     "strike_sum": 0.0, "strike_cnt": 0,
                     "gb_sum": 0.0, "gb_cnt": 0,
+                    # MLB独自（NPBのmixにはキーが無いのでcnt=0のまま→Noneで出力）
+                    "xwoba_sum": 0.0, "xwoba_cnt": 0,
+                    "spin_sum": 0.0, "spin_cnt": 0,
+                    "spinaxis_sum": 0.0, "spinaxis_cnt": 0,
+                    "activespin_sum": 0.0, "activespin_cnt": 0,
+                    "vaa_sum": 0.0, "vaa_cnt": 0,
+                    "ivb_sum": 0.0, "ivb_cnt": 0,
+                    "hb_sum": 0.0, "hb_cnt": 0,
+                    "ext_sum": 0.0, "ext_cnt": 0,
                     "cbs_merged": defaultdict(lambda: {f: 0 for f in _CBS_FIELDS}),
                 }
             k = km[key]
@@ -320,6 +329,23 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
             if m.get("gbpct") is not None:
                 k["gb_sum"] += m["gbpct"] or 0
                 k["gb_cnt"] += 1
+            # MLB独自指標（投球数加重平均。NPBはこれらのキーが無いので蓄積されずcnt=0のまま）
+            if m.get("xwoba") is not None:
+                k["xwoba_sum"] += m["xwoba"] * count; k["xwoba_cnt"] += count
+            if m.get("avgSpin") is not None:
+                k["spin_sum"] += m["avgSpin"] * count; k["spin_cnt"] += count
+            if m.get("spinAxis") is not None:
+                k["spinaxis_sum"] += m["spinAxis"] * count; k["spinaxis_cnt"] += count
+            if m.get("activeSpin") is not None:
+                k["activespin_sum"] += m["activeSpin"] * count; k["activespin_cnt"] += count
+            if m.get("vaa") is not None:
+                k["vaa_sum"] += m["vaa"] * count; k["vaa_cnt"] += count
+            if m.get("ivb") is not None:
+                k["ivb_sum"] += m["ivb"] * count; k["ivb_cnt"] += count
+            if m.get("hb") is not None:
+                k["hb_sum"] += m["hb"] * count; k["hb_cnt"] += count
+            if m.get("ext") is not None:
+                k["ext_sum"] += m["ext"] * count; k["ext_cnt"] += count
             # cbs（カウント別）マージ
             cbs = m.get("cbs") or {}
             if isinstance(cbs, dict):
@@ -349,6 +375,15 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
             "GB%": round(m["gb_sum"] / m["gb_cnt"], 1) if m["gb_cnt"] > 0 else None,
             "H": m["hits"],
             "HR": m["hr"],
+            # MLB独自（NPBはcnt=0のままなのでNone）
+            "xwOBA": round(m["xwoba_sum"] / m["xwoba_cnt"], 3) if m["xwoba_cnt"] > 0 else None,
+            "回転数": round(m["spin_sum"] / m["spin_cnt"]) if m["spin_cnt"] > 0 else None,
+            "回転軸": round(m["spinaxis_sum"] / m["spinaxis_cnt"]) if m["spinaxis_cnt"] > 0 else None,
+            "回転効率": round(m["activespin_sum"] / m["activespin_cnt"], 1) if m["activespin_cnt"] > 0 else None,
+            "VAA": round(m["vaa_sum"] / m["vaa_cnt"], 1) if m["vaa_cnt"] > 0 else None,
+            "縦変化量": round(m["ivb_sum"] / m["ivb_cnt"], 1) if m["ivb_cnt"] > 0 else None,
+            "横変化量": round(m["hb_sum"] / m["hb_cnt"], 1) if m["hb_cnt"] > 0 else None,
+            "Extension": round(m["ext_sum"] / m["ext_cnt"], 2) if m["ext_cnt"] > 0 else None,
             "_cbs": dict(m["cbs_merged"]),  # カウント別パターンシート生成用（出力シートには含めない）
         })
     return out
@@ -423,8 +458,18 @@ def aggregate_course_distribution(appearances: list[dict]) -> dict:
 #   p15/p30/p40/p60/p70/p85 パーセンタイルを算出し、値がどの階層に入るかを判定する。
 # ==================================================
 
-_COLOR_SCALE_METRICS = ["swstr", "oSwing", "strike", "zone", "gbpct"]
-_COLOR_SCALE_DIR = {"swstr": True, "oSwing": True, "strike": True, "zone": True, "gbpct": True}
+_COLOR_SCALE_METRICS = [
+    "swstr", "oSwing", "strike", "zone", "gbpct", "vel", "maxVel",
+    # MLB独自（Statcast由来。NPBデータには存在しないため自動的にNoneスキップされる）
+    "avgSpin", "spinAxis", "activeSpin", "vaa", "ivb", "hb", "ext", "xwoba",
+]
+_COLOR_SCALE_DIR = {
+    "swstr": True, "oSwing": True, "strike": True, "zone": True, "gbpct": True,
+    "vel": True, "maxVel": True,
+    # MLB独自。index.html の COL_SCALE_DIR と同じ方向定義。
+    "avgSpin": True, "spinAxis": False, "activeSpin": True, "vaa": False,
+    "ivb": True, "hb": True, "ext": True, "xwoba": False,
+}
 # True = 値が高いほど良い（ティール方向）。dashboardのCOL_SCALE_DIRと同じ定義。
 
 
@@ -604,7 +649,7 @@ def build_count_pattern_rows(player_name: str, season_mix: list[dict]) -> list[d
 # ==================================================
 
 def _single_game_mix_rows(mix_list) -> list[dict]:
-    """1試合ぶんのmix配列を、カード表示用の球種行形式に整形（ゾーン率・ゴロ率・球速も含む）"""
+    """1試合ぶんのmix配列を、カード表示用の球種行形式に整形（ゾーン率・ゴロ率・球速・MLB独自指標も含む）"""
     if not isinstance(mix_list, list):
         return []
     valid = [m for m in mix_list if isinstance(m, dict)]
@@ -623,6 +668,15 @@ def _single_game_mix_rows(mix_list) -> list[dict]:
             "gb_pct": m.get("gbpct"),
             "avg_vel": m.get("vel"),
             "max_vel": m.get("maxVel"),
+            # MLB独自（Statcast由来。NPBのmixオブジェクトにはキー自体が無いのでNoneになる）
+            "xwoba": m.get("xwoba"),
+            "avg_spin": m.get("avgSpin"),
+            "spin_axis": m.get("spinAxis"),
+            "active_spin": m.get("activeSpin"),
+            "vaa": m.get("vaa"),
+            "ivb": m.get("ivb"),
+            "hb": m.get("hb"),
+            "ext": m.get("ext"),
         })
     return rows
 
@@ -638,6 +692,17 @@ def _single_game_pitch_tiers(mix_rows: list[dict], role_key: str, pitch_scale_st
         row["ストライク率_ランク"] = get_scale_tier("strike", row.get("strike_pct"), stats_for_pitch)
         row["ゾーン率_ランク"] = get_scale_tier("zone", row.get("zone_pct"), stats_for_pitch)
         row["GB%_ランク"] = get_scale_tier("gbpct", row.get("gb_pct"), stats_for_pitch)
+        row["平均球速_ランク"] = get_scale_tier("vel", row.get("avg_vel"), stats_for_pitch)
+        row["最高球速_ランク"] = get_scale_tier("maxVel", row.get("max_vel"), stats_for_pitch)
+        # MLB独自（NPBはvalueがNoneなのでget_scale_tierがNoneを返して自動的に色なしになる）
+        row["回転数_ランク"] = get_scale_tier("avgSpin", row.get("avg_spin"), stats_for_pitch)
+        row["回転軸_ランク"] = get_scale_tier("spinAxis", row.get("spin_axis"), stats_for_pitch)
+        row["回転効率_ランク"] = get_scale_tier("activeSpin", row.get("active_spin"), stats_for_pitch)
+        row["VAA_ランク"] = get_scale_tier("vaa", row.get("vaa"), stats_for_pitch)
+        row["縦変化量_ランク"] = get_scale_tier("ivb", row.get("ivb"), stats_for_pitch)
+        row["横変化量_ランク"] = get_scale_tier("hb", row.get("hb"), stats_for_pitch)
+        row["Extension_ランク"] = get_scale_tier("ext", row.get("ext"), stats_for_pitch)
+        row["xwOBA_ランク"] = get_scale_tier("xwoba", row.get("xwoba"), stats_for_pitch)
 
 
 _PITCH_COLOR_MAP = {
@@ -717,6 +782,15 @@ def build_season_pitch_detail(season_mix_all, season_mix_vs_r, season_mix_vs_l,
             "gb_pct": m.get("GB%"),
             "avg_vel": m.get("平均球速"),
             "max_vel": m.get("最高球速"),
+            # MLB独自（NPBはaggregate_season_mix側でNoneになる）
+            "xwoba": m.get("xwOBA"),
+            "avg_spin": m.get("回転数"),
+            "spin_axis": m.get("回転軸"),
+            "active_spin": m.get("回転効率"),
+            "vaa": m.get("VAA"),
+            "ivb": m.get("縦変化量"),
+            "hb": m.get("横変化量"),
+            "ext": m.get("Extension"),
         } for m in mix_list]
         _single_game_pitch_tiers(rows, role_key, pitch_scale_stats, key_lookup)
         return rows
