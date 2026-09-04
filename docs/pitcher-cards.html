@@ -142,7 +142,7 @@
      autoレイアウトのままだと、日付や対戦カードの文字量によって実際の列幅が
      sticky指定のleft/widthの想定値とズレてしまい、固定列の間に隙間や
      他の列の値が透けて見える不具合が起きていたため。 */
-  .gamelog-table{ width:auto; min-width:960px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
+  .gamelog-table{ width:auto; min-width:964px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
   .gamelog-table th{
     text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:nowrap;
     border-bottom:1px solid rgba(148,163,184,0.15);
@@ -159,6 +159,10 @@
   .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:100px; z-index:2; }
   .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:136px; width:92px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
   .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; }
+  /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
+     ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
+     固定列の間に他の値が透けて見える不具合が再発するため。 */
+  .gamelog-table th:nth-child(n+5), .gamelog-table td:nth-child(n+5){ width:76px; }
   .gamelog-table th:nth-child(1), .gamelog-table th:nth-child(2), .gamelog-table th:nth-child(3){ background:var(--panel-alt); z-index:3; }
   .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ background:var(--panel); }
   .gamelog-table .row-season td:nth-child(1), .gamelog-table .row-season td:nth-child(2), .gamelog-table .row-season td:nth-child(3){ background:#111F33; }
@@ -281,7 +285,8 @@
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
 
   @media (max-width:720px){
-    html, body{ overflow:auto; }
+    html{ overflow:hidden; }
+    body{ overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
     .app{ height:auto; min-height:100vh; }
     .body-layout{ flex-direction:column; }
     .sidebar{ width:100%; max-height:260px; height:auto; border-right:none; border-bottom:1px solid var(--border); }
