@@ -53,16 +53,16 @@
       "name": "ウォルターズ",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "33.1",
-      "innings_num": 33.3
+      "innings": "35.1",
+      "innings_num": 35.3
     },
     {
       "id": "ウレーニャ",
       "name": "ウレーニャ",
       "team": "楽天",
       "role": "先発",
-      "innings": "53.2",
-      "innings_num": 53.7
+      "innings": "55.2",
+      "innings_num": 55.7
     },
     {
       "id": "エスピノーザ",
@@ -77,8 +77,8 @@
       "name": "オスナ",
       "team": "ソフトバンク",
       "role": "中継ぎ",
-      "innings": "40.0",
-      "innings_num": 40.0
+      "innings": "41.0",
+      "innings_num": 41.0
     },
     {
       "id": "カスティーヨ",
@@ -125,8 +125,8 @@
       "name": "ジャクソン",
       "team": "ロッテ",
       "role": "先発",
-      "innings": "134.0",
-      "innings_num": 134.0
+      "innings": "139.0",
+      "innings_num": 139.0
     },
     {
       "id": "スチュワート_ジュニア",
@@ -205,8 +205,8 @@
       "name": "ヘルナンデス",
       "team": "ソフトバンク",
       "role": "中継ぎ",
-      "innings": "33.2",
-      "innings_num": 33.7
+      "innings": "34.2",
+      "innings_num": 34.7
     },
     {
       "id": "ペルドモ",
@@ -229,8 +229,8 @@
       "name": "マチャド",
       "team": "オリックス",
       "role": "中継ぎ",
-      "innings": "44.1",
-      "innings_num": 44.3
+      "innings": "45.1",
+      "innings_num": 45.3
     },
     {
       "id": "マラー",
@@ -261,8 +261,8 @@
       "name": "マルティネス",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "44.0",
-      "innings_num": 44.0
+      "innings": "45.0",
+      "innings_num": 45.0
     },
     {
       "id": "メヒア",
@@ -421,8 +421,8 @@
       "name": "中川 皓太",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "32.0",
-      "innings_num": 32.0
+      "innings": "32.1",
+      "innings_num": 32.3
     },
     {
       "id": "中川_虎大",
@@ -461,8 +461,8 @@
       "name": "中森 俊介",
       "team": "ロッテ",
       "role": "中継ぎ",
-      "innings": "31.1",
-      "innings_num": 31.3
+      "innings": "32.1",
+      "innings_num": 32.3
     },
     {
       "id": "中西_聖輝",
@@ -493,8 +493,8 @@
       "name": "丸山 翔大",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "36.0",
-      "innings_num": 36.0
+      "innings": "37.0",
+      "innings_num": 37.0
     },
     {
       "id": "九谷_瑠",
@@ -565,8 +565,8 @@
       "name": "伊藤 優輔",
       "team": "ソフトバンク",
       "role": "中継ぎ",
-      "innings": "30.0",
-      "innings_num": 30.0
+      "innings": "31.0",
+      "innings_num": 31.0
     },
     {
       "id": "伊藤_大海",
@@ -621,8 +621,8 @@
       "name": "佐藤 隼輔",
       "team": "西武",
       "role": "中継ぎ",
-      "innings": "23.2",
-      "innings_num": 23.7
+      "innings": "24.2",
+      "innings_num": 24.7
     },
     {
       "id": "入山_海斗",
@@ -645,8 +645,8 @@
       "name": "八木 彬",
       "team": "ロッテ",
       "role": "中継ぎ",
-      "innings": "51.0",
-      "innings_num": 51.0
+      "innings": "52.0",
+      "innings_num": 52.0
     },
     {
       "id": "内_星龍",
@@ -685,8 +685,8 @@
       "name": "前田 悠伍",
       "team": "ソフトバンク",
       "role": "先発",
-      "innings": "89.0",
-      "innings_num": 89.0
+      "innings": "92.1",
+      "innings_num": 92.3
     },
     {
       "id": "前田_純",
@@ -725,8 +725,8 @@
       "name": "北山 亘基",
       "team": "日本ハム",
       "role": "先発",
-      "innings": "126.0",
-      "innings_num": 126.0
+      "innings": "134.0",
+      "innings_num": 134.0
     },
     {
       "id": "北斗",
@@ -789,8 +789,8 @@
       "name": "古謝 樹",
       "team": "楽天",
       "role": "先発",
-      "innings": "91.0",
-      "innings_num": 91.0
+      "innings": "96.0",
+      "innings_num": 96.0
     },
     {
       "id": "古賀_康誠",
@@ -821,8 +821,8 @@
       "name": "吉田 聖弥",
       "team": "中日",
       "role": "中継ぎ",
-      "innings": "40.2",
-      "innings_num": 40.7
+      "innings": "41.2",
+      "innings_num": 41.7
     },
     {
       "id": "吉田_輝星",
@@ -885,8 +885,8 @@
       "name": "堀田 賢慎",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "32.0",
-      "innings_num": 32.0
+      "innings": "32.2",
+      "innings_num": 32.7
     },
     {
       "id": "堀越_啓太",
@@ -957,8 +957,8 @@
       "name": "大瀬良 大地",
       "team": "広島",
       "role": "先発",
-      "innings": "8.1",
-      "innings_num": 8.3
+      "innings": "9.1",
+      "innings_num": 9.3
     },
     {
       "id": "大竹_耕太郎",
@@ -1101,8 +1101,8 @@
       "name": "富山 凌雅",
       "team": "オリックス",
       "role": "中継ぎ",
-      "innings": "8.2",
-      "innings_num": 8.7
+      "innings": "9.2",
+      "innings_num": 9.7
     },
     {
       "id": "富田_蓮",
@@ -1165,8 +1165,8 @@
       "name": "小野 郁",
       "team": "ロッテ",
       "role": "中継ぎ",
-      "innings": "36.0",
-      "innings_num": 36.0
+      "innings": "37.0",
+      "innings_num": 37.0
     },
     {
       "id": "尾形_崇斗",
@@ -1269,16 +1269,16 @@
       "name": "山﨑 颯一郎",
       "team": "オリックス",
       "role": "中継ぎ",
-      "innings": "46.0",
-      "innings_num": 46.0
+      "innings": "47.0",
+      "innings_num": 47.0
     },
     {
       "id": "岡本_駿",
       "name": "岡本 駿",
       "team": "広島",
       "role": "先発",
-      "innings": "101.1",
-      "innings_num": 101.3
+      "innings": "102.1",
+      "innings_num": 102.3
     },
     {
       "id": "岡留_英貴",
@@ -1461,8 +1461,8 @@
       "name": "廣澤 優",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "37.0",
-      "innings_num": 37.0
+      "innings": "37.1",
+      "innings_num": 37.3
     },
     {
       "id": "廣畑_敦也",
@@ -1693,8 +1693,8 @@
       "name": "松山 晋也",
       "team": "中日",
       "role": "中継ぎ",
-      "innings": "37.1",
-      "innings_num": 37.3
+      "innings": "38.1",
+      "innings_num": 38.3
     },
     {
       "id": "松本_健吾",
@@ -1733,8 +1733,8 @@
       "name": "松本 航",
       "team": "西武",
       "role": "中継ぎ",
-      "innings": "3.1",
-      "innings_num": 3.3
+      "innings": "5.1",
+      "innings_num": 5.3
     },
     {
       "id": "松本_裕樹",
@@ -1765,8 +1765,8 @@
       "name": "柳川 大晟",
       "team": "日本ハム",
       "role": "中継ぎ",
-      "innings": "43.0",
-      "innings_num": 43.0
+      "innings": "44.0",
+      "innings_num": 44.0
     },
     {
       "id": "柴田_大地",
@@ -1829,8 +1829,8 @@
       "name": "森 博人",
       "team": "中日",
       "role": "中継ぎ",
-      "innings": "4.1",
-      "innings_num": 4.3
+      "innings": "5.1",
+      "innings_num": 5.3
     },
     {
       "id": "森_翔平",
@@ -1845,8 +1845,8 @@
       "name": "森下 暢仁",
       "team": "広島",
       "role": "先発",
-      "innings": "106.2",
-      "innings_num": 106.7
+      "innings": "112.2",
+      "innings_num": 112.7
     },
     {
       "id": "森浦_大輔",
@@ -1861,8 +1861,8 @@
       "name": "森田 駿哉",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "32.0",
-      "innings_num": 32.0
+      "innings": "32.1",
+      "innings_num": 32.3
     },
     {
       "id": "森脇_亮介",
@@ -1877,8 +1877,8 @@
       "name": "椋木 蓮",
       "team": "オリックス",
       "role": "中継ぎ",
-      "innings": "41.1",
-      "innings_num": 41.3
+      "innings": "42.1",
+      "innings_num": 42.3
     },
     {
       "id": "椎葉_剛",
@@ -2005,16 +2005,16 @@
       "name": "泰 勝利",
       "team": "楽天",
       "role": "中継ぎ",
-      "innings": "18.0",
-      "innings_num": 18.0
+      "innings": "19.0",
+      "innings_num": 19.0
     },
     {
       "id": "津森_宥紀",
       "name": "津森 宥紀",
       "team": "ソフトバンク",
       "role": "中継ぎ",
-      "innings": "39.1",
-      "innings_num": 39.3
+      "innings": "40.1",
+      "innings_num": 40.3
     },
     {
       "id": "津田_淳哉",
@@ -2221,8 +2221,8 @@
       "name": "田中 瑛斗",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "47.0",
-      "innings_num": 47.0
+      "innings": "47.2",
+      "innings_num": 47.7
     },
     {
       "id": "田口_麗斗",
@@ -2405,8 +2405,8 @@
       "name": "竹丸 和幸",
       "team": "巨人",
       "role": "先発",
-      "innings": "103.0",
-      "innings_num": 103.0
+      "innings": "109.0",
+      "innings_num": 109.0
     },
     {
       "id": "竹田_祐",
@@ -2613,8 +2613,8 @@
       "name": "西垣 雅矢",
       "team": "楽天",
       "role": "中継ぎ",
-      "innings": "28.2",
-      "innings_num": 28.7
+      "innings": "29.2",
+      "innings_num": 29.7
     },
     {
       "id": "西舘_勇陽",
@@ -2645,8 +2645,8 @@
       "name": "豆田 泰志",
       "team": "西武",
       "role": "中継ぎ",
-      "innings": "28.1",
-      "innings_num": 28.3
+      "innings": "30.1",
+      "innings_num": 30.3
     },
     {
       "id": "赤星_優志",
@@ -2693,8 +2693,8 @@
       "name": "遠藤 淳志",
       "team": "広島",
       "role": "中継ぎ",
-      "innings": "46.2",
-      "innings_num": 46.7
+      "innings": "47.2",
+      "innings_num": 47.7
     },
     {
       "id": "金丸_夢斗",
@@ -2741,8 +2741,8 @@
       "name": "鈴木 豪太",
       "team": "ソフトバンク",
       "role": "中継ぎ",
-      "innings": "38.2",
-      "innings_num": 38.7
+      "innings": "40.1",
+      "innings_num": 40.3
     },
     {
       "id": "長谷川_宙輝",
@@ -2765,8 +2765,8 @@
       "name": "阪口 皓亮",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "25.0",
-      "innings_num": 25.0
+      "innings": "25.2",
+      "innings_num": 25.7
     },
     {
       "id": "阿部_翔太",
@@ -2813,8 +2813,8 @@
       "name": "高梨 裕稔",
       "team": "ヤクルト",
       "role": "先発",
-      "innings": "59.1",
-      "innings_num": 59.3
+      "innings": "64.1",
+      "innings_num": 64.3
     },
     {
       "id": "高梨_雄平",
@@ -2853,24 +2853,24 @@
       "name": "髙島 泰都",
       "team": "オリックス",
       "role": "先発",
-      "innings": "81.2",
-      "innings_num": 81.7
+      "innings": "86.2",
+      "innings_num": 86.7
     },
     {
       "id": "髙橋_光成",
       "name": "髙橋 光成",
       "team": "西武",
       "role": "先発",
-      "innings": "126.1",
-      "innings_num": 126.3
+      "innings": "128.1",
+      "innings_num": 128.3
     },
     {
       "id": "髙橋_宏斗",
       "name": "髙橋 宏斗",
       "team": "中日",
       "role": "先発",
-      "innings": "94.2",
-      "innings_num": 94.7
+      "innings": "100.2",
+      "innings_num": 100.7
     },
     {
       "id": "髙橋_快秀",
@@ -2909,8 +2909,8 @@
       "name": "黒木 優太",
       "team": "西武",
       "role": "中継ぎ",
-      "innings": "7.0",
-      "innings_num": 7.0
+      "innings": "8.0",
+      "innings_num": 8.0
     },
     {
       "id": "黒田_将矢",
