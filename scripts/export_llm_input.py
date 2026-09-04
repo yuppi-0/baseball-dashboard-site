@@ -636,6 +636,8 @@ def _single_game_pitch_tiers(mix_rows: list[dict], role_key: str, pitch_scale_st
         row["空振り率_ランク"] = get_scale_tier("swstr", row.get("swstr_pct"), stats_for_pitch)
         row["ゾーン外スイング率_ランク"] = get_scale_tier("oSwing", row.get("chase_pct"), stats_for_pitch)
         row["ストライク率_ランク"] = get_scale_tier("strike", row.get("strike_pct"), stats_for_pitch)
+        row["ゾーン率_ランク"] = get_scale_tier("zone", row.get("zone_pct"), stats_for_pitch)
+        row["GB%_ランク"] = get_scale_tier("gbpct", row.get("gb_pct"), stats_for_pitch)
 
 
 _PITCH_COLOR_MAP = {
