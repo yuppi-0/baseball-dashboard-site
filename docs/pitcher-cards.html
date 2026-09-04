@@ -150,7 +150,7 @@
   }
   .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; overflow:hidden; text-overflow:ellipsis; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
-  .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
+  .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
 
@@ -252,6 +252,11 @@
   .pcompare-table td:first-child{ font-size:12px; }
   .pcompare-table .grp-sep{ border-left:2px solid rgba(59,130,246,0.35); }
   .pcompare-table tbody tr:last-child td{ font-weight:700; color:var(--amber-text); border-top:2px solid rgba(59,130,246,0.3); border-bottom:none; }
+  /* 球種名（先頭列）を横スクロール時も固定表示 */
+  .pcompare-table th:first-child, .pcompare-table td:first-child{ position:sticky; left:0; width:110px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .pcompare-table thead th:first-child{ background:var(--panel-alt); z-index:3; }
+  .pcompare-table tbody td:first-child{ background:var(--panel); }
+  .pcompare-table tbody tr:last-child td:first-child{ background:var(--panel-alt); }
   .course-row{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:6px; }
   .course-pair{ display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
   .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
@@ -645,7 +650,7 @@ function renderCard(d){
     { label: "防御率", value: d.era, color: (d.era != null && d.era < 3.5) ? "var(--green-text)" : "var(--red-text)", rankKey: "era" },
     { label: "K-BB%", value: d.k_bb_pct != null ? d.k_bb_pct + "%" : "-", color: "var(--green-text)", rankKey: "k_bb_pct" },
     { label: "K%", value: d.k_pct_season != null ? d.k_pct_season + "%" : "-", color: "var(--green-text)", rankKey: "k_pct" },
-    { label: "BB%", value: d.bb_pct_season != null ? d.bb_pct_season + "%" : "-", color: "var(--red-text)", rankKey: "bb_pct" },
+    { label: "BB%", value: d.bb_pct_season != null ? d.bb_pct_season + "%" : "-", color: (d.bb_pct_season != null && d.bb_pct_season <= 8) ? "var(--green-text)" : "var(--red-text)", rankKey: "bb_pct" },
     { label: "ゴロ率", value: d.gb_pct != null ? d.gb_pct + "%" : "-", color: "var(--green-text)", rankKey: "gb_pct" },
     { label: "決め球", value: d.signature_pitch || "-", color: "var(--blue-text)", small: true }
   ];
@@ -769,20 +774,6 @@ function renderCard(d){
   mainContentEl.querySelectorAll(".cmp-checkbox").forEach(cb => {
     cb.addEventListener("click", (e) => e.stopPropagation()); // 行クリックとの二重発火を防ぐ
     cb.addEventListener("change", () => toggleCompareRow(cb.dataset.gidx, cb));
-  });
-  mainContentEl.querySelectorAll(".gamelog-table tbody tr.row-game").forEach(row => {
-    row.addEventListener("click", (e) => {
-      if(e.target.closest(".cmp-checkbox")) return; // チェックボックス自体のクリックはここでは扱わない
-      const gidx = row.dataset.gidx;
-      // この行だけを選択状態にし（既存の比較選択は置き換え）、チェックボックスの見た目も同期する
-      compareSelectedKeys = new Set([gidx]);
-      mainContentEl.querySelectorAll(".cmp-checkbox").forEach(cb => {
-        cb.checked = (cb.dataset.gidx === gidx);
-      });
-      renderComparePanel(d);
-      const panel = document.getElementById("comparePanel");
-      if(panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
   });
 }
 
@@ -1182,7 +1173,11 @@ function buildGameLogTable(d){
       <td>${chk("season")}</td>
       <td>シーズン</td><td>―</td>
       <td>${formatSeasonResult(d)}</td>
-      ${cols.map(c => `<td>${d[c.key + "_season"] != null ? d[c.key + "_season"] + "%" : "-"}</td>`).join("")}
+      ${cols.map(c => {
+        const v = d[c.key + "_season"];
+        const cls = cellClass(v, c.good, c.th);
+        return `<td class="${cls}">${v != null ? v + "%" : "-"}</td>`;
+      }).join("")}
     </tr>
   `;
 
