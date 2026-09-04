@@ -150,7 +150,7 @@
   }
   .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; overflow:hidden; text-overflow:ellipsis; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
-  .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); }
+  .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
 
@@ -532,6 +532,7 @@ async function selectPlayer(id, name){
   // 選手を切り替えたら、前の選手で選んでいた比較チェックボックス／フィルターは引き継がない
   compareSelectedKeys = new Set();
   compareHand = "all";
+  previewGidx = null;
   window._hmResultFilter = "all";
   window._hmSplitMode = "9";
   window._hmSelectedPitchKeys = null;
@@ -766,6 +767,7 @@ function renderCard(d){
   window._hmSelectedPitchKeys = null;
 
   function toggleCompareRow(gidx, cb){
+    previewGidx = null; // チェックボックス操作が優先。行クリックのプレビューは破棄する
     if(cb.checked) compareSelectedKeys.add(gidx);
     else compareSelectedKeys.delete(gidx);
     renderComparePanel(d);
@@ -774,6 +776,20 @@ function renderCard(d){
   mainContentEl.querySelectorAll(".cmp-checkbox").forEach(cb => {
     cb.addEventListener("click", (e) => e.stopPropagation()); // 行クリックとの二重発火を防ぐ
     cb.addEventListener("change", () => toggleCompareRow(cb.dataset.gidx, cb));
+  });
+
+  // 行クリック：チェックボックスは一切変更せず、その行の内容だけを下のパネルにプレビュー表示する
+  mainContentEl.querySelectorAll(".gamelog-table tbody tr.row-game").forEach(row => {
+    row.addEventListener("click", (e) => {
+      if(e.target.closest(".cmp-checkbox")) return; // チェックボックス自体のクリックはここでは扱わない
+      const gidx = row.dataset.gidx;
+      previewGidx = (previewGidx === gidx) ? null : gidx; // 同じ行を再クリックしたら閉じる
+      renderComparePanel(d);
+      if(previewGidx){
+        const panel = document.getElementById("comparePanel");
+        if(panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    });
   });
 }
 
@@ -1150,7 +1166,8 @@ function hmControlsHtml(allPitchKeysMap){
 // 試合ログテーブル + 比較パネル
 // ============================================================
 
-let compareSelectedKeys = new Set(); // "season" | 数字(game index、文字列)
+let compareSelectedKeys = new Set(); // "season" | 数字(game index、文字列)。チェックボックスでのみ操作する
+let previewGidx = null; // 行クリックでの単体プレビュー表示用（チェックボックスの状態とは独立）
 let compareHand = "all"; // 複数選択時の球種比較テーブルで使う 全体/対右/対左
 
 function buildGameLogTable(d){
@@ -1227,7 +1244,8 @@ function getRowDataFor(d, gidx){
 function renderComparePanel(d){
   const panel = document.getElementById("comparePanel");
   if(!panel) return;
-  const keys = [...compareSelectedKeys];
+  // チェックボックスでの選択がある場合はそちらを優先。無ければ行クリックのプレビューを表示する
+  const keys = compareSelectedKeys.size ? [...compareSelectedKeys] : (previewGidx != null ? [previewGidx] : []);
   if(!keys.length){ panel.innerHTML = ""; return; }
 
   // 全選択ぶんに登場する球種の集合（球種フィルターボタン用）
