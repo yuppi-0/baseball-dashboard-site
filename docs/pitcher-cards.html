@@ -138,12 +138,17 @@
   .bullets.tone-negative div b{ color:#FECACA; }
 
   /* 試合ログテーブル */
-  .gamelog-table{ width:100%; border-collapse:collapse; font-size:11px; }
+  /* table-layout:fixed にして列幅をthead側の指定に固定する。
+     autoレイアウトのままだと、日付や対戦カードの文字量によって実際の列幅が
+     sticky指定のleft/widthの想定値とズレてしまい、固定列の間に隙間や
+     他の列の値が透けて見える不具合が起きていたため。 */
+  .gamelog-table{ width:auto; min-width:960px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
   .gamelog-table th{
     text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:nowrap;
     border-bottom:1px solid rgba(148,163,184,0.15);
+    overflow:hidden; text-overflow:ellipsis;
   }
-  .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; }
+  .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; overflow:hidden; text-overflow:ellipsis; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
   .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
@@ -151,8 +156,9 @@
 
   /* 比較・日付・対戦の3列を横スクロール時も固定表示 */
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; }
-  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:96px; z-index:2; }
-  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:132px; width:80px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:100px; z-index:2; }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:136px; width:92px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; }
   .gamelog-table th:nth-child(1), .gamelog-table th:nth-child(2), .gamelog-table th:nth-child(3){ background:var(--panel-alt); z-index:3; }
   .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ background:var(--panel); }
   .gamelog-table .row-season td:nth-child(1), .gamelog-table .row-season td:nth-child(2), .gamelog-table .row-season td:nth-child(3){ background:#111F33; }
@@ -167,6 +173,12 @@
     padding:5px 12px; border-radius:6px; cursor:pointer;
   }
   .hand-toggle button.active{ background:#fff; color:#000; }
+  .chand-toggle{ display:flex; gap:4px; margin-bottom:10px; }
+  .chand-toggle .hand-btn{
+    border:none; background:var(--panel-alt); color:var(--text-dim); font-size:10.5px; font-weight:700;
+    padding:5px 12px; border-radius:6px; cursor:pointer;
+  }
+  .chand-toggle .hand-btn.active{ background:#fff; color:#000; }
   .pmix-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:14px; }
   .pmix-table{ width:100%; border-collapse:collapse; min-width:560px; font-family:'DM Mono',monospace; }
   .pmix-table th{
@@ -177,6 +189,13 @@
   .pmix-table tfoot td{ padding:6px 8px; font-size:11px; font-weight:700; border-top:2px solid rgba(59,130,246,0.3); background:var(--panel-alt); }
   .pmix-pname{ display:inline-flex; align-items:center; gap:6px; }
   .pmix-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; }
+
+  /* 球種・投球数（先頭2列）を横スクロール時も固定表示 */
+  .pmix-table th:nth-child(1), .pmix-table td:nth-child(1){ position:sticky; left:0; width:104px; z-index:2; overflow:hidden; text-overflow:ellipsis; }
+  .pmix-table th:nth-child(2), .pmix-table td:nth-child(2){ position:sticky; left:104px; width:52px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .pmix-table th:nth-child(1), .pmix-table th:nth-child(2){ background:var(--panel-alt); z-index:3; }
+  .pmix-table td:nth-child(1), .pmix-table td:nth-child(2){ background:var(--panel); }
+  .pmix-table tfoot td:nth-child(1), .pmix-table tfoot td:nth-child(2){ background:var(--panel-alt); }
 
   /* コース分布グリッド（本家と同じ強度スケール） */
   .course-wrap{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
@@ -220,6 +239,19 @@
   }
   .compare-block-title{ font-size:12.5px; font-weight:700; color:var(--text-bright); margin-bottom:2px; }
   .compare-block-summary{ font-size:11px; color:var(--text-dim); font-family:'DM Mono',monospace; margin-bottom:10px; }
+
+  /* 複数選択時の球種比較テーブル（投球数・投球割合を選択項目ぶん横並びにする） */
+  .pcompare-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:4px; }
+  .pcompare-table{ border-collapse:collapse; font-family:'DM Mono',monospace; min-width:100%; }
+  .pcompare-table th, .pcompare-table td{
+    padding:6px 10px; font-size:11px; text-align:center; white-space:nowrap;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .pcompare-table thead th{ color:var(--text-dim); font-weight:700; background:var(--panel-alt); font-size:10px; }
+  .pcompare-table th:first-child, .pcompare-table td:first-child{ text-align:left; }
+  .pcompare-table td:first-child{ font-size:12px; }
+  .pcompare-table .grp-sep{ border-left:2px solid rgba(59,130,246,0.35); }
+  .pcompare-table tbody tr:last-child td{ font-weight:700; color:var(--amber-text); border-top:2px solid rgba(59,130,246,0.3); border-bottom:none; }
   .course-row{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:6px; }
   .course-pair{ display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
   .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
@@ -249,6 +281,12 @@
     .body-layout{ flex-direction:column; }
     .sidebar{ width:100%; max-height:260px; height:auto; border-right:none; border-bottom:1px solid var(--border); }
     main{ padding:14px; overflow-y:visible; }
+
+    /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
+       画面幅が狭い分、配球キャンバスの表示サイズだけ縮める（グリッド側のセル幅はJS側でも縮小）。 */
+    .course-row{ gap:12px; }
+    .course-pair{ flex-wrap:nowrap; gap:6px; }
+    .hm-canvas-block{ width:108px; }
   }
 </style>
 </head>
@@ -494,15 +532,10 @@ async function selectPlayer(id, name){
     const merged = mergeCardData(numeric, llm);
     renderCard(merged);
     if(!llm){
-      const debugHtml = debugLog.map(line => `<div>${escapeHtml(line)}</div>`).join("");
       mainContentEl.insertAdjacentHTML("afterbegin",
         `<div style="font-size:11px;color:var(--text-dim);margin-bottom:10px">
           ※ この選手のAI解釈テキストはまだ生成されていません（数値データのみ表示中）
-        </div>
-        <details style="margin-bottom:14px;font-size:10px;color:var(--text-dim)">
-          <summary style="cursor:pointer;color:var(--blue-text)">デバッグ情報を見る（うまく表示されない時にサポートへ共有してください）</summary>
-          <div style="margin-top:6px;padding:8px;background:var(--panel);border-radius:6px;font-family:monospace;white-space:pre-wrap;word-break:break-all">${debugHtml}</div>
-        </details>`);
+        </div>`);
     }
   }catch(e){
     mainContentEl.innerHTML = `<div class="error">カードを読み込めませんでした。<br>(${escapeHtml(e.message)})</div>`;
@@ -755,6 +788,17 @@ function cellClass(value, goodDir, threshold){
   return value <= threshold ? "cell-good" : (value >= threshold * 1.6 ? "cell-bad" : "");
 }
 
+// 試合1件ぶんの「回・球数・K・BB・安打(自責)」表記（例: 6.0回 104球 5K 3BB 7(2)）
+function formatGameResult(g){
+  if(g.ip == null && g.pitches == null) return escapeHtml(g.result || "");
+  return `${g.ip ?? "-"}回 ${g.pitches ?? "-"}球 ${g.k ?? "-"}K ${g.bb ?? "-"}BB ${g.h ?? "-"}(${g.er ?? "-"})`;
+}
+
+// シーズン行の「登板・回・防御率・K・BB」表記（例: 7登板 53.1回 防1.01 53K 7BB）
+function formatSeasonResult(d){
+  return `${d.games ?? "-"}登板 ${d.innings ?? "-"}回 防${d.era ?? "-"} ${d.k ?? "-"}K ${d.bb ?? "-"}BB`;
+}
+
 // ── 球種詳細テーブル（本家ダッシュボードと同じ列構成・パーセンタイル色付け）──
 const PMIX_METRICS = [
   { key:"swstr_pct",  tierKey:"空振り率_ランク",         label:"空振り率" },
@@ -803,6 +847,58 @@ function pitchDetailTableHtml(pitches){
 
 const PITCH_COLORS = ["#34D399","#FB923C","#F87171","#EC4899","#A78BFA","#60A5FA","#FBBF24","#22D3EE"];
 function pitchColor(i){ return PITCH_COLORS[i % PITCH_COLORS.length]; }
+
+// ── 複数選択時：球種ごとに「投球数」「投球割合」を選択項目の数だけ横並びで比較するテーブル ──
+// entries: [{label, pitches}]（pitchesは pitchDetailTableHtml に渡すのと同じ球種配列）
+function buildPitchCompareTable(entries){
+  if(!entries.length) return "";
+  // 球種の並び順：先に選んだ項目の投球数が多い順 → 以後の項目にしか無い球種は末尾に追加
+  const order = [];
+  const seen = new Set();
+  entries.forEach(e => (e.pitches || []).forEach(p => {
+    if(p.name && !seen.has(p.name)){ seen.add(p.name); order.push(p.name); }
+  }));
+  const colorFor = (name) => pitchColor(order.indexOf(name));
+
+  const rows = order.map(name => {
+    const cells = entries.map(e => (e.pitches || []).find(p => p.name === name) || null);
+    return `
+      <tr>
+        <td><span class="pmix-pname"><span class="pmix-dot" style="background:${colorFor(name)}"></span>${escapeHtml(name)}</span></td>
+        ${cells.map((p,i) => `<td class="${i===0?'grp-sep':''}">${p ? (p.count ?? "—") : "—"}</td>`).join("")}
+        ${cells.map((p,i) => `<td class="${i===0?'grp-sep':''}">${p && p.pct != null ? p.pct + "%" : "—"}</td>`).join("")}
+      </tr>
+    `;
+  }).join("");
+
+  const totalRow = `
+    <tr>
+      <td>合計</td>
+      ${entries.map((e,i) => `<td class="${i===0?'grp-sep':''}">${(e.pitches||[]).reduce((s,p)=>s+(p.count||0),0)}</td>`).join("")}
+      ${entries.map((e,i) => `<td class="${i===0?'grp-sep':''}">${(e.pitches||[]).length ? "100%" : "—"}</td>`).join("")}
+    </tr>
+  `;
+
+  const n = entries.length;
+  return `
+    <div class="pcompare-scroll">
+      <table class="pcompare-table">
+        <thead>
+          <tr>
+            <th rowspan="2">球種</th>
+            <th colspan="${n}" class="grp-sep">投球数</th>
+            <th colspan="${n}" class="grp-sep">投球割合</th>
+          </tr>
+          <tr>
+            ${entries.map((e,i) => `<th class="${i===0?'grp-sep':''}">${escapeHtml(e.label)}</th>`).join("")}
+            ${entries.map((e,i) => `<th class="${i===0?'grp-sep':''}">${escapeHtml(e.label)}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>${rows}${totalRow}</tbody>
+      </table>
+    </div>
+  `;
+}
 
 // ============================================================
 // コース分布（本家ダッシュボードの _hmFilterLocs / グリッド計算 / _drawZoneHeatmapMulti を移植）
@@ -860,8 +956,11 @@ function hmBuildGridHtml(label, locs){
   const counts = Array.from({length:N}, () => new Array(N).fill(0));
   zoneLocs.forEach(([x,y]) => { counts[hmGetCell(-y, edges)][hmGetCell(x, edges)]++; });
   const maxCnt = Math.max(...counts.flat(), 1);
-  const CW = mode === "9" ? 54 : 34, CH = mode === "9" ? 44 : 28;
-  const fs = mode === "9" ? "12px" : "10px", fsSub = mode === "9" ? "9px" : "8px";
+  // スマホ幅では「グリッド＋配球キャンバス」を横並びのまま収めたいので、セルを一回り小さくする
+  const isNarrow = window.innerWidth <= 720;
+  const CW = mode === "9" ? (isNarrow ? 44 : 54) : (isNarrow ? 26 : 34);
+  const CH = mode === "9" ? (isNarrow ? 36 : 44) : (isNarrow ? 22 : 28);
+  const fs = mode === "9" ? (isNarrow ? "10.5px" : "12px") : "10px", fsSub = mode === "9" ? "8.5px" : "8px";
 
   let html = `<div class="course-block">
     <div class="ctitle">${escapeHtml(label)}（${mode==='9' ? denom+'球 ゾーン内' : locs.length+'球'}）— 投手視点</div>
@@ -1008,6 +1107,7 @@ function hmControlsHtml(allPitchKeysMap){
 // ============================================================
 
 let compareSelectedKeys = new Set(); // "season" | 数字(game index、文字列)
+let compareHand = "all"; // 複数選択時の球種比較テーブルで使う 全体/対右/対左
 
 function buildGameLogTable(d){
   if(!d.game_log || !d.game_log.length) return "";
@@ -1028,7 +1128,7 @@ function buildGameLogTable(d){
     <tr class="row-game" data-gidx="season">
       <td>${chk("season")}</td>
       <td>シーズン</td><td>―</td>
-      <td>${d.games ?? "-"}登板 ${d.innings ?? "-"}回</td>
+      <td>${formatSeasonResult(d)}</td>
       ${cols.map(c => `<td>${d[c.key + "_season"] != null ? d[c.key + "_season"] + "%" : "-"}</td>`).join("")}
     </tr>
   `;
@@ -1038,7 +1138,7 @@ function buildGameLogTable(d){
       <td>${chk(String(i))}</td>
       <td>${escapeHtml(g.date || "")}</td>
       <td>${escapeHtml(g.opponent || "")}</td>
-      <td>${escapeHtml(g.result || "")}</td>
+      <td>${formatGameResult(g)}</td>
       ${cols.map(c => {
         const v = g[c.key];
         const cls = cellClass(v, c.good, c.th);
@@ -1069,15 +1169,11 @@ function buildGameLogTable(d){
 // 選択中のキーに対応する {pitch_detail, course_locs, label, summary} を取得
 function getRowDataFor(d, gidx){
   if(gidx === "season"){
-    const summary = `${d.games ?? "-"}登板 ${d.innings ?? "-"}回 防${d.era ?? "-"} ${d.k ?? "-"}K ${d.bb ?? "-"}BB`;
-    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs, summary };
+    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs, summary: formatSeasonResult(d) };
   }
   const g = d.game_log[parseInt(gidx,10)];
   if(!g) return null;
-  const summary = (g.ip != null || g.pitches != null)
-    ? `${g.ip ?? "-"}回 ${g.pitches ?? "-"}球 ${g.k ?? "-"}K ${g.bb ?? "-"}BB ${g.h ?? "-"}(${g.er ?? "-"})`
-    : "";
-  return { label: `${g.date || ""} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary };
+  return { label: `${g.date || ""} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary: formatGameResult(g) };
 }
 
 function renderComparePanel(d){
@@ -1093,8 +1189,33 @@ function renderComparePanel(d){
     if(rd && rd.courseLocs) Object.entries(rd.courseLocs).forEach(([pkey, info]) => { allPitchKeysMap[pkey] = info; });
   });
   const controlsHtml = hmControlsHtml(allPitchKeysMap);
+  const isMulti = keys.length >= 2;
 
-  const blocksHtml = keys.map(gidx => {
+  // 2件以上選択時：球種ごとの投球数・投球割合を選択項目ぶん横並びにした比較テーブルを1つだけ表示する
+  const compareTableHtml = isMulti ? (() => {
+    const entries = keys.map(gidx => {
+      const rd = getRowDataFor(d, gidx);
+      const pitches = rd && rd.pitchDetail ? rd.pitchDetail[compareHand] : null;
+      return { label: rd ? rd.label : gidx, pitches: pitches || [] };
+    });
+    const handButtons = `
+      <div class="chand-toggle">
+        <button class="hand-btn ${compareHand==='all'?'active':''}" data-hand="all">全体</button>
+        <button class="hand-btn ${compareHand==='vsR'?'active':''}" data-hand="vsR">対右</button>
+        <button class="hand-btn ${compareHand==='vsL'?'active':''}" data-hand="vsL">対左</button>
+      </div>
+    `;
+    return `
+      <div class="compare-block">
+        <div class="compare-block-title">球種比較</div>
+        ${handButtons}
+        ${buildPitchCompareTable(entries)}
+        ${controlsHtml}
+      </div>
+    `;
+  })() : "";
+
+  const blocksHtml = keys.map((gidx, idx) => {
     const rd = getRowDataFor(d, gidx);
     if(!rd) return "";
     const pitchDetail = rd.pitchDetail || {};
@@ -1107,7 +1228,7 @@ function renderComparePanel(d){
       <div class="compare-block" data-cmp-gidx="${gidx}">
         <div class="compare-block-title">${escapeHtml(rd.label)}</div>
         ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
-        ${pitchDetail.all ? `
+        ${(!isMulti && pitchDetail.all) ? `
           <div class="hand-toggle" data-gidx="${gidx}">
             <button class="hand-btn active" data-hand="all">全体</button>
             <button class="hand-btn" data-hand="vsR">対右</button>
@@ -1115,6 +1236,7 @@ function renderComparePanel(d){
           </div>
           <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(pitchDetail.all)}</div>
         ` : ""}
+        ${(!isMulti && idx === 0) ? controlsHtml : ""}
         <div class="course-row">
           <div class="course-pair">
             ${hmBuildGridHtml("対右打者", locsR)}
@@ -1135,8 +1257,10 @@ function renderComparePanel(d){
     `;
   }).join("");
 
-  // フィルター（結果・分割・球種）は、コース系マトリックスの直上に1セットだけ表示する
-  panel.innerHTML = `<div class="compare-blocks">${controlsHtml}${blocksHtml}</div>`;
+  // フィルター（結果・分割・球種）は、単一選択時は1つ目のブロックの球種テーブルの直下、
+  // 複数選択時は球種比較テーブルの直下に1セットだけ表示する
+  panel.innerHTML = `<div class="compare-blocks">${compareTableHtml}${blocksHtml}</div>`;
+
 
   // canvas描画（DOM挿入後に実行する必要がある）
   keys.forEach(gidx => {
@@ -1162,6 +1286,9 @@ function wireComparePanelEvents(d){
   const panel = document.getElementById("comparePanel");
   if(!panel) return;
 
+  panel.querySelectorAll(".chand-toggle .hand-btn").forEach(btn => {
+    btn.addEventListener("click", () => { compareHand = btn.dataset.hand; renderComparePanel(d); });
+  });
   panel.querySelectorAll(".hm-filter-btn[data-result]").forEach(btn => {
     btn.addEventListener("click", () => { window._hmResultFilter = btn.dataset.result; renderComparePanel(d); });
   });
