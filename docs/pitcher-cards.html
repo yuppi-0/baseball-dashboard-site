@@ -171,8 +171,9 @@
     text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:nowrap;
     border-bottom:1px solid rgba(148,163,184,0.15);
     overflow:hidden; text-overflow:ellipsis;
+    box-sizing:border-box;
   }
-  .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; overflow:hidden; text-overflow:ellipsis; }
+  .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
   .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
@@ -182,7 +183,7 @@
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; }
   .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:100px; z-index:2; }
   .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:136px; width:92px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
-  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; padding-left:12px; }
+  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; padding-left:16px; }
   /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
      固定列の間に他の値が透けて見える不具合が再発するため。 */
@@ -212,8 +213,9 @@
   .pmix-table th{
     padding:6px 8px; font-size:9px; font-weight:600; color:var(--text-dim); white-space:nowrap;
     text-align:left; background:var(--panel-alt); border-bottom:1px solid rgba(148,163,184,0.15);
+    box-sizing:border-box;
   }
-  .pmix-table td{ padding:7px 8px; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid rgba(255,255,255,0.04); }
+  .pmix-table td{ padding:7px 8px; font-size:12px; text-align:left; white-space:nowrap; border-bottom:1px solid rgba(255,255,255,0.04); box-sizing:border-box; }
   .pmix-table tfoot td{ padding:6px 8px; font-size:11px; font-weight:700; border-top:2px solid rgba(59,130,246,0.3); background:var(--panel-alt); }
   .pmix-pname{ display:inline-flex; align-items:center; gap:6px; }
   .pmix-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; }
@@ -285,7 +287,7 @@
   .pcompare-table thead th:first-child{ background:var(--panel-alt); z-index:3; }
   .pcompare-table tbody td:first-child{ background:var(--panel); }
   .pcompare-table tbody tr:last-child td:first-child{ background:var(--panel-alt); }
-  .course-row{ display:flex; gap:20px; flex-wrap:wrap; margin-bottom:6px; }
+  .course-row{ display:flex; gap:40px; flex-wrap:wrap; margin-bottom:6px; }
   .course-pair{ display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
   .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
   .hm-canvas-block{ width:150px; flex-shrink:0; }
@@ -334,7 +336,7 @@
 
     /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
        画面幅が狭い分、配球キャンバスの表示サイズだけ縮める（グリッド側のセル幅はJS側でも縮小）。 */
-    .course-row{ gap:12px; }
+    .course-row{ gap:20px; }
     .course-pair{ flex-wrap:nowrap; gap:6px; }
     .hm-canvas-block{ width:108px; }
   }
@@ -1137,10 +1139,11 @@ function hmGetCell(v, edges){
 }
 
 // pitchLocsMap: {球種コード: {name,color,locsR,locsL}} → 指定した打者方向の、フィルター適用済み結合locs配列
-function hmCombinedLocs(pitchLocsMap, isBatterRight){
+function hmCombinedLocs(pitchLocsMap, isBatterRight, filterOverride){
   const locsKey = isBatterRight ? "locsR" : "locsL";
   const keys = Object.keys(pitchLocsMap).filter(k => !window._hmSelectedPitchKeys || window._hmSelectedPitchKeys.has(k));
-  return keys.flatMap(k => hmFilterLocs(pitchLocsMap[k][locsKey] || [], window._hmResultFilter));
+  const filter = filterOverride !== undefined ? filterOverride : window._hmResultFilter;
+  return keys.flatMap(k => hmFilterLocs(pitchLocsMap[k][locsKey] || [], filter));
 }
 
 // 本家 index.html の表示用フリップ（_fR/_fL）の移植。
@@ -1155,7 +1158,7 @@ function hmDisplayFlip(league, pitcherHand, isBatterRight){
   return league === "mlb" ? (pitcherHand === "L") : (pitcherHand === "R");
 }
 
-function hmBuildGridHtml(label, locs, flipX){
+function hmBuildGridHtml(label, locs, flipX, allLocs){
   const ZONE = 1.0, OUTER = 1.67;
   const edges9  = [-ZONE, -ZONE/3, ZONE/3, ZONE];
   const edges25 = [-OUTER, -ZONE, -ZONE/3, ZONE/3, ZONE, OUTER];
@@ -1168,6 +1171,18 @@ function hmBuildGridHtml(label, locs, flipX){
   const counts = Array.from({length:N}, () => new Array(N).fill(0));
   zoneLocs.forEach(([x,y]) => { const dispX = flipX ? -x : x; counts[hmGetCell(-y, edges)][hmGetCell(dispX, edges)]++; });
   const maxCnt = Math.max(...counts.flat(), 1);
+
+  // 「スイング」以降のタブでは、各セルを「そのゾーンに投げた全投球数」に対する割合（分数付き）で表示する。
+  // 「全て」タブのときは従来通り「全ゾーン合計に対する割合」を表示する。
+  const showRateOfAll = !!allLocs;
+  let allCounts = null, allMaxCnt = 1;
+  if(showRateOfAll){
+    const allZoneLocs = mode === "9" ? allLocs.filter(l => l[3] === 1) : allLocs;
+    allCounts = Array.from({length:N}, () => new Array(N).fill(0));
+    allZoneLocs.forEach(([x,y]) => { const dispX = flipX ? -x : x; allCounts[hmGetCell(-y, edges)][hmGetCell(dispX, edges)]++; });
+    allMaxCnt = Math.max(...allCounts.flat(), 1);
+  }
+
   // スマホ幅では「グリッド＋配球キャンバス」を横並びのまま収めたいので、セルを一回り小さくする
   const isNarrow = window.innerWidth <= 720;
   const CW = mode === "9" ? (isNarrow ? 44 : 54) : (isNarrow ? 26 : 34);
@@ -1181,20 +1196,31 @@ function hmBuildGridHtml(label, locs, flipX){
     html += "<tr>";
     for(let c=0;c<N;c++){
       const cnt = counts[r][c];
-      const pct = denom>0 ? (cnt/denom*100).toFixed(1) : "0.0";
+      let pct, subLabel, hasVal, intensity;
+      if(showRateOfAll){
+        const total = allCounts[r][c];
+        hasVal = total > 0;
+        pct = hasVal ? Math.round(cnt/total*100) : 0;
+        subLabel = `${cnt}/${total}`;
+        intensity = total>0 ? total/allMaxCnt : 0; // セルの濃淡は「全投球の分布」を基準にする
+      } else {
+        hasVal = cnt > 0;
+        pct = denom>0 ? (cnt/denom*100).toFixed(1) : "0.0";
+        subLabel = String(cnt);
+        intensity = cnt / maxCnt;
+      }
       const inZone = mode==="9" ? true : (c>=1&&c<=3&&r>=1&&r<=3);
-      const intensity = cnt / maxCnt;
       const bgAlpha = (0.05 + intensity*0.7).toFixed(2);
-      const bg = cnt>0 ? (inZone?`rgba(59,130,246,${bgAlpha})`:`rgba(100,116,139,${bgAlpha})`) : (inZone?"rgba(59,130,246,0.03)":"rgba(255,255,255,0.01)");
-      const textCol = intensity>0.25 ? "#fff" : (cnt>0?"var(--text)":"var(--text-dim)");
+      const bg = hasVal ? (inZone?`rgba(59,130,246,${bgAlpha})`:`rgba(100,116,139,${bgAlpha})`) : (inZone?"rgba(59,130,246,0.03)":"rgba(255,255,255,0.01)");
+      const textCol = intensity>0.25 ? "#fff" : (hasVal?"var(--text)":"var(--text-dim)");
       const subCol = intensity>0.25 ? "rgba(255,255,255,0.75)" : "var(--text-dim)";
       const bT = (mode==="25"&&r===1)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
       const bL = (mode==="25"&&c===1)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
       const bB = (mode==="25"&&r===3)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
       const bR = (mode==="25"&&c===3)?"2px solid rgba(255,255,255,0.5)":"1px solid rgba(255,255,255,0.08)";
       html += `<td style="width:${CW}px;height:${CH}px;text-align:center;border-top:${bT};border-left:${bL};border-bottom:${bB};border-right:${bR};background:${bg};vertical-align:middle;padding:0">
-        <div style="font-size:${fs};font-weight:700;line-height:1.3;color:${textCol}">${cnt>0?pct+'%':'·'}</div>
-        ${cnt>0?`<div style="font-size:${fsSub};line-height:1.1;color:${subCol}">${cnt}</div>`:""}
+        <div style="font-size:${fs};font-weight:700;line-height:1.3;color:${textCol}">${hasVal?pct+'%':'·'}</div>
+        ${hasVal?`<div style="font-size:${fsSub};line-height:1.1;color:${subCol}">${subLabel}</div>`:""}
       </td>`;
     }
     html += "</tr>";
@@ -1232,7 +1258,7 @@ function hmDrawHeatmap(canvasId, locs, isBatterRight, flipX){
     const [x,y] = loc;
     const pc = hexToRgb(loc._color || "#3B82F6");
     const px = flipX ? -x : x;
-    const BALL_COMPRESS = 0.42, SZ = 1.0;
+    const BALL_COMPRESS = 0.28, SZ = 1.0;
     const compress = v => { if(Math.abs(v)<=SZ) return v; const sign=v>0?1:-1; return sign*(SZ+(Math.abs(v)-SZ)*BALL_COMPRESS); };
     const cx2 = toX(compress(px)), cy2 = toY(compress(y));
     const grd = ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,dotR*2.2);
@@ -1443,6 +1469,9 @@ function renderComparePanel(d){
     const courseLocs = rd.courseLocs || {};
     const locsR = hmCombinedLocs(courseLocs, true);
     const locsL = hmCombinedLocs(courseLocs, false);
+    const isAllFilter = window._hmResultFilter === "all";
+    const allLocsR = isAllFilter ? null : hmCombinedLocs(courseLocs, true, "all");
+    const allLocsL = isAllFilter ? null : hmCombinedLocs(courseLocs, false, "all");
     const canvasIdR = `hmcanvas-${gidx}-R`, canvasIdL = `hmcanvas-${gidx}-L`;
 
     return `
@@ -1460,14 +1489,14 @@ function renderComparePanel(d){
         ${(!isMulti && idx === 0) ? controlsHtml : ""}
         <div class="course-row">
           <div class="course-pair">
-            ${hmBuildGridHtml("対右打者", locsR, flipR)}
+            ${hmBuildGridHtml("対右打者", locsR, flipR, allLocsR)}
             <div class="hm-canvas-block">
               <div class="hm-canvas-title">対右打者 配球</div>
               <canvas id="${canvasIdR}" width="200" height="210"></canvas>
             </div>
           </div>
           <div class="course-pair">
-            ${hmBuildGridHtml("対左打者", locsL, flipL)}
+            ${hmBuildGridHtml("対左打者", locsL, flipL, allLocsL)}
             <div class="hm-canvas-block">
               <div class="hm-canvas-title">対左打者 配球</div>
               <canvas id="${canvasIdL}" width="200" height="210"></canvas>
