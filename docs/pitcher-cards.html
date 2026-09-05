@@ -53,6 +53,17 @@
     display:flex; flex-direction:column; height:100%;
   }
   .filter-box{ padding:10px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
+  .category-box{ padding:10px 14px; border-bottom:1px solid var(--border); }
+  .category-box-title{ font-size:10.5px; color:var(--text-dim); font-weight:700; margin-bottom:6px; }
+  .category-chips{ display:flex; flex-wrap:wrap; gap:5px; }
+  .category-chip{
+    border:1px solid rgba(148,163,184,0.25); background:var(--panel); color:var(--text-dim);
+    font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:14px; cursor:pointer;
+    display:flex; align-items:center; gap:5px;
+  }
+  .category-chip .cnt{ color:var(--text-dim); font-weight:400; }
+  .category-chip.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
+  .category-chip.active .cnt{ color:rgba(255,255,255,0.8); }
   .filter-row{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
   .filter-row input[type="checkbox"]{ accent-color:var(--blue); }
   .filter-row input[type="number"]{
@@ -88,11 +99,13 @@
   }
   .p-name{ font-size:18px; font-weight:700; color:var(--text-bright); }
   .p-meta{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .p-type-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
   .p-type-tag{
-    display:inline-block; margin-top:6px; padding:3px 10px; border-radius:20px;
+    display:inline-block; padding:3px 10px; border-radius:20px; cursor:pointer;
     font-size:11px; font-weight:700; color:var(--blue-text);
     background:rgba(59,130,246,0.14); border:1px solid rgba(59,130,246,0.3);
   }
+  .p-type-tag:hover{ background:rgba(59,130,246,0.24); }
 
   .stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:16px; }
   .stat-box{ background:var(--panel); border-radius:8px; padding:10px 6px; text-align:center; }
@@ -311,7 +324,7 @@
       flex-shrink:0; border:none; background:var(--blue); color:#fff; font-size:12px; font-weight:700;
       padding:8px 14px; border-radius:8px; cursor:pointer;
     }
-    .sidebar.collapsed .search-box, .sidebar.collapsed .filter-box, .sidebar.collapsed .player-list{ display:none; }
+    .sidebar.collapsed .search-box, .sidebar.collapsed .filter-box, .sidebar.collapsed .category-box, .sidebar.collapsed .player-list{ display:none; }
     .sidebar:not(.collapsed) .player-list{ max-height:55vh; }
 
     /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
@@ -360,6 +373,7 @@
           回以上
         </label>
       </div>
+      <div class="category-box" id="categoryBox"></div>
       <div class="player-list" id="playerList">
         <div class="empty-list">読み込み中…</div>
       </div>
@@ -387,6 +401,7 @@ const LEAGUE_PATHS = {
 
 let currentLeague = "npb";
 let allPlayers = [];
+let selectedCategory = null; // カテゴリで絞り込み中の値（null=絞り込みなし）
 let activePlayerId = null;
 
 const el = (sel) => document.querySelector(sel);
@@ -438,6 +453,7 @@ async function loadPlayerIndex(league){
   llmDataLoaded = false;
   playersWithLlmData = new Set();
   aiOnlyFilterEl.checked = false;
+  selectedCategory = null;
   sidebarEl.classList.remove("collapsed");
   updateSidebarSummary("選手を選択してください", "");
   try{
@@ -447,6 +463,7 @@ async function loadPlayerIndex(league){
     const data = await res.json();
     allPlayers = data.players || [];
     populateTeamSelect(allPlayers);
+    renderCategoryChips();
     renderPlayerList(applyFilters());
   }catch(e){
     playerListEl.innerHTML = `<div class="empty-list">選手一覧を読み込めませんでした。<br>(${escapeHtml(e.message)})</div>`;
@@ -570,6 +587,7 @@ function mergeCardData(numeric, llm){
     k: numeric.k,
     bb: numeric.bb,
     season_pitch_detail: numeric.season_pitch_detail,
+    categories: numeric.categories,
     season_course_locs: numeric.season_course_locs,
     player_type: llm.player_type || null,
     strengths: llm.strengths || [],
@@ -619,7 +637,32 @@ function applyFilters(){
     const matchesTeam = !team || p.team === team;
     const matchesAi = !aiOnly || playersWithLlmData.has(p.name);
     const matchesIp = isNaN(minIp) || (p.innings_num != null && p.innings_num >= minIp);
-    return matchesQuery && matchesTeam && matchesAi && matchesIp;
+    const matchesCategory = !selectedCategory || (p.categories || []).includes(selectedCategory);
+    return matchesQuery && matchesTeam && matchesAi && matchesIp && matchesCategory;
+  });
+}
+
+// カテゴリ絞り込みチップ：選手一覧に登場する全カテゴリを人数の多い順に表示する
+function renderCategoryChips(){
+  const box = document.getElementById("categoryBox");
+  if(!box) return;
+  const counts = {};
+  allPlayers.forEach(p => (p.categories || []).forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
+  const cats = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+  if(!cats.length){ box.innerHTML = ""; return; }
+  box.innerHTML = `
+    <div class="category-box-title">カテゴリで絞り込む</div>
+    <div class="category-chips">
+      ${cats.map(c => `<button class="category-chip ${selectedCategory===c?'active':''}" data-category="${escapeHtml(c)}">${escapeHtml(c)}<span class="cnt">${counts[c]}</span></button>`).join("")}
+    </div>
+  `;
+  box.querySelectorAll(".category-chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const c = btn.dataset.category;
+      selectedCategory = (selectedCategory === c) ? null : c; // もう一度押すと解除
+      renderCategoryChips();
+      renderPlayerList(applyFilters());
+    });
   });
 }
 
@@ -698,29 +741,16 @@ function sectionHeader({bar, label, labelColor, sub}){
   `;
 }
 
-// ── 球種構成とゴロ/フライ傾向から、ざっくりした「タイプ」ラベルを機械的に組み立てる ──
-// LLM解釈とは独立（数値データだけで決まるので、AIコメント未生成の選手でも常に表示できる）
+// ── 球種構成とゴロ/フライ傾向から、カテゴリタグ配列を組み立てる（サーバー側で計算済みのd.categoriesが無い場合のフォールバック）──
 function classifyPitcherType(d){
-  const pitches = (d.season_pitch_detail && d.season_pitch_detail.all) || [];
-  if(!pitches.length) return null;
-
-  // ゴロ/フライ傾向（シーズンゴロ率basis）
-  let battedTag = "";
+  const cats = [];
   if(d.gb_pct_season != null){
-    if(d.gb_pct_season >= 50) battedTag = "ゴロ型";
-    else if(d.gb_pct_season <= 38) battedTag = "フライ型";
+    if(d.gb_pct_season >= 50) cats.push("ゴロピッチャー");
+    else if(d.gb_pct_season <= 38) cats.push("フライピッチャー");
   }
-
-  // 持ち味の球種：投球割合15%以上を「主要球種」とし、上位2つまでを採用
-  // （1つしか無ければ1つだけ、ストレート1本槍のようなタイプもそのまま表現する）
-  const main = pitches
-    .filter(p => p.pct != null && p.pct >= 15)
-    .sort((a,b) => (b.pct||0) - (a.pct||0))
-    .slice(0, 2)
-    .map(p => p.name);
-  if(!main.length) return null;
-
-  return `${battedTag}${main.join("・")}ピッチャー`;
+  const pitches = (d.season_pitch_detail && d.season_pitch_detail.all) || [];
+  pitches.forEach(p => { if(p.pct != null && p.pct >= 20) cats.push(`${p.name}ピッチャー`); });
+  return cats;
 }
 
 function renderCard(d){
@@ -752,7 +782,7 @@ function renderCard(d){
   `;}).join("");
 
   const gameLogHtml = buildGameLogTable(d);
-  const typeTag = classifyPitcherType(d);
+  const typeCats = (d.categories && d.categories.length) ? d.categories : classifyPitcherType(d);
 
   // 選手特徴・強み・弱み を1つの枠にまとめる（区切り線つき）
   const profileHtml = `
@@ -788,10 +818,11 @@ function renderCard(d){
         <div>
           <div class="p-name">${escapeHtml(d.name)}</div>
           <div class="p-meta">${escapeHtml(d.team || "")}・${escapeHtml(d.throws_bats || "")}・${escapeHtml(d.role || "")}・${d.games ?? "-"}登板 ${d.innings ?? "-"}回</div>
-          ${typeTag ? `<div class="p-type-tag">${escapeHtml(typeTag)}</div>` : ""}
+          ${typeCats.length ? `<div class="p-type-tags">${typeCats.map(c => `<button class="p-type-tag" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}</div>` : ""}
         </div>
       </div>
 
+      <div class="stat-grid">
         ${stats.map(s => `
           <div class="stat-box">
             <div class="label">${s.label}</div>
@@ -838,6 +869,17 @@ function renderCard(d){
       const chev = title.querySelector(".chev");
       const isCollapsed = body.classList.toggle("collapsed");
       chev.style.transform = isCollapsed ? "rotate(-90deg)" : "rotate(0deg)";
+    });
+  });
+
+  // タイプタグをクリック → サイドバーのカテゴリ絞り込みに反映して一覧を開く
+  mainContentEl.querySelectorAll(".p-type-tag").forEach(tag => {
+    tag.addEventListener("click", () => {
+      selectedCategory = tag.dataset.category;
+      renderCategoryChips();
+      sidebarEl.classList.remove("collapsed");
+      renderPlayerList(applyFilters());
+      sidebarEl.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 
@@ -1445,14 +1487,8 @@ function wireComparePanelEvents(d){
   panel.querySelectorAll(".hm-pitch-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const pkey = btn.dataset.pkey;
-      if(pkey === "__all__"){ window._hmSelectedPitchKeys = null; }
-      else{
-        if(!window._hmSelectedPitchKeys) window._hmSelectedPitchKeys = new Set(Object.keys(
-          (function(){ const m={}; [...compareSelectedKeys].forEach(k=>{const rd=getRowDataFor(d,k); if(rd&&rd.courseLocs) Object.keys(rd.courseLocs).forEach(pk=>m[pk]=1);}); return m; })()
-        ));
-        if(window._hmSelectedPitchKeys.has(pkey)) window._hmSelectedPitchKeys.delete(pkey);
-        else window._hmSelectedPitchKeys.add(pkey);
-      }
+      // 単一選択：クリックした球種だけを選ぶ（前の選択は置き換え）。「全球種」でリセット
+      window._hmSelectedPitchKeys = (pkey === "__all__") ? null : new Set([pkey]);
       renderComparePanel(d);
     });
   });
