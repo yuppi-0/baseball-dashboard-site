@@ -2664,7 +2664,11 @@ def main():
             "  games      Step1: RAW取得→datamart→JSON（活躍選手なし）\n"
             "  highlights Step2: 活躍選手選出→highlights.xlsx→datamart更新→JSON更新\n"
             "  datamart   datamart再生成（活躍選手なし・RAW再利用）\n"
-            "  例) --steps games highlights"
+            "  llm_input  LLM入力xlsx・数値JSON(pitcher_cards_numeric)だけ再生成\n"
+            "             （Statcastは再取得せず、games_json_dir内の既存データから作り直す。\n"
+            "             export_llm_input.pyだけ直した時などに使う）\n"
+            "  例) --steps games highlights\n"
+            "  例) --steps llm_input"
         ),
     )
     args = parser.parse_args()
@@ -2686,6 +2690,13 @@ def main():
         print("  [INFO] games が datamart を内包 → datamart はスキップ")
         run_datamart = False
     # gamesとhighlightsは別ステップ: games後にhighlightsも実行する（--steps all含む）
+    # llm_input: pitcher_cards_numeric（数値JSON）・LLM入力xlsxの再生成のみを単独で行いたい時用
+    # （scripts/export_llm_input.py だけ直した時など、Statcastを再取得せずに反映できる）。
+    # 既存の挙動を壊さないよう、games/highlights/datamart/all のいずれかが動く時は今まで通り自動でも実行する。
+    run_llm_input = (
+        run_all or run_games or run_highlights or run_datamart
+        or "llm_input" in raw_steps
+    )
 
     label = date_list[0] if len(date_list)==1 else f"{date_list[0]} 〜 {date_list[-1]}"
     # ステップ名を日本語に
@@ -2693,6 +2704,7 @@ def main():
         "games":      "Step1 RAWデータ取得 → datamart → JSON",
         "highlights": "Step2 活躍選手選出 → datamart更新 → JSON更新",
         "datamart":   "datamart再生成 → JSON",
+        "llm_input":  "LLM入力xlsx・数値JSON再生成のみ",
         "all":        "全ステップ",
     }
     steps_label = " → ".join(STEP_NAMES.get(s, s) for s in raw_steps)
@@ -2763,25 +2775,28 @@ def main():
     # ── LLM入力用xlsx生成 ──
     # games_json_dir はループ内の年・game_typeが変わらない限り日付共通のフォルダなので、
     # 日付ループの外（最後に set_dirs された状態）で1回だけ実行すればよい。
-    print(f"\n--- LLM入力用xlsx生成 ---")
     path_llm_input = ""
-    try:
-        year = TARGET_DATE[:4]
-        llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", args.game_type, "llm_input")
-        path_llm_input = os.path.join(llm_input_dir, f"MLB_投手データ_{year}.xlsx")
-        # 数値JSON（pitcher_cards_numeric）は pitcher-cards.html が直接fetchするので、
-        # 非公開のBASE_DATA_DIRではなく公開側のBASE_PUBLIC_DIRに出力する
-        numeric_json_dir = os.path.join(BASE_PUBLIC_DIR, f"{year}年", args.game_type, "pitcher_cards_numeric")
-        export_llm_input_xlsx(
-            games_json_dir=GAMES_JSON_DIR,
-            out_path=path_llm_input,
-            # min_ipは指定しない（デフォルト0=全投手を出力）。絞り込みはClaude.aiへのプロンプト側で行う
-            numeric_json_dir=numeric_json_dir,
-        )
-        print(f"  完了: {path_llm_input}")
-        print(f"  数値JSON: {numeric_json_dir}")
-    except Exception as e:
-        print(f"  [WARN] LLM入力用xlsx生成失敗: {e}")
+    if run_llm_input:
+        print(f"\n--- LLM入力用xlsx生成 ---")
+        try:
+            year = TARGET_DATE[:4]
+            llm_input_dir = os.path.join(BASE_DATA_DIR, f"{year}年", args.game_type, "llm_input")
+            path_llm_input = os.path.join(llm_input_dir, f"MLB_投手データ_{year}.xlsx")
+            # 数値JSON（pitcher_cards_numeric）は pitcher-cards.html が直接fetchするので、
+            # 非公開のBASE_DATA_DIRではなく公開側のBASE_PUBLIC_DIRに出力する
+            numeric_json_dir = os.path.join(BASE_PUBLIC_DIR, f"{year}年", args.game_type, "pitcher_cards_numeric")
+            export_llm_input_xlsx(
+                games_json_dir=GAMES_JSON_DIR,
+                out_path=path_llm_input,
+                # min_ipは指定しない（デフォルト0=全投手を出力）。絞り込みはClaude.aiへのプロンプト側で行う
+                numeric_json_dir=numeric_json_dir,
+            )
+            print(f"  完了: {path_llm_input}")
+            print(f"  数値JSON: {numeric_json_dir}")
+        except Exception as e:
+            print(f"  [WARN] LLM入力用xlsx生成失敗: {e}")
+    else:
+        print(f"\n--- LLM入力用xlsx生成: スキップ（--steps に llm_input/games/highlights/datamart/all のいずれも無し）---")
 
     # ── 完了サマリー ──
     print("\n" + "=" * 55)
