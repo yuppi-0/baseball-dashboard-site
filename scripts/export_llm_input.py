@@ -1075,6 +1075,14 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                 "id": player_id, "name": name, "team": card.get("team"), "role": card.get("role"),
                 "innings": card.get("innings"), "innings_num": round(ip_float, 1),
                 "categories": card["categories"],
+                # 選手一覧での並び替え用に主要指標もindex.jsonに含めておく
+                # （選手ごとのJSONを全件取得しなくても一覧画面でソートできるようにするため）
+                "era": card.get("era"),
+                "k_bb_pct": card.get("kbb_pct_season"),
+                "k_pct": card.get("k_pct_season"),
+                "bb_pct": card.get("bb_pct_season"),
+                "swstr_pct": card.get("swstr_pct_season"),
+                "gb_pct": card.get("gb_pct"),
             })
         with open(os.path.join(numeric_json_dir, "index.json"), "w", encoding="utf-8") as f:
             json.dump({"players": index_players}, f, ensure_ascii=False, indent=2)
