@@ -1762,6 +1762,18 @@ function renderComparePanel(d){
   const keys = compareSelectedKeys.size ? [...compareSelectedKeys] : (previewGidx != null ? [previewGidx] : []);
   if(!keys.length){ panel.innerHTML = ""; return; }
 
+  // 比較パネルが表示される（下に大きく伸びる）ときは、開いている年フォルダを閉じて
+  // シーズン成績テーブル自体の縦の長さを抑える
+  mainContentEl.querySelectorAll(".gamelog-table tbody.folder-body").forEach(body => {
+    if(body.style.display !== "none"){
+      body.style.display = "none";
+      const year = body.dataset.yearBody;
+      const row = mainContentEl.querySelector(`.gamelog-table tr.row-folder[data-year="${year}"]`);
+      const chev = row && row.querySelector(".folder-chevron");
+      if(chev) chev.style.transform = "rotate(-90deg)";
+    }
+  });
+
   // 全選択ぶんに登場する球種の集合（球種フィルターボタン用）。
   // タブは投球割合（投球数）が多い球種順に並べる。
   const allPitchKeysMap = {};
