@@ -247,7 +247,7 @@
   .gamelog-table .cell-bad{ background:rgba(248,113,113,0.18); color:var(--red-text); border-radius:4px; }
   .gamelog-scroll{ overflow-x:auto; }
   .gamelog-table .cmp-checkbox{ accent-color:var(--blue); cursor:pointer; }
-  .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; width:32px; }
+  .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; }
 
   /* 比較パネル（試合ログの下部に表示） */
   #comparePanel{ margin-top:14px; }
@@ -953,6 +953,45 @@ function renderCard(d){
         if(panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     });
+  });
+
+  setupGamelogSnap();
+}
+
+// 試合ログテーブルの横スクロールを列境界にスナップさせる。
+// 比較・日付・対戦は固定列（position:sticky）だが、4列目（結果）以降は普通にスクロールして
+// 固定列の下を通り過ぎていくため、指を離した位置がちょうど列の途中だと、結果や各指標の値が
+// 固定列との境目からわずかに見えてしまうことがある。スクロールが止まったら一番近い列の境界まで
+// スムーズに補正することで、常にどこかの列がきっちり境界に揃った状態で止まるようにする。
+function setupGamelogSnap(){
+  const scrollEl = mainContentEl.querySelector(".gamelog-scroll");
+  const table = scrollEl && scrollEl.querySelector(".gamelog-table");
+  if(!scrollEl || !table) return;
+  const headerCells = table.querySelectorAll("thead th");
+  if(headerCells.length < 5) return;
+  const boundaries = [0];
+  let acc = 0;
+  for(let i = 3; i < headerCells.length; i++){
+    acc += headerCells[i].offsetWidth;
+    boundaries.push(acc);
+  }
+  let snapTimer = null;
+  scrollEl.addEventListener("scroll", () => {
+    clearTimeout(snapTimer);
+    snapTimer = setTimeout(() => {
+      const maxScroll = table.offsetWidth - scrollEl.clientWidth;
+      const sl = scrollEl.scrollLeft;
+      if(sl <= 0 || sl >= maxScroll - 1) return; // 端まで来ている場合はそのまま
+      let nearest = boundaries[0], best = Infinity;
+      for(const b of boundaries){
+        if(b > maxScroll) break;
+        const d = Math.abs(b - sl);
+        if(d < best){ best = d; nearest = b; }
+      }
+      if(Math.abs(nearest - sl) > 1){
+        scrollEl.scrollTo({ left: nearest, behavior: "smooth" });
+      }
+    }, 120);
   });
 }
 
