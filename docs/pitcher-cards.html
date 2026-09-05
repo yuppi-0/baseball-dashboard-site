@@ -253,6 +253,18 @@
   .gamelog-table .cmp-checkbox{ accent-color:var(--blue); cursor:pointer; }
   .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; }
 
+  /* 年フォルダ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備） */
+  .gamelog-table tr.row-folder{ cursor:pointer; }
+  .gamelog-table tr.row-folder td{
+    position:static; left:auto; width:auto; box-shadow:none;
+    background:rgba(59,130,246,0.10); color:var(--text-bright); font-weight:700;
+    padding:7px 8px; text-align:left; border-bottom:1px solid rgba(59,130,246,0.2);
+  }
+  .gamelog-table tr.row-folder:hover td{ background:rgba(59,130,246,0.16); }
+  .gamelog-table .folder-chevron{ display:inline-block; margin-right:4px; color:var(--blue); font-size:9px; transition:transform 0.15s ease; }
+  .gamelog-table .folder-icon{ margin-right:4px; }
+  .gamelog-table .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; }
+
   /* 比較パネル（試合ログの下部に表示） */
   #comparePanel{ margin-top:14px; }
   .hm-controls{
@@ -291,15 +303,18 @@
     border-bottom:1px solid rgba(255,255,255,0.06);
   }
   .pcompare-table thead th{ color:var(--text-dim); font-weight:700; background:var(--panel-alt); font-size:10px; }
-  .pcompare-table th:first-child, .pcompare-table td:first-child{ text-align:left; }
-  .pcompare-table td:first-child{ font-size:12px; }
+  .pcompare-table tbody td:first-child{ text-align:left; font-size:12px; }
   .pcompare-table .grp-sep{ border-left:2px solid rgba(59,130,246,0.35); }
   .pcompare-table tbody tr:last-child td{ font-weight:700; color:var(--amber-text); border-top:2px solid rgba(59,130,246,0.3); border-bottom:none; }
-  /* 球種名（先頭列）を横スクロール時も固定表示 */
-  .pcompare-table th:first-child, .pcompare-table td:first-child{ position:sticky; left:0; width:110px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
-  .pcompare-table thead th:first-child{ background:var(--panel-alt); z-index:3; }
-  .pcompare-table tbody td:first-child{ background:var(--panel); }
-  .pcompare-table tbody tr:last-child td:first-child{ background:var(--panel-alt); }
+  /* 球種名（先頭列）を横スクロール時も固定表示。
+     ヘッダーは1行目の「球種」セルだけがrowspan=2でこの列を占めており、2行目の先頭セルは
+     実際には1つ目の指標グループの1つ目のラベル（例:「シーズン」）なので、
+     :first-child で両方の行を一緒に拾うと2行目のラベルまで固定列扱いになって
+     「球種」列にラベル文字が被って見える不具合になる。専用クラスだけを対象にする。 */
+  .pcompare-table .pcompare-namecol{ position:sticky; left:0; width:110px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); text-align:left; }
+  .pcompare-table thead th.pcompare-namecol{ background:var(--panel-alt); z-index:3; }
+  .pcompare-table tbody td.pcompare-namecol{ background:var(--panel); font-size:12px; }
+  .pcompare-table tbody tr:last-child td.pcompare-namecol{ background:var(--panel-alt); }
   .course-row{ display:flex; gap:40px; flex-wrap:wrap; margin-bottom:6px; }
   .course-pair{ display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
   .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
@@ -961,6 +976,19 @@ function renderCard(d){
     cb.addEventListener("change", () => toggleCompareRow(cb.dataset.gidx, cb));
   });
 
+  // 年フォルダ行クリック：その年の試合行だけを開閉する
+  mainContentEl.querySelectorAll(".gamelog-table tr.row-folder").forEach(row => {
+    row.addEventListener("click", () => {
+      const year = row.dataset.year;
+      const body = mainContentEl.querySelector(`.gamelog-table tbody.folder-body[data-year-body="${year}"]`);
+      if(!body) return;
+      const isOpen = body.style.display !== "none";
+      body.style.display = isOpen ? "none" : "table-row-group";
+      const chev = row.querySelector(".folder-chevron");
+      if(chev) chev.style.transform = isOpen ? "rotate(0deg)" : "rotate(90deg)";
+    });
+  });
+
   // 行クリック：チェックボックスは一切変更せず、その行の内容だけを下のパネルにプレビュー表示する
   mainContentEl.querySelectorAll(".gamelog-table tbody tr.row-game").forEach(row => {
     row.addEventListener("click", (e) => {
@@ -1039,6 +1067,19 @@ function formatGameResult(g){
 // シーズン行の「登板・回・防御率・K・BB」表記（例: 7登板 53.1回 防1.01 53K 7BB）
 function formatSeasonResult(d){
   return `${d.games ?? "-"}登板 ${d.innings ?? "-"}回 防${d.era ?? "-"} ${d.k ?? "-"}K ${d.bb ?? "-"}BB`;
+}
+
+// "2026-08-30" → "8/30"（年をまたぐ表示が必要な箇所では別途年フォルダを使う）
+function formatDateShort(dateStr){
+  if(!dateStr) return "";
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(dateStr);
+  if(!m) return dateStr;
+  return `${parseInt(m[2],10)}/${parseInt(m[3],10)}`;
+}
+// "2026-08-30" → "2026"
+function dateYear(dateStr){
+  const m = /^(\d{4})-/.exec(dateStr || "");
+  return m ? m[1] : null;
 }
 
 // ── 球種詳細テーブル（本家ダッシュボードと同じ列構成・パーセンタイル色付け）──
@@ -1156,7 +1197,7 @@ function buildPitchCompareTable(entries){
     const perEntry = entries.map(e => (e.pitches || []).find(p => p.name === name) || null);
     return `
       <tr>
-        <td><span class="pmix-pname"><span class="pmix-dot" style="background:${colorFor(name)}"></span>${escapeHtml(name)}</span></td>
+        <td class="pcompare-namecol"><span class="pmix-pname"><span class="pmix-dot" style="background:${colorFor(name)}"></span>${escapeHtml(name)}</span></td>
         ${metrics.map(m => cellsFor(m, perEntry)).join("")}
       </tr>
     `;
@@ -1164,7 +1205,7 @@ function buildPitchCompareTable(entries){
 
   const totalRow = `
     <tr>
-      <td>合計</td>
+      <td class="pcompare-namecol">合計</td>
       ${metrics.map(m => entries.map((e,i) => {
         const sep = i === 0 ? "grp-sep" : "";
         if(m.isCount) return `<td class="${sep}">${(e.pitches||[]).reduce((s,p)=>s+(p.count||0),0)}</td>`;
@@ -1180,7 +1221,7 @@ function buildPitchCompareTable(entries){
       <table class="pcompare-table">
         <thead>
           <tr>
-            <th rowspan="2">球種</th>
+            <th rowspan="2" class="pcompare-namecol">球種</th>
             ${metrics.map(m => `<th colspan="${n}" class="grp-sep">${m.label}</th>`).join("")}
           </tr>
           <tr>
@@ -1280,6 +1321,20 @@ function hmBuildGridHtml(label, locs, flipX, allLocs){
   const CH = mode === "9" ? (isNarrow ? 36 : 44) : (isNarrow ? 22 : 28);
   const fs = mode === "9" ? (isNarrow ? "10.5px" : "12px") : "10px", fsSub = mode === "9" ? "8.5px" : "8px";
 
+  // showRateOfAll（「スイング」以降のタブ）では、色の濃淡は「そのゾーンに来た球のうち該当した割合」
+  // （＝セルに表示されている%そのもの）が高いほど濃くなるようにする。総投球数で決めると、
+  // 割合は高いのに投球数が少ないだけのセルが薄く表示されて紛らわしいため、先に全セルの%を
+  // 計算してその中の最大値を基準に正規化する。
+  let ratePctGrid = null, maxRatePct = 1;
+  if(showRateOfAll){
+    ratePctGrid = Array.from({length:N}, () => new Array(N).fill(0));
+    for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+      const total = allCounts[r][c];
+      ratePctGrid[r][c] = total>0 ? (counts[r][c]/total*100) : 0;
+    }
+    maxRatePct = Math.max(...ratePctGrid.flat(), 1);
+  }
+
   let html = `<div class="course-block">
     <div class="ctitle">${escapeHtml(label)}（${mode==='9' ? denom+'球 ゾーン内' : locs.length+'球'}）— 投手視点</div>
     <table class="hm-grid-table"><tbody>`;
@@ -1293,7 +1348,7 @@ function hmBuildGridHtml(label, locs, flipX, allLocs){
         hasVal = total > 0;
         pct = hasVal ? Math.round(cnt/total*100) : 0;
         subLabel = `${cnt}/${total}`;
-        intensity = total>0 ? total/allMaxCnt : 0; // セルの濃淡は「全投球の分布」を基準にする
+        intensity = hasVal ? ratePctGrid[r][c] / maxRatePct : 0; // 濃淡は割合（%）の高さを基準にする
       } else {
         hasVal = cnt > 0;
         pct = denom>0 ? (cnt/denom*100).toFixed(1) : "0.0";
@@ -1467,10 +1522,12 @@ function buildGameLogTable(d){
     </tr>
   `;
 
-  const gameRows = d.game_log.map((g, i) => `
+  const colCount = 4 + cols.length; // 比較・日付・対戦・結果 + 指標列
+
+  const gameRowHtml = (g, i) => `
     <tr class="row-game" data-gidx="${i}">
       <td>${chk(String(i))}</td>
-      <td>${escapeHtml(g.date || "")}</td>
+      <td>${escapeHtml(formatDateShort(g.date))}</td>
       <td>${escapeHtml(g.opponent || "")}</td>
       <td>${formatGameResult(g)}</td>
       ${cols.map(c => {
@@ -1479,7 +1536,37 @@ function buildGameLogTable(d){
         return `<td class="${cls}">${v != null ? v + "%" : "-"}</td>`;
       }).join("")}
     </tr>
-  `).join("");
+  `;
+
+  // 試合を年ごとにグループ化し、フォルダ行の下にその年の試合行だけを表示する。
+  // 来シーズン以降、新しい年のフォルダ（例: 2027年）が自動的に並ぶようになる想定。
+  const yearGroups = []; // [{year, indices:[...]}]
+  d.game_log.forEach((g, i) => {
+    const y = dateYear(g.date) || "-";
+    let grp = yearGroups.find(gr => gr.year === y);
+    if(!grp){ grp = { year: y, indices: [] }; yearGroups.push(grp); }
+    grp.indices.push(i);
+  });
+
+  const folderRowsHtml = yearGroups.map((grp, gi) => {
+    const isOpen = gi === 0; // 最新（先頭）の年だけデフォルトで開いておく
+    const rows = grp.indices.map(i => gameRowHtml(d.game_log[i], i)).join("");
+    return `
+      <tbody class="folder-head-body">
+        <tr class="row-folder" data-year="${escapeHtml(grp.year)}">
+          <td colspan="${colCount}">
+            <span class="folder-chevron" style="transform:${isOpen ? "rotate(90deg)" : "rotate(0deg)"}">▶</span>
+            <span class="folder-icon">📁</span>
+            <span class="folder-label">${escapeHtml(grp.year)}年</span>
+            <span class="folder-count">（${grp.indices.length}試合）</span>
+          </td>
+        </tr>
+      </tbody>
+      <tbody class="folder-body" data-year-body="${escapeHtml(grp.year)}" style="display:${isOpen ? "table-row-group" : "none"}">
+        ${rows}
+      </tbody>
+    `;
+  }).join("");
 
   return `
     <div class="section section-gamelog">
@@ -1491,7 +1578,8 @@ function buildGameLogTable(d){
               <th>比較</th><th>日付</th><th>対戦</th><th>結果</th>
               ${cols.map(c => `<th>${c.label}</th>`).join("")}
             </tr></thead>
-            <tbody>${seasonRow}${gameRows}</tbody>
+            <tbody>${seasonRow}</tbody>
+            ${folderRowsHtml}
           </table>
         </div>
         <div id="comparePanel"></div>
@@ -1507,7 +1595,7 @@ function getRowDataFor(d, gidx){
   }
   const g = d.game_log[parseInt(gidx,10)];
   if(!g) return null;
-  return { label: `${g.date || ""} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary: formatGameResult(g) };
+  return { label: `${formatDateShort(g.date)} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary: formatGameResult(g) };
 }
 
 function renderComparePanel(d){
