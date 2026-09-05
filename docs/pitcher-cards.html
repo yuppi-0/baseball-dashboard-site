@@ -53,9 +53,14 @@
     display:flex; flex-direction:column; height:100%;
   }
   .filter-box{ padding:10px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
-  .category-box{ padding:10px 14px; border-bottom:1px solid var(--border); }
-  .category-box-title{ font-size:10.5px; color:var(--text-dim); font-weight:700; margin-bottom:6px; }
-  .category-chips{ display:flex; flex-wrap:wrap; gap:5px; }
+  .category-box{ padding:8px 14px; border-bottom:1px solid var(--border); }
+  .category-box-toggle{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px;
+    border:none; background:transparent; color:var(--text-dim); font-size:10.5px; font-weight:700;
+    padding:4px 0; cursor:pointer; text-align:left;
+  }
+  .category-box-toggle .chev{ font-size:9px; transition:transform 0.15s; flex-shrink:0; }
+  .category-chips{ flex-wrap:wrap; gap:5px; margin-top:8px; }
   .category-chip{
     border:1px solid rgba(148,163,184,0.25); background:var(--panel); color:var(--text-dim);
     font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:14px; cursor:pointer;
@@ -454,6 +459,7 @@ async function loadPlayerIndex(league){
   playersWithLlmData = new Set();
   aiOnlyFilterEl.checked = false;
   selectedCategory = null;
+  categoryBoxOpen = false;
   sidebarEl.classList.remove("collapsed");
   updateSidebarSummary("選手を選択してください", "");
   try{
@@ -643,6 +649,8 @@ function applyFilters(){
 }
 
 // カテゴリ絞り込みチップ：選手一覧に登場する全カテゴリを人数の多い順に表示する
+let categoryBoxOpen = false; // カテゴリチップ一覧の開閉状態（デフォルトは閉じて選手一覧を優先表示）
+
 function renderCategoryChips(){
   const box = document.getElementById("categoryBox");
   if(!box) return;
@@ -650,12 +658,20 @@ function renderCategoryChips(){
   allPlayers.forEach(p => (p.categories || []).forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
   const cats = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
   if(!cats.length){ box.innerHTML = ""; return; }
+  const isOpen = categoryBoxOpen || !!selectedCategory; // 選択中は常に開いておく
   box.innerHTML = `
-    <div class="category-box-title">カテゴリで絞り込む</div>
-    <div class="category-chips">
+    <button class="category-box-toggle" id="categoryBoxToggle">
+      <span>カテゴリで絞り込む${selectedCategory ? `：${escapeHtml(selectedCategory)}` : ""}</span>
+      <span class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</span>
+    </button>
+    <div class="category-chips" style="display:${isOpen ? 'flex' : 'none'}">
       ${cats.map(c => `<button class="category-chip ${selectedCategory===c?'active':''}" data-category="${escapeHtml(c)}">${escapeHtml(c)}<span class="cnt">${counts[c]}</span></button>`).join("")}
     </div>
   `;
+  document.getElementById("categoryBoxToggle").addEventListener("click", () => {
+    categoryBoxOpen = !categoryBoxOpen;
+    renderCategoryChips();
+  });
   box.querySelectorAll(".category-chip").forEach(btn => {
     btn.addEventListener("click", () => {
       const c = btn.dataset.category;
