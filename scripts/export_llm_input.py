@@ -1007,10 +1007,12 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                 })
 
             if numeric_json_dir:
+                pitcher_hand = appearances[0]["player"].get("hand") if appearances else None
                 numeric_cards[name] = {
                     "name": name,
                     "team": team,
                     "role": season["役割"],
+                    "throws": pitcher_hand,  # 投手の利き腕 R/L（配球プロットの表示用フリップに使う）
                     "games": season["登板数"],
                     "innings": season["投球回"],
                     "era": season["防御率"],
