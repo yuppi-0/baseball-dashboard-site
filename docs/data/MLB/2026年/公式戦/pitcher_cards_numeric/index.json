@@ -61,19 +61,19 @@
       "name": "Aaron Ashby",
       "team": "MIL",
       "role": "中継ぎ",
-      "innings": "74.2",
-      "innings_num": 74.7,
+      "innings": "75.2",
+      "innings_num": 75.7,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "カーブピッチャー"
       ],
-      "era": 4.34,
-      "k_bb_pct": 21.2,
-      "k_pct": 32.0,
-      "bb_pct": 10.8,
-      "swstr_pct": 13.1,
-      "gb_pct": 59.2
+      "era": 4.28,
+      "k_bb_pct": 21.3,
+      "k_pct": 32.2,
+      "bb_pct": 10.9,
+      "swstr_pct": 13.2,
+      "gb_pct": 58.3
     },
     {
       "id": "aaron_brooks",
@@ -119,19 +119,19 @@
       "name": "Aaron Civale",
       "team": "CHC",
       "role": "先発",
-      "innings": "91.1",
-      "innings_num": 91.3,
+      "innings": "94.1",
+      "innings_num": 94.3,
       "categories": [
         "フライピッチャー",
         "カットボールピッチャー",
         "カーブピッチャー"
       ],
-      "era": 4.34,
-      "k_bb_pct": 12.0,
-      "k_pct": 18.7,
-      "bb_pct": 6.7,
-      "swstr_pct": 9.7,
-      "gb_pct": 29.8
+      "era": 4.29,
+      "k_bb_pct": 11.9,
+      "k_pct": 18.9,
+      "bb_pct": 7.0,
+      "swstr_pct": 9.6,
+      "gb_pct": 30.8
     },
     {
       "id": "aaron_nola",
@@ -193,18 +193,19 @@
       "name": "Adam Macko",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "23.1",
-      "innings_num": 23.3,
+      "innings": "24.0",
+      "innings_num": 24.0,
       "categories": [
+        "フライピッチャー",
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 6.17,
-      "k_bb_pct": 13.5,
-      "k_pct": 22.5,
-      "bb_pct": 9.0,
-      "swstr_pct": 13.7,
-      "gb_pct": 39.1
+      "era": 6.0,
+      "k_bb_pct": 14.2,
+      "k_pct": 23.0,
+      "bb_pct": 8.8,
+      "swstr_pct": 13.5,
+      "gb_pct": 37.4
     },
     {
       "id": "adam_tulloch",
@@ -267,18 +268,18 @@
       "name": "Adrian Morejon",
       "team": "SD",
       "role": "中継ぎ",
-      "innings": "73.2",
-      "innings_num": 73.7,
+      "innings": "74.2",
+      "innings_num": 74.7,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 4.52,
-      "k_bb_pct": 21.8,
-      "k_pct": 29.2,
-      "bb_pct": 7.5,
-      "swstr_pct": 17.2,
+      "era": 4.46,
+      "k_bb_pct": 22.5,
+      "k_pct": 29.9,
+      "bb_pct": 7.4,
+      "swstr_pct": 17.3,
       "gb_pct": 58.7
     },
     {
@@ -398,18 +399,19 @@
       "name": "Alex Hoppe",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "37.0",
-      "innings_num": 37.0,
+      "innings": "37.2",
+      "innings_num": 37.7,
       "categories": [
         "スライダーピッチャー",
-        "フォーシームピッチャー"
+        "フォーシームピッチャー",
+        "シンカーピッチャー"
       ],
-      "era": 5.59,
-      "k_bb_pct": 16.5,
-      "k_pct": 25.3,
-      "bb_pct": 8.9,
-      "swstr_pct": 12.3,
-      "gb_pct": 47.4
+      "era": 5.5,
+      "k_bb_pct": 15.4,
+      "k_pct": 24.7,
+      "bb_pct": 9.3,
+      "swstr_pct": 12.0,
+      "gb_pct": 46.0
     },
     {
       "id": "alex_jackson",
@@ -454,20 +456,20 @@
       "name": "Alex McFarlane",
       "team": "PHI",
       "role": "中継ぎ",
-      "innings": "10.1",
-      "innings_num": 10.3,
+      "innings": "11.1",
+      "innings_num": 11.3,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 2.61,
-      "k_bb_pct": 12.5,
+      "era": 2.38,
+      "k_bb_pct": 13.6,
       "k_pct": 25.0,
-      "bb_pct": 12.5,
-      "swstr_pct": 11.3,
-      "gb_pct": 62.5
+      "bb_pct": 11.4,
+      "swstr_pct": 11.4,
+      "gb_pct": 62.9
     },
     {
       "id": "alex_vesia",
@@ -531,19 +533,19 @@
       "name": "Andre Pallante",
       "team": "STL",
       "role": "先発",
-      "innings": "133.2",
-      "innings_num": 133.7,
+      "innings": "138.2",
+      "innings_num": 138.7,
       "categories": [
         "ゴロピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.43,
-      "k_bb_pct": 9.9,
-      "k_pct": 17.2,
-      "bb_pct": 7.3,
-      "swstr_pct": 9.5,
-      "gb_pct": 54.9
+      "era": 3.38,
+      "k_bb_pct": 9.1,
+      "k_pct": 16.8,
+      "bb_pct": 7.7,
+      "swstr_pct": 9.4,
+      "gb_pct": 55.1
     },
     {
       "id": "andrew_abbott",
@@ -697,19 +699,19 @@
       "name": "Andrew Sears",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "6.1",
-      "innings_num": 6.3,
+      "innings": "11.2",
+      "innings_num": 11.7,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 5.68,
-      "k_bb_pct": 10.7,
-      "k_pct": 14.3,
-      "bb_pct": 3.6,
-      "swstr_pct": 12.9,
-      "gb_pct": 25.4
+      "era": 3.86,
+      "k_bb_pct": 9.8,
+      "k_pct": 15.7,
+      "bb_pct": 5.9,
+      "swstr_pct": 11.9,
+      "gb_pct": 25.3
     },
     {
       "id": "andrew_vaughn",
@@ -773,19 +775,19 @@
       "name": "Andrés Muñoz",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "49.1",
-      "innings_num": 49.3,
+      "innings": "50.1",
+      "innings_num": 50.3,
       "categories": [
         "ゴロピッチャー",
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 4.56,
-      "k_bb_pct": 28.5,
-      "k_pct": 38.2,
-      "bb_pct": 9.7,
+      "era": 4.47,
+      "k_bb_pct": 28.6,
+      "k_pct": 38.1,
+      "bb_pct": 9.5,
       "swstr_pct": 19.1,
-      "gb_pct": 51.2
+      "gb_pct": 52.2
     },
     {
       "id": "angel_chivilli",
@@ -961,18 +963,18 @@
       "name": "Antonio Senzatela",
       "team": "MIL",
       "role": "中継ぎ",
-      "innings": "63.2",
-      "innings_num": 63.7,
+      "innings": "64.2",
+      "innings_num": 64.7,
       "categories": [
         "フォーシームピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 4.81,
-      "k_bb_pct": 11.9,
-      "k_pct": 20.0,
-      "bb_pct": 8.1,
+      "era": 4.87,
+      "k_bb_pct": 11.7,
+      "k_pct": 19.7,
+      "bb_pct": 8.0,
       "swstr_pct": 11.6,
-      "gb_pct": 48.9
+      "gb_pct": 49.5
     },
     {
       "id": "antwone_kelly",
@@ -998,16 +1000,16 @@
       "name": "Aroldis Chapman",
       "team": "BOS",
       "role": "中継ぎ",
-      "innings": "46.0",
-      "innings_num": 46.0,
+      "innings": "47.0",
+      "innings_num": 47.0,
       "categories": [
         "フォーシームピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 2.54,
-      "k_bb_pct": 22.1,
+      "era": 2.49,
+      "k_bb_pct": 22.3,
       "k_pct": 32.1,
-      "bb_pct": 10.0,
+      "bb_pct": 9.8,
       "swstr_pct": 15.8,
       "gb_pct": 47.9
     },
@@ -1054,18 +1056,18 @@
       "name": "Austin Warren",
       "team": "NYM",
       "role": "中継ぎ",
-      "innings": "38.0",
-      "innings_num": 38.0,
+      "innings": "39.0",
+      "innings_num": 39.0,
       "categories": [
         "スイーパーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 4.03,
-      "k_bb_pct": 14.5,
-      "k_pct": 25.6,
-      "bb_pct": 11.0,
+      "era": 4.62,
+      "k_bb_pct": 15.2,
+      "k_pct": 25.8,
+      "bb_pct": 10.7,
       "swstr_pct": 10.4,
-      "gb_pct": 40.8
+      "gb_pct": 41.1
     },
     {
       "id": "bailey_falter",
@@ -1110,18 +1112,18 @@
       "name": "Beau Brieske",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "10.2",
-      "innings_num": 10.7,
+      "innings": "12.0",
+      "innings_num": 12.0,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 5.06,
-      "k_bb_pct": 8.5,
-      "k_pct": 19.1,
-      "bb_pct": 10.6,
-      "swstr_pct": 11.4,
-      "gb_pct": 40.0
+      "era": 4.5,
+      "k_bb_pct": 13.7,
+      "k_pct": 23.5,
+      "bb_pct": 9.8,
+      "swstr_pct": 12.9,
+      "gb_pct": 46.7
     },
     {
       "id": "beck_way",
@@ -1260,19 +1262,19 @@
       "name": "Bennett Sousa",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "21.0",
-      "innings_num": 21.0,
+      "innings": "22.1",
+      "innings_num": 22.3,
       "categories": [
         "フライピッチャー",
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 6.86,
-      "k_bb_pct": 9.8,
-      "k_pct": 22.5,
-      "bb_pct": 12.7,
-      "swstr_pct": 14.3,
-      "gb_pct": 30.0
+      "era": 6.45,
+      "k_bb_pct": 9.3,
+      "k_pct": 23.1,
+      "bb_pct": 13.9,
+      "swstr_pct": 14.6,
+      "gb_pct": 32.9
     },
     {
       "id": "blade_tidwell",
@@ -1337,18 +1339,18 @@
       "name": "Blake Snell",
       "team": "LAD",
       "role": "先発",
-      "innings": "26.1",
-      "innings_num": 26.3,
+      "innings": "32.0",
+      "innings_num": 32.0,
       "categories": [
         "フォーシームピッチャー",
         "カーブピッチャー"
       ],
-      "era": 2.73,
+      "era": 2.25,
       "k_bb_pct": 22.0,
-      "k_pct": 33.0,
-      "bb_pct": 11.0,
-      "swstr_pct": 18.7,
-      "gb_pct": 42.4
+      "k_pct": 32.6,
+      "bb_pct": 10.6,
+      "swstr_pct": 18.0,
+      "gb_pct": 44.9
     },
     {
       "id": "blake_treinen",
@@ -1488,20 +1490,38 @@
       "name": "Bradgley Rodriguez",
       "team": "SD",
       "role": "中継ぎ",
-      "innings": "62.1",
-      "innings_num": 62.3,
+      "innings": "63.1",
+      "innings_num": 63.3,
       "categories": [
         "ゴロピッチャー",
         "チェンジアップピッチャー",
         "シンカーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 4.33,
-      "k_bb_pct": 19.1,
-      "k_pct": 26.1,
-      "bb_pct": 7.0,
-      "swstr_pct": 15.1,
+      "era": 4.26,
+      "k_bb_pct": 19.2,
+      "k_pct": 26.2,
+      "bb_pct": 6.9,
+      "swstr_pct": 15.2,
       "gb_pct": 50.4
+    },
+    {
+      "id": "bradley_blalock",
+      "name": "Bradley Blalock",
+      "team": "MIA",
+      "role": "中継ぎ",
+      "innings": "3.0",
+      "innings_num": 3.0,
+      "categories": [
+        "フォーシームピッチャー",
+        "スライダーピッチャー"
+      ],
+      "era": 3.0,
+      "k_bb_pct": 14.3,
+      "k_pct": 21.4,
+      "bb_pct": 7.1,
+      "swstr_pct": 10.6,
+      "gb_pct": 40.0
     },
     {
       "id": "bradley_hanner",
@@ -1527,18 +1547,18 @@
       "name": "Brady Basso",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "30.1",
-      "innings_num": 30.3,
+      "innings": "33.0",
+      "innings_num": 33.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 4.75,
-      "k_bb_pct": 14.9,
-      "k_pct": 17.9,
-      "bb_pct": 3.0,
+      "era": 4.36,
+      "k_bb_pct": 13.0,
+      "k_pct": 16.4,
+      "bb_pct": 3.4,
       "swstr_pct": 10.6,
-      "gb_pct": 37.8
+      "gb_pct": 37.9
     },
     {
       "id": "brady_singer",
@@ -1848,17 +1868,17 @@
       "name": "Braydon Fisher",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "66.0",
-      "innings_num": 66.0,
+      "innings": "67.0",
+      "innings_num": 67.0,
       "categories": [
         "スライダーピッチャー",
         "カーブピッチャー"
       ],
-      "era": 4.23,
-      "k_bb_pct": 10.4,
-      "k_pct": 23.4,
-      "bb_pct": 12.9,
-      "swstr_pct": 12.1,
+      "era": 4.16,
+      "k_bb_pct": 10.0,
+      "k_pct": 23.1,
+      "bb_pct": 13.2,
+      "swstr_pct": 11.9,
       "gb_pct": 48.5
     },
     {
@@ -1904,38 +1924,38 @@
       "name": "Brendon Little",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "19.1",
-      "innings_num": 19.3,
+      "innings": "20.1",
+      "innings_num": 20.3,
       "categories": [
         "ゴロピッチャー",
         "ナックルカーブピッチャー",
         "スライダーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 11.17,
-      "k_bb_pct": 11.7,
-      "k_pct": 31.1,
-      "bb_pct": 19.4,
-      "swstr_pct": 16.1,
-      "gb_pct": 57.8
+      "era": 10.62,
+      "k_bb_pct": 11.2,
+      "k_pct": 30.8,
+      "bb_pct": 19.6,
+      "swstr_pct": 15.9,
+      "gb_pct": 60.0
     },
     {
       "id": "brennan_bernardino",
       "name": "Brennan Bernardino",
       "team": "COL",
       "role": "中継ぎ",
-      "innings": "55.2",
-      "innings_num": 55.7,
+      "innings": "56.0",
+      "innings_num": 56.0,
       "categories": [
         "シンカーピッチャー",
         "カーブピッチャー"
       ],
-      "era": 4.53,
+      "era": 4.5,
       "k_bb_pct": 11.3,
       "k_pct": 17.2,
       "bb_pct": 5.9,
       "swstr_pct": 10.1,
-      "gb_pct": 46.8
+      "gb_pct": 46.1
     },
     {
       "id": "brent_headrick",
@@ -2151,18 +2171,18 @@
       "name": "Bryan Abreu",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "51.2",
-      "innings_num": 51.7,
+      "innings": "53.0",
+      "innings_num": 53.0,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.18,
-      "k_bb_pct": 13.5,
-      "k_pct": 30.1,
-      "bb_pct": 16.6,
-      "swstr_pct": 14.4,
-      "gb_pct": 42.0
+      "era": 4.08,
+      "k_bb_pct": 12.9,
+      "k_pct": 29.6,
+      "bb_pct": 16.7,
+      "swstr_pct": 14.2,
+      "gb_pct": 41.9
     },
     {
       "id": "bryan_baker",
@@ -2176,10 +2196,10 @@
         "チェンジアップピッチャー"
       ],
       "era": 1.87,
-      "k_bb_pct": 20.6,
-      "k_pct": 28.7,
-      "bb_pct": 8.1,
-      "swstr_pct": 15.6,
+      "k_bb_pct": 19.4,
+      "k_pct": 28.4,
+      "bb_pct": 9.0,
+      "swstr_pct": 15.4,
       "gb_pct": 40.3
     },
     {
@@ -2187,19 +2207,19 @@
       "name": "Bryan Hudson",
       "team": "CWS",
       "role": "中継ぎ",
-      "innings": "54.2",
-      "innings_num": 54.7,
+      "innings": "55.2",
+      "innings_num": 55.7,
       "categories": [
         "ゴロピッチャー",
         "フォーシームピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 4.28,
-      "k_bb_pct": 15.7,
-      "k_pct": 22.5,
-      "bb_pct": 6.8,
-      "swstr_pct": 11.5,
-      "gb_pct": 50.0
+      "era": 4.2,
+      "k_bb_pct": 15.4,
+      "k_pct": 22.1,
+      "bb_pct": 6.7,
+      "swstr_pct": 11.3,
+      "gb_pct": 50.8
     },
     {
       "id": "bryan_king",
@@ -2521,38 +2541,38 @@
       "name": "Cade Smith",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "61.0",
-      "innings_num": 61.0,
+      "innings": "62.0",
+      "innings_num": 62.0,
       "categories": [
         "フォーシームピッチャー",
         "スプリットピッチャー"
       ],
-      "era": 3.25,
-      "k_bb_pct": 26.6,
-      "k_pct": 35.1,
-      "bb_pct": 8.5,
+      "era": 3.19,
+      "k_bb_pct": 27.0,
+      "k_pct": 35.3,
+      "bb_pct": 8.3,
       "swstr_pct": 16.9,
-      "gb_pct": 40.1
+      "gb_pct": 40.2
     },
     {
       "id": "cade_winquest",
       "name": "Cade Winquest",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "3.2",
-      "innings_num": 3.7,
+      "innings": "5.1",
+      "innings_num": 5.3,
       "categories": [
         "ゴロピッチャー",
-        "カーブピッチャー",
         "カットボールピッチャー",
+        "カーブピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 7.36,
-      "k_bb_pct": 12.5,
-      "k_pct": 25.0,
-      "bb_pct": 12.5,
-      "swstr_pct": 9.7,
-      "gb_pct": 53.3
+      "era": 5.06,
+      "k_bb_pct": 13.6,
+      "k_pct": 22.7,
+      "bb_pct": 9.1,
+      "swstr_pct": 8.5,
+      "gb_pct": 55.0
     },
     {
       "id": "cal_quantrill",
@@ -2656,37 +2676,37 @@
       "name": "Cam Booser",
       "team": "TB",
       "role": "中継ぎ",
-      "innings": "32.2",
-      "innings_num": 32.7,
+      "innings": "33.1",
+      "innings_num": 33.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 1.93,
-      "k_bb_pct": 27.2,
-      "k_pct": 32.0,
+      "era": 1.89,
+      "k_bb_pct": 27.0,
+      "k_pct": 31.7,
       "bb_pct": 4.8,
-      "swstr_pct": 15.6,
-      "gb_pct": 26.7
+      "swstr_pct": 15.5,
+      "gb_pct": 29.0
     },
     {
       "id": "cam_sanders",
       "name": "Cam Sanders",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "23.1",
-      "innings_num": 23.3,
+      "innings": "24.1",
+      "innings_num": 24.3,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.09,
-      "k_bb_pct": 10.5,
-      "k_pct": 26.7,
-      "bb_pct": 16.2,
-      "swstr_pct": 16.0,
-      "gb_pct": 38.8
+      "era": 2.96,
+      "k_bb_pct": 12.0,
+      "k_pct": 27.8,
+      "bb_pct": 15.7,
+      "swstr_pct": 16.4,
+      "gb_pct": 41.7
     },
     {
       "id": "cam_schlittler",
@@ -3148,19 +3168,19 @@
       "name": "Chad Patrick",
       "team": "MIL",
       "role": "中継ぎ",
-      "innings": "92.2",
-      "innings_num": 92.7,
+      "innings": "94.2",
+      "innings_num": 94.7,
       "categories": [
         "カットボールピッチャー",
         "フォーシームピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 3.4,
-      "k_bb_pct": 10.9,
-      "k_pct": 20.9,
-      "bb_pct": 10.1,
-      "swstr_pct": 12.4,
-      "gb_pct": 46.0
+      "era": 3.33,
+      "k_bb_pct": 10.4,
+      "k_pct": 20.7,
+      "bb_pct": 10.4,
+      "swstr_pct": 12.3,
+      "gb_pct": 45.7
     },
     {
       "id": "chadwick_tromp",
@@ -3303,12 +3323,12 @@
         "スプリットピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 6.06,
-      "k_bb_pct": 11.7,
-      "k_pct": 26.0,
-      "bb_pct": 14.3,
+      "era": 6.23,
+      "k_bb_pct": 11.5,
+      "k_pct": 25.6,
+      "bb_pct": 14.1,
       "swstr_pct": 14.9,
-      "gb_pct": 38.5
+      "gb_pct": 38.6
     },
     {
       "id": "chase_solesky",
@@ -3468,18 +3488,18 @@
       "name": "Chris Sale",
       "team": "ATL",
       "role": "先発",
-      "innings": "136.2",
-      "innings_num": 136.7,
+      "innings": "142.2",
+      "innings_num": 142.7,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 2.3,
-      "k_bb_pct": 25.4,
-      "k_pct": 30.3,
+      "era": 2.33,
+      "k_bb_pct": 25.3,
+      "k_pct": 30.2,
       "bb_pct": 4.9,
-      "swstr_pct": 15.1,
-      "gb_pct": 43.6
+      "swstr_pct": 15.0,
+      "gb_pct": 43.3
     },
     {
       "id": "christian_koss",
@@ -4029,19 +4049,19 @@
       "name": "Cooper Criswell",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "30.1",
-      "innings_num": 30.3,
+      "innings": "31.1",
+      "innings_num": 31.3,
       "categories": [
         "ゴロピッチャー",
-        "チェンジアップピッチャー",
         "シンカーピッチャー",
+        "チェンジアップピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 4.45,
-      "k_bb_pct": 10.3,
-      "k_pct": 18.3,
-      "bb_pct": 7.9,
-      "swstr_pct": 10.2,
+      "era": 4.31,
+      "k_bb_pct": 9.9,
+      "k_pct": 17.6,
+      "bb_pct": 7.6,
+      "swstr_pct": 9.8,
       "gb_pct": 59.4
     },
     {
@@ -4086,55 +4106,55 @@
       "name": "Craig Yoho",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "32.1",
-      "innings_num": 32.3,
+      "innings": "33.1",
+      "innings_num": 33.3,
       "categories": [
         "チェンジアップピッチャー"
       ],
-      "era": 4.45,
-      "k_bb_pct": 13.8,
-      "k_pct": 23.9,
-      "bb_pct": 10.1,
-      "swstr_pct": 12.5,
-      "gb_pct": 47.0
+      "era": 4.32,
+      "k_bb_pct": 14.8,
+      "k_pct": 24.6,
+      "bb_pct": 9.9,
+      "swstr_pct": 12.9,
+      "gb_pct": 48.9
     },
     {
       "id": "cristian_javier",
       "name": "Cristian Javier",
       "team": "HOU",
       "role": "先発",
-      "innings": "44.2",
-      "innings_num": 44.7,
+      "innings": "49.2",
+      "innings_num": 49.7,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 6.04,
-      "k_bb_pct": 11.3,
-      "k_pct": 20.6,
-      "bb_pct": 9.3,
-      "swstr_pct": 14.7,
-      "gb_pct": 28.1
+      "era": 5.62,
+      "k_bb_pct": 12.6,
+      "k_pct": 22.4,
+      "bb_pct": 9.9,
+      "swstr_pct": 15.5,
+      "gb_pct": 28.8
     },
     {
       "id": "cristopher_sánchez",
       "name": "Cristopher Sánchez",
       "team": "PHI",
       "role": "先発",
-      "innings": "174.0",
-      "innings_num": 174.0,
+      "innings": "180.0",
+      "innings_num": 180.0,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 2.69,
-      "k_bb_pct": 22.2,
-      "k_pct": 27.8,
-      "bb_pct": 5.6,
-      "swstr_pct": 16.3,
-      "gb_pct": 60.2
+      "era": 2.75,
+      "k_bb_pct": 21.7,
+      "k_pct": 27.5,
+      "bb_pct": 5.8,
+      "swstr_pct": 16.1,
+      "gb_pct": 60.3
     },
     {
       "id": "césar_salazar",
@@ -4215,39 +4235,39 @@
       "name": "Daniel Espino",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "6.0",
-      "innings_num": 6.0,
+      "innings": "8.0",
+      "innings_num": 8.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.5,
-      "k_bb_pct": 29.6,
-      "k_pct": 44.4,
-      "bb_pct": 14.8,
+      "era": 3.38,
+      "k_bb_pct": 32.4,
+      "k_pct": 44.1,
+      "bb_pct": 11.8,
       "swstr_pct": 19.2,
-      "gb_pct": 30.0
+      "gb_pct": 37.5
     },
     {
       "id": "daniel_lynch_iv",
       "name": "Daniel Lynch IV",
       "team": "KC",
       "role": "中継ぎ",
-      "innings": "61.1",
-      "innings_num": 61.3,
+      "innings": "66.1",
+      "innings_num": 66.3,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "チェンジアップピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.52,
-      "k_bb_pct": 10.8,
-      "k_pct": 18.4,
-      "bb_pct": 7.6,
-      "swstr_pct": 11.7,
-      "gb_pct": 51.4
+      "era": 3.93,
+      "k_bb_pct": 9.5,
+      "k_pct": 16.8,
+      "bb_pct": 7.3,
+      "swstr_pct": 11.1,
+      "gb_pct": 51.3
     },
     {
       "id": "daniel_palencia",
@@ -4308,19 +4328,19 @@
       "name": "David Bednar",
       "team": "NYY",
       "role": "中継ぎ",
-      "innings": "57.1",
-      "innings_num": 57.3,
+      "innings": "58.1",
+      "innings_num": 58.3,
       "categories": [
         "ゴロピッチャー",
         "フォーシームピッチャー",
         "スプリットピッチャー"
       ],
-      "era": 3.77,
-      "k_bb_pct": 19.6,
+      "era": 3.7,
+      "k_bb_pct": 19.7,
       "k_pct": 27.2,
-      "bb_pct": 7.7,
+      "bb_pct": 7.5,
       "swstr_pct": 16.5,
-      "gb_pct": 52.1
+      "gb_pct": 51.1
     },
     {
       "id": "david_morgan",
@@ -4478,18 +4498,18 @@
       "name": "Derek Law",
       "team": "AZ",
       "role": "中継ぎ",
-      "innings": "2.1",
-      "innings_num": 2.3,
+      "innings": "3.1",
+      "innings_num": 3.3,
       "categories": [
         "カットボールピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 11.57,
+      "era": 8.1,
       "k_bb_pct": 0.0,
-      "k_pct": 9.1,
-      "bb_pct": 9.1,
-      "swstr_pct": 7.5,
-      "gb_pct": 42.5
+      "k_pct": 7.1,
+      "bb_pct": 7.1,
+      "swstr_pct": 7.4,
+      "gb_pct": 45.0
     },
     {
       "id": "derrick_edington",
@@ -4533,19 +4553,19 @@
       "name": "Didier Fuentes",
       "team": "ATL",
       "role": "中継ぎ",
-      "innings": "59.1",
-      "innings_num": 59.3,
+      "innings": "61.1",
+      "innings_num": 61.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.34,
-      "k_bb_pct": 24.1,
-      "k_pct": 31.4,
-      "bb_pct": 7.3,
-      "swstr_pct": 16.2,
-      "gb_pct": 36.9
+      "era": 3.23,
+      "k_bb_pct": 23.9,
+      "k_pct": 31.1,
+      "bb_pct": 7.2,
+      "swstr_pct": 16.0,
+      "gb_pct": 36.5
     },
     {
       "id": "dietrich_enns",
@@ -4685,20 +4705,20 @@
       "name": "Drew Sommers",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "27.1",
-      "innings_num": 27.3,
+      "innings": "28.1",
+      "innings_num": 28.3,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.94,
-      "k_bb_pct": 26.1,
-      "k_pct": 36.1,
-      "bb_pct": 10.1,
-      "swstr_pct": 15.1,
-      "gb_pct": 62.8
+      "era": 5.08,
+      "k_bb_pct": 26.0,
+      "k_pct": 35.8,
+      "bb_pct": 9.8,
+      "swstr_pct": 15.0,
+      "gb_pct": 62.9
     },
     {
       "id": "drey_jameson",
@@ -4874,19 +4894,18 @@
       "name": "Easton McGee",
       "team": "KC",
       "role": "中継ぎ",
-      "innings": "8.0",
-      "innings_num": 8.0,
+      "innings": "10.0",
+      "innings_num": 10.0,
       "categories": [
-        "フォーシームピッチャー",
         "カーブピッチャー",
-        "シンカーピッチャー"
+        "フォーシームピッチャー"
       ],
-      "era": 9.0,
-      "k_bb_pct": 10.5,
-      "k_pct": 21.1,
-      "bb_pct": 10.5,
-      "swstr_pct": 13.4,
-      "gb_pct": 48.1
+      "era": 8.1,
+      "k_bb_pct": 8.5,
+      "k_pct": 19.1,
+      "bb_pct": 10.6,
+      "swstr_pct": 11.4,
+      "gb_pct": 45.7
     },
     {
       "id": "eddy_yean",
@@ -4912,19 +4931,19 @@
       "name": "Edgardo Henriquez",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "53.0",
-      "innings_num": 53.0,
+      "innings": "54.0",
+      "innings_num": 54.0,
       "categories": [
         "フォーシームピッチャー",
         "シンカーピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.23,
-      "k_bb_pct": 19.1,
-      "k_pct": 29.3,
-      "bb_pct": 10.2,
-      "swstr_pct": 15.0,
-      "gb_pct": 42.7
+      "era": 3.17,
+      "k_bb_pct": 19.7,
+      "k_pct": 29.8,
+      "bb_pct": 10.1,
+      "swstr_pct": 14.9,
+      "gb_pct": 41.9
     },
     {
       "id": "eduard_bazardo",
@@ -5099,17 +5118,17 @@
       "name": "Elvis Alvarado",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "41.2",
-      "innings_num": 41.7,
+      "innings": "42.2",
+      "innings_num": 42.7,
       "categories": [
         "フォーシームピッチャー"
       ],
-      "era": 5.83,
-      "k_bb_pct": 16.7,
-      "k_pct": 28.7,
-      "bb_pct": 12.1,
-      "swstr_pct": 16.1,
-      "gb_pct": 40.5
+      "era": 5.91,
+      "k_bb_pct": 15.6,
+      "k_pct": 27.8,
+      "bb_pct": 12.2,
+      "swstr_pct": 15.7,
+      "gb_pct": 39.9
     },
     {
       "id": "emerson_hancock",
@@ -5225,20 +5244,20 @@
       "name": "Enyel De Los Santos",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "62.2",
-      "innings_num": 62.7,
+      "innings": "63.0",
+      "innings_num": 63.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 4.45,
-      "k_bb_pct": 15.9,
-      "k_pct": 22.0,
-      "bb_pct": 6.1,
+      "era": 4.43,
+      "k_bb_pct": 15.4,
+      "k_pct": 21.7,
+      "bb_pct": 6.4,
       "swstr_pct": 14.5,
-      "gb_pct": 36.0
+      "gb_pct": 35.4
     },
     {
       "id": "eric_cerantola",
@@ -5302,18 +5321,18 @@
       "name": "Erick Fedde",
       "team": "CWS",
       "role": "先発",
-      "innings": "121.0",
-      "innings_num": 121.0,
+      "innings": "126.0",
+      "innings_num": 126.0,
       "categories": [
         "スイーパーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 4.69,
-      "k_bb_pct": 8.1,
-      "k_pct": 16.5,
-      "bb_pct": 8.4,
+      "era": 4.5,
+      "k_bb_pct": 7.8,
+      "k_pct": 16.2,
+      "bb_pct": 8.5,
       "swstr_pct": 7.7,
-      "gb_pct": 38.7
+      "gb_pct": 38.2
     },
     {
       "id": "erik_miller",
@@ -5339,18 +5358,17 @@
       "name": "Erik Sabrowski",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "39.0",
-      "innings_num": 39.0,
+      "innings": "41.0",
+      "innings_num": 41.0,
       "categories": [
         "フライピッチャー",
-        "フォーシームピッチャー",
-        "カーブピッチャー"
+        "フォーシームピッチャー"
       ],
-      "era": 5.08,
-      "k_bb_pct": 23.1,
-      "k_pct": 38.5,
-      "bb_pct": 15.4,
-      "swstr_pct": 15.2,
+      "era": 4.83,
+      "k_bb_pct": 22.9,
+      "k_pct": 37.7,
+      "bb_pct": 14.9,
+      "swstr_pct": 15.3,
       "gb_pct": 18.0
     },
     {
@@ -5506,17 +5524,17 @@
       "name": "Foster Griffin",
       "team": "CLE",
       "role": "先発",
-      "innings": "154.1",
-      "innings_num": 154.3,
+      "innings": "160.1",
+      "innings_num": 160.3,
       "categories": [
         "カットボールピッチャー"
       ],
-      "era": 3.56,
-      "k_bb_pct": 16.1,
-      "k_pct": 22.3,
+      "era": 3.59,
+      "k_bb_pct": 15.6,
+      "k_pct": 21.8,
       "bb_pct": 6.2,
       "swstr_pct": 11.1,
-      "gb_pct": 41.6
+      "gb_pct": 42.7
     },
     {
       "id": "framber_valdez",
@@ -5633,19 +5651,18 @@
       "name": "Garrett Acton",
       "team": "MIN",
       "role": "中継ぎ",
-      "innings": "8.2",
-      "innings_num": 8.7,
+      "innings": "10.2",
+      "innings_num": 10.7,
       "categories": [
-        "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 6.23,
-      "k_bb_pct": 21.1,
+      "era": 5.06,
+      "k_bb_pct": 22.2,
       "k_pct": 28.9,
-      "bb_pct": 7.9,
-      "swstr_pct": 16.5,
-      "gb_pct": 34.4
+      "bb_pct": 6.7,
+      "swstr_pct": 17.6,
+      "gb_pct": 38.6
     },
     {
       "id": "garrett_cleavinger",
@@ -5655,15 +5672,16 @@
       "innings": "39.1",
       "innings_num": 39.3,
       "categories": [
+        "フライピッチャー",
         "スライダーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 4.35,
-      "k_bb_pct": 16.1,
-      "k_pct": 29.3,
-      "bb_pct": 13.2,
-      "swstr_pct": 13.6,
-      "gb_pct": 38.7
+      "era": 5.26,
+      "k_bb_pct": 15.3,
+      "k_pct": 28.8,
+      "bb_pct": 13.6,
+      "swstr_pct": 13.5,
+      "gb_pct": 37.9
     },
     {
       "id": "garrett_crochet",
@@ -5728,18 +5746,18 @@
       "name": "Garrett Whitlock",
       "team": "BOS",
       "role": "中継ぎ",
-      "innings": "45.2",
-      "innings_num": 45.7,
+      "innings": "46.2",
+      "innings_num": 46.7,
       "categories": [
         "シンカーピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 2.76,
-      "k_bb_pct": 25.9,
-      "k_pct": 29.9,
+      "era": 2.7,
+      "k_bb_pct": 25.4,
+      "k_pct": 29.4,
       "bb_pct": 4.0,
       "swstr_pct": 17.5,
-      "gb_pct": 41.1
+      "gb_pct": 40.9
     },
     {
       "id": "gary_gill_hill",
@@ -5844,19 +5862,18 @@
       "name": "Geoff Hartlieb",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "13.1",
-      "innings_num": 13.3,
+      "innings": "14.2",
+      "innings_num": 14.7,
       "categories": [
-        "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 6.07,
-      "k_bb_pct": -4.7,
-      "k_pct": 9.4,
-      "bb_pct": 14.1,
-      "swstr_pct": 11.5,
-      "gb_pct": 36.6
+      "era": 5.52,
+      "k_bb_pct": -2.9,
+      "k_pct": 10.3,
+      "bb_pct": 13.2,
+      "swstr_pct": 12.2,
+      "gb_pct": 40.4
     },
     {
       "id": "george_kirby",
@@ -6049,18 +6066,18 @@
       "name": "Grant Taylor",
       "team": "CWS",
       "role": "中継ぎ",
-      "innings": "70.2",
-      "innings_num": 70.7,
+      "innings": "71.2",
+      "innings_num": 71.7,
       "categories": [
         "フォーシームピッチャー",
         "カーブピッチャー"
       ],
-      "era": 3.06,
-      "k_bb_pct": 25.0,
-      "k_pct": 33.2,
-      "bb_pct": 8.2,
-      "swstr_pct": 13.4,
-      "gb_pct": 48.4
+      "era": 3.14,
+      "k_bb_pct": 24.1,
+      "k_pct": 32.5,
+      "bb_pct": 8.4,
+      "swstr_pct": 13.1,
+      "gb_pct": 48.2
     },
     {
       "id": "grant_wolfram",
@@ -6234,18 +6251,37 @@
       "name": "Hagen Smith",
       "team": "CWS",
       "role": "中継ぎ",
-      "innings": "11.0",
-      "innings_num": 11.0,
+      "innings": "13.0",
+      "innings_num": 13.0,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 1.64,
-      "k_bb_pct": 13.0,
-      "k_pct": 34.8,
-      "bb_pct": 21.7,
-      "swstr_pct": 14.8,
-      "gb_pct": 42.1
+      "era": 1.38,
+      "k_bb_pct": 17.0,
+      "k_pct": 35.8,
+      "bb_pct": 18.9,
+      "swstr_pct": 15.3,
+      "gb_pct": 40.0
+    },
+    {
+      "id": "hancel_rincon",
+      "name": "Hancel Rincon",
+      "team": "STL",
+      "role": "中継ぎ",
+      "innings": "0.1",
+      "innings_num": 0.3,
+      "categories": [
+        "フライピッチャー",
+        "フォーシームピッチャー",
+        "スライダーピッチャー"
+      ],
+      "era": 27.0,
+      "k_bb_pct": 0.0,
+      "k_pct": 0.0,
+      "bb_pct": 0.0,
+      "swstr_pct": 7.7,
+      "gb_pct": 0.0
     },
     {
       "id": "harrison_cohen",
@@ -6343,16 +6379,16 @@
       "name": "Hogan Harris",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "58.2",
-      "innings_num": 58.7,
+      "innings": "59.2",
+      "innings_num": 59.7,
       "categories": [
         "フォーシームピッチャー",
         "カーブピッチャー"
       ],
-      "era": 4.45,
-      "k_bb_pct": 15.9,
+      "era": 4.37,
+      "k_bb_pct": 15.7,
       "k_pct": 29.9,
-      "bb_pct": 14.0,
+      "bb_pct": 14.2,
       "swstr_pct": 11.1,
       "gb_pct": 49.7
     },
@@ -6470,19 +6506,19 @@
       "name": "Hunter Gaddis",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "46.2",
-      "innings_num": 46.7,
+      "innings": "48.2",
+      "innings_num": 48.7,
       "categories": [
         "フライピッチャー",
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 2.51,
-      "k_bb_pct": 12.9,
-      "k_pct": 22.3,
-      "bb_pct": 9.4,
-      "swstr_pct": 15.7,
-      "gb_pct": 34.1
+      "era": 2.4,
+      "k_bb_pct": 13.5,
+      "k_pct": 22.6,
+      "bb_pct": 9.1,
+      "swstr_pct": 15.8,
+      "gb_pct": 35.4
     },
     {
       "id": "hunter_greene",
@@ -6749,18 +6785,18 @@
       "name": "Jack Dreyer",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "53.0",
-      "innings_num": 53.0,
+      "innings": "54.0",
+      "innings_num": 54.0,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.42,
-      "k_bb_pct": 20.8,
-      "k_pct": 29.6,
-      "bb_pct": 8.8,
+      "era": 4.67,
+      "k_bb_pct": 20.9,
+      "k_pct": 29.5,
+      "bb_pct": 8.6,
       "swstr_pct": 13.5,
-      "gb_pct": 46.4
+      "gb_pct": 46.2
     },
     {
       "id": "jack_flaherty",
@@ -6843,19 +6879,37 @@
       "name": "Jack Ralston",
       "team": "MIA",
       "role": "中継ぎ",
-      "innings": "5.0",
-      "innings_num": 5.0,
+      "innings": "5.1",
+      "innings_num": 5.3,
       "categories": [
-        "ゴロピッチャー",
         "スプリットピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.6,
-      "k_bb_pct": 21.1,
-      "k_pct": 21.1,
+      "era": 3.38,
+      "k_bb_pct": 4.3,
+      "k_pct": 17.4,
+      "bb_pct": 13.0,
+      "swstr_pct": 9.4,
+      "gb_pct": 46.7
+    },
+    {
+      "id": "jack_sinclair",
+      "name": "Jack Sinclair",
+      "team": "WSH",
+      "role": "中継ぎ",
+      "innings": "1.0",
+      "innings_num": 1.0,
+      "categories": [
+        "ゴロピッチャー",
+        "スイーパーピッチャー",
+        "フォーシームピッチャー"
+      ],
+      "era": 0.0,
+      "k_bb_pct": 33.3,
+      "k_pct": 33.3,
       "bb_pct": 0.0,
-      "swstr_pct": 11.4,
-      "gb_pct": 58.4
+      "swstr_pct": 6.2,
+      "gb_pct": 50.0
     },
     {
       "id": "jack_weisenburger",
@@ -6900,19 +6954,18 @@
       "name": "Jackson Kent",
       "team": "WSH",
       "role": "先発",
-      "innings": "19.1",
-      "innings_num": 19.3,
+      "innings": "24.1",
+      "innings_num": 24.3,
       "categories": [
         "ゴロピッチャー",
-        "フォーシームピッチャー",
-        "チェンジアップピッチャー"
+        "フォーシームピッチャー"
       ],
-      "era": 3.72,
-      "k_bb_pct": 2.3,
-      "k_pct": 19.3,
+      "era": 4.44,
+      "k_bb_pct": 1.8,
+      "k_pct": 18.8,
       "bb_pct": 17.0,
-      "swstr_pct": 9.5,
-      "gb_pct": 58.5
+      "swstr_pct": 10.5,
+      "gb_pct": 54.3
     },
     {
       "id": "jackson_rutledge",
@@ -6993,18 +7046,18 @@
       "name": "Jacob Waguespack",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "32.2",
-      "innings_num": 32.7,
+      "innings": "33.2",
+      "innings_num": 33.7,
       "categories": [
         "フォーシームピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 2.48,
-      "k_bb_pct": 5.4,
-      "k_pct": 15.4,
-      "bb_pct": 10.0,
-      "swstr_pct": 11.0,
-      "gb_pct": 46.5
+      "era": 2.94,
+      "k_bb_pct": 5.2,
+      "k_pct": 15.6,
+      "bb_pct": 10.4,
+      "swstr_pct": 10.7,
+      "gb_pct": 46.0
     },
     {
       "id": "jacob_webb",
@@ -7270,54 +7323,54 @@
       "name": "Jameson Taillon",
       "team": "TOR",
       "role": "先発",
-      "innings": "83.0",
-      "innings_num": 83.0,
+      "innings": "85.0",
+      "innings_num": 85.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 5.75,
-      "k_bb_pct": 11.8,
-      "k_pct": 20.7,
-      "bb_pct": 8.8,
-      "swstr_pct": 12.4,
-      "gb_pct": 34.5
+      "era": 5.72,
+      "k_bb_pct": 11.9,
+      "k_pct": 20.5,
+      "bb_pct": 8.6,
+      "swstr_pct": 12.2,
+      "gb_pct": 34.2
     },
     {
       "id": "janson_junk",
       "name": "Janson Junk",
       "team": "MIA",
       "role": "先発",
-      "innings": "101.0",
-      "innings_num": 101.0,
+      "innings": "105.2",
+      "innings_num": 105.7,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.46,
-      "k_bb_pct": 9.6,
-      "k_pct": 16.1,
+      "era": 4.34,
+      "k_bb_pct": 9.9,
+      "k_pct": 16.3,
       "bb_pct": 6.4,
-      "swstr_pct": 7.4,
-      "gb_pct": 44.5
+      "swstr_pct": 7.3,
+      "gb_pct": 44.6
     },
     {
       "id": "jared_jones",
       "name": "Jared Jones",
       "team": "PIT",
       "role": "先発",
-      "innings": "69.0",
-      "innings_num": 69.0,
+      "innings": "75.0",
+      "innings_num": 75.0,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.7,
-      "k_bb_pct": 18.3,
-      "k_pct": 26.6,
-      "bb_pct": 8.3,
-      "swstr_pct": 14.8,
-      "gb_pct": 39.2
+      "era": 4.32,
+      "k_bb_pct": 19.6,
+      "k_pct": 27.6,
+      "bb_pct": 8.1,
+      "swstr_pct": 15.4,
+      "gb_pct": 40.2
     },
     {
       "id": "jared_koenig",
@@ -7568,19 +7621,19 @@
       "name": "Jefry Yan",
       "team": "NYM",
       "role": "中継ぎ",
-      "innings": "10.2",
-      "innings_num": 10.7,
+      "innings": "11.1",
+      "innings_num": 11.3,
       "categories": [
         "シンカーピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 8.44,
-      "k_bb_pct": 7.5,
-      "k_pct": 24.5,
-      "bb_pct": 17.0,
-      "swstr_pct": 15.4,
-      "gb_pct": 49.2
+      "era": 8.74,
+      "k_bb_pct": 8.6,
+      "k_pct": 25.9,
+      "bb_pct": 17.2,
+      "swstr_pct": 15.5,
+      "gb_pct": 49.3
     },
     {
       "id": "jeremiah_estrada",
@@ -7719,20 +7772,20 @@
       "name": "Jimmy Herget",
       "team": "COL",
       "role": "中継ぎ",
-      "innings": "42.1",
-      "innings_num": 42.3,
+      "innings": "43.0",
+      "innings_num": 43.0,
       "categories": [
         "フライピッチャー",
         "スライダーピッチャー",
         "スイーパーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 8.08,
-      "k_bb_pct": 7.7,
-      "k_pct": 19.5,
-      "bb_pct": 11.8,
-      "swstr_pct": 11.5,
-      "gb_pct": 33.8
+      "era": 7.95,
+      "k_bb_pct": 7.6,
+      "k_pct": 19.2,
+      "bb_pct": 11.6,
+      "swstr_pct": 11.4,
+      "gb_pct": 34.6
     },
     {
       "id": "jojo_romero",
@@ -7795,19 +7848,20 @@
       "name": "Joe Mantiply",
       "team": "TOR",
       "role": "中継ぎ",
-      "innings": "18.2",
-      "innings_num": 18.7,
+      "innings": "20.2",
+      "innings_num": 20.7,
       "categories": [
+        "ゴロピッチャー",
         "シンカーピッチャー",
         "カーブピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 4.82,
+      "era": 4.35,
       "k_bb_pct": 16.5,
-      "k_pct": 21.5,
-      "bb_pct": 5.1,
-      "swstr_pct": 8.7,
-      "gb_pct": 49.2
+      "k_pct": 21.2,
+      "bb_pct": 4.7,
+      "swstr_pct": 8.4,
+      "gb_pct": 50.9
     },
     {
       "id": "joe_rock",
@@ -8320,19 +8374,19 @@
       "name": "Jordan Romano",
       "team": "COL",
       "role": "中継ぎ",
-      "innings": "26.0",
-      "innings_num": 26.0,
+      "innings": "27.0",
+      "innings_num": 27.0,
       "categories": [
         "フライピッチャー",
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 3.81,
-      "k_bb_pct": 13.8,
-      "k_pct": 25.9,
-      "bb_pct": 12.1,
+      "era": 4.67,
+      "k_bb_pct": 12.3,
+      "k_pct": 24.6,
+      "bb_pct": 12.3,
       "swstr_pct": 12.2,
-      "gb_pct": 30.1
+      "gb_pct": 30.4
     },
     {
       "id": "jordan_wicks",
@@ -8529,19 +8583,19 @@
       "name": "Josh Ekness",
       "team": "MIA",
       "role": "中継ぎ",
-      "innings": "18.2",
-      "innings_num": 18.7,
+      "innings": "19.1",
+      "innings_num": 19.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 4.34,
-      "k_bb_pct": 6.3,
-      "k_pct": 17.7,
-      "bb_pct": 11.4,
-      "swstr_pct": 9.7,
-      "gb_pct": 31.0
+      "era": 5.59,
+      "k_bb_pct": 4.8,
+      "k_pct": 16.7,
+      "bb_pct": 11.9,
+      "swstr_pct": 9.3,
+      "gb_pct": 32.0
     },
     {
       "id": "josh_fleming",
@@ -8568,17 +8622,17 @@
       "name": "Josh Hader",
       "team": "HOU",
       "role": "中継ぎ",
-      "innings": "34.1",
-      "innings_num": 34.3,
+      "innings": "35.1",
+      "innings_num": 35.3,
       "categories": [
         "シンカーピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 0.79,
-      "k_bb_pct": 28.8,
-      "k_pct": 35.2,
-      "bb_pct": 6.4,
-      "swstr_pct": 19.3,
+      "era": 0.76,
+      "k_bb_pct": 30.5,
+      "k_pct": 36.7,
+      "bb_pct": 6.2,
+      "swstr_pct": 19.7,
       "gb_pct": 41.7
     },
     {
@@ -8626,19 +8680,19 @@
       "name": "Josh Walker",
       "team": "BAL",
       "role": "中継ぎ",
-      "innings": "20.1",
-      "innings_num": 20.3,
+      "innings": "21.1",
+      "innings_num": 21.3,
       "categories": [
         "スライダーピッチャー",
         "シンカーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 5.75,
-      "k_bb_pct": 15.1,
-      "k_pct": 22.1,
-      "bb_pct": 7.0,
-      "swstr_pct": 10.1,
-      "gb_pct": 43.6
+      "era": 5.48,
+      "k_bb_pct": 16.5,
+      "k_pct": 24.2,
+      "bb_pct": 7.7,
+      "swstr_pct": 10.8,
+      "gb_pct": 46.4
     },
     {
       "id": "josh_white",
@@ -8665,18 +8719,18 @@
       "name": "José A. Ferrer",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "38.1",
-      "innings_num": 38.3,
+      "innings": "39.1",
+      "innings_num": 39.3,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 5.17,
-      "k_bb_pct": 9.3,
-      "k_pct": 16.9,
-      "bb_pct": 7.6,
-      "swstr_pct": 7.2,
-      "gb_pct": 61.6
+      "era": 5.03,
+      "k_bb_pct": 9.1,
+      "k_pct": 17.0,
+      "bb_pct": 8.0,
+      "swstr_pct": 7.0,
+      "gb_pct": 61.3
     },
     {
       "id": "josé_alvarado",
@@ -8721,18 +8775,18 @@
       "name": "José Fermin",
       "team": "LAA",
       "role": "中継ぎ",
-      "innings": "44.1",
-      "innings_num": 44.3,
+      "innings": "45.1",
+      "innings_num": 45.3,
       "categories": [
         "スライダーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 5.08,
-      "k_bb_pct": 16.8,
-      "k_pct": 27.4,
-      "bb_pct": 10.7,
-      "swstr_pct": 15.2,
-      "gb_pct": 46.2
+      "era": 4.96,
+      "k_bb_pct": 17.5,
+      "k_pct": 28.0,
+      "bb_pct": 10.5,
+      "swstr_pct": 15.4,
+      "gb_pct": 47.4
     },
     {
       "id": "josé_soriano",
@@ -8889,38 +8943,37 @@
       "name": "Julian Garcia",
       "team": "CIN",
       "role": "中継ぎ",
-      "innings": "35.1",
-      "innings_num": 35.3,
+      "innings": "36.1",
+      "innings_num": 36.3,
       "categories": [
-        "フライピッチャー",
         "スイーパーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 5.09,
-      "k_bb_pct": 17.4,
+      "era": 4.95,
+      "k_bb_pct": 16.9,
       "k_pct": 24.6,
-      "bb_pct": 7.2,
-      "swstr_pct": 13.5,
-      "gb_pct": 36.1
+      "bb_pct": 7.7,
+      "swstr_pct": 13.3,
+      "gb_pct": 38.6
     },
     {
       "id": "justin_bruihl",
       "name": "Justin Bruihl",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "66.1",
-      "innings_num": 66.3,
+      "innings": "67.2",
+      "innings_num": 67.7,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 4.75,
-      "k_bb_pct": 6.4,
-      "k_pct": 15.2,
-      "bb_pct": 8.8,
-      "swstr_pct": 7.5,
-      "gb_pct": 51.6
+      "era": 5.05,
+      "k_bb_pct": 6.3,
+      "k_pct": 14.9,
+      "bb_pct": 8.6,
+      "swstr_pct": 7.7,
+      "gb_pct": 51.4
     },
     {
       "id": "justin_lawrence",
@@ -8945,8 +8998,8 @@
       "name": "Justin Martinez",
       "team": "AZ",
       "role": "中継ぎ",
-      "innings": "4.1",
-      "innings_num": 4.3,
+      "innings": "5.1",
+      "innings_num": 5.3,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
@@ -8954,11 +9007,11 @@
         "スプリットピッチャー"
       ],
       "era": 0.0,
-      "k_bb_pct": 4.8,
-      "k_pct": 23.8,
-      "bb_pct": 19.0,
-      "swstr_pct": 5.9,
-      "gb_pct": 63.3
+      "k_bb_pct": 12.5,
+      "k_pct": 29.2,
+      "bb_pct": 16.7,
+      "swstr_pct": 8.0,
+      "gb_pct": 69.4
     },
     {
       "id": "justin_slaten",
@@ -9076,17 +9129,17 @@
       "name": "Kade Morris",
       "team": "ATH",
       "role": "中継ぎ",
-      "innings": "14.1",
-      "innings_num": 14.3,
+      "innings": "17.0",
+      "innings_num": 17.0,
       "categories": [
         "シンカーピッチャー"
       ],
-      "era": 9.42,
-      "k_bb_pct": 5.3,
-      "k_pct": 13.3,
-      "bb_pct": 8.0,
-      "swstr_pct": 9.8,
-      "gb_pct": 47.6
+      "era": 10.59,
+      "k_bb_pct": 3.4,
+      "k_pct": 11.2,
+      "bb_pct": 7.9,
+      "swstr_pct": 9.0,
+      "gb_pct": 48.0
     },
     {
       "id": "kade_strowd",
@@ -9190,18 +9243,18 @@
       "name": "Keider Montero",
       "team": "DET",
       "role": "先発",
-      "innings": "131.1",
-      "innings_num": 131.3,
+      "innings": "135.1",
+      "innings_num": 135.3,
       "categories": [
         "フォーシームピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 3.08,
-      "k_bb_pct": 11.0,
-      "k_pct": 16.8,
-      "bb_pct": 5.9,
-      "swstr_pct": 9.0,
-      "gb_pct": 46.4
+      "era": 3.39,
+      "k_bb_pct": 11.1,
+      "k_pct": 16.9,
+      "bb_pct": 5.8,
+      "swstr_pct": 8.8,
+      "gb_pct": 45.7
     },
     {
       "id": "ken_waldichuk",
@@ -9244,18 +9297,18 @@
       "name": "Kenley Jansen",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "34.1",
-      "innings_num": 34.3,
+      "innings": "36.0",
+      "innings_num": 36.0,
       "categories": [
         "フライピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 3.93,
-      "k_bb_pct": 14.9,
-      "k_pct": 28.4,
-      "bb_pct": 13.5,
-      "swstr_pct": 12.4,
-      "gb_pct": 18.3
+      "era": 4.0,
+      "k_bb_pct": 15.6,
+      "k_pct": 28.6,
+      "bb_pct": 12.9,
+      "swstr_pct": 12.8,
+      "gb_pct": 19.9
     },
     {
       "id": "kent_emanuel",
@@ -9357,19 +9410,19 @@
       "name": "Kevin Kelly",
       "team": "TB",
       "role": "中継ぎ",
-      "innings": "62.0",
-      "innings_num": 62.0,
+      "innings": "63.0",
+      "innings_num": 63.0,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 3.19,
-      "k_bb_pct": 16.5,
-      "k_pct": 21.1,
+      "era": 3.14,
+      "k_bb_pct": 16.2,
+      "k_pct": 20.8,
       "bb_pct": 4.6,
       "swstr_pct": 10.1,
-      "gb_pct": 58.2
+      "gb_pct": 58.9
     },
     {
       "id": "khristian_curtis",
@@ -9415,19 +9468,19 @@
       "name": "Kodai Senga",
       "team": "NYM",
       "role": "中継ぎ",
-      "innings": "49.1",
-      "innings_num": 49.3,
+      "innings": "50.1",
+      "innings_num": 50.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "フォークピッチャー"
       ],
-      "era": 7.48,
-      "k_bb_pct": 10.7,
-      "k_pct": 26.2,
-      "bb_pct": 15.5,
+      "era": 7.33,
+      "k_bb_pct": 10.1,
+      "k_pct": 25.7,
+      "bb_pct": 15.6,
       "swstr_pct": 12.5,
-      "gb_pct": 33.0
+      "gb_pct": 34.4
     },
     {
       "id": "kody_funderburk",
@@ -9509,18 +9562,18 @@
       "name": "Kumar Rocker",
       "team": "TEX",
       "role": "先発",
-      "innings": "122.1",
-      "innings_num": 122.3,
+      "innings": "127.1",
+      "innings_num": 127.3,
       "categories": [
         "スライダーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 4.49,
+      "era": 4.74,
       "k_bb_pct": 11.9,
-      "k_pct": 21.7,
-      "bb_pct": 9.9,
+      "k_pct": 21.4,
+      "bb_pct": 9.5,
       "swstr_pct": 12.2,
-      "gb_pct": 43.4
+      "gb_pct": 42.5
     },
     {
       "id": "kyle_backhus",
@@ -9658,18 +9711,18 @@
       "name": "Kyle Hurt",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "42.2",
-      "innings_num": 42.7,
+      "innings": "43.1",
+      "innings_num": 43.3,
       "categories": [
         "フォーシームピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 4.22,
-      "k_bb_pct": 17.0,
-      "k_pct": 29.3,
-      "bb_pct": 12.2,
+      "era": 4.15,
+      "k_bb_pct": 17.2,
+      "k_pct": 29.2,
+      "bb_pct": 12.0,
       "swstr_pct": 17.7,
-      "gb_pct": 43.9
+      "gb_pct": 43.7
     },
     {
       "id": "kyle_leahy",
@@ -9841,37 +9894,37 @@
       "name": "Logan Allen",
       "team": "CLE",
       "role": "中継ぎ",
-      "innings": "14.1",
-      "innings_num": 14.3,
+      "innings": "16.2",
+      "innings_num": 16.7,
       "categories": [
         "フォーシームピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 5.65,
-      "k_bb_pct": 16.4,
-      "k_pct": 22.4,
-      "bb_pct": 6.0,
-      "swstr_pct": 9.9,
-      "gb_pct": 41.8
+      "era": 7.56,
+      "k_bb_pct": 12.3,
+      "k_pct": 19.8,
+      "bb_pct": 7.4,
+      "swstr_pct": 9.5,
+      "gb_pct": 44.9
     },
     {
       "id": "logan_gilbert",
       "name": "Logan Gilbert",
       "team": "SEA",
       "role": "先発",
-      "innings": "152.0",
-      "innings_num": 152.0,
+      "innings": "156.1",
+      "innings_num": 156.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.26,
-      "k_bb_pct": 19.4,
-      "k_pct": 25.5,
-      "bb_pct": 6.1,
-      "swstr_pct": 14.4,
-      "gb_pct": 37.6
+      "era": 3.57,
+      "k_bb_pct": 19.9,
+      "k_pct": 26.2,
+      "bb_pct": 6.2,
+      "swstr_pct": 14.7,
+      "gb_pct": 36.9
     },
     {
       "id": "logan_henderson",
@@ -10201,19 +10254,19 @@
       "name": "Luis Mey",
       "team": "CIN",
       "role": "中継ぎ",
-      "innings": "23.2",
-      "innings_num": 23.7,
+      "innings": "24.2",
+      "innings_num": 24.7,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 5.32,
-      "k_bb_pct": 17.4,
-      "k_pct": 32.1,
-      "bb_pct": 14.7,
-      "swstr_pct": 13.7,
-      "gb_pct": 54.7
+      "era": 5.47,
+      "k_bb_pct": 18.3,
+      "k_pct": 32.2,
+      "bb_pct": 13.9,
+      "swstr_pct": 14.0,
+      "gb_pct": 54.5
     },
     {
       "id": "luis_morales",
@@ -10238,20 +10291,20 @@
       "name": "Luis Perales",
       "team": "WSH",
       "role": "中継ぎ",
-      "innings": "3.0",
-      "innings_num": 3.0,
+      "innings": "5.0",
+      "innings_num": 5.0,
       "categories": [
         "ゴロピッチャー",
         "スプリットピッチャー",
         "カットボールピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 18.0,
-      "k_bb_pct": 4.8,
-      "k_pct": 23.8,
-      "bb_pct": 19.0,
-      "swstr_pct": 19.5,
-      "gb_pct": 68.5
+      "era": 12.6,
+      "k_bb_pct": 3.6,
+      "k_pct": 17.9,
+      "bb_pct": 14.3,
+      "swstr_pct": 18.0,
+      "gb_pct": 55.2
     },
     {
       "id": "luis_severino",
@@ -10498,19 +10551,18 @@
       "name": "Mark Manfredi",
       "team": "COL",
       "role": "中継ぎ",
-      "innings": "7.0",
-      "innings_num": 7.0,
+      "innings": "9.0",
+      "innings_num": 9.0,
       "categories": [
-        "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 2.57,
-      "k_bb_pct": 9.1,
-      "k_pct": 27.3,
-      "bb_pct": 18.2,
-      "swstr_pct": 10.1,
-      "gb_pct": 36.1
+      "era": 2.0,
+      "k_bb_pct": 12.8,
+      "k_pct": 28.2,
+      "bb_pct": 15.4,
+      "swstr_pct": 10.3,
+      "gb_pct": 45.2
     },
     {
       "id": "martín_pérez",
@@ -10630,36 +10682,36 @@
       "name": "Mason Miller",
       "team": "SD",
       "role": "中継ぎ",
-      "innings": "57.2",
-      "innings_num": 57.7,
+      "innings": "59.2",
+      "innings_num": 59.7,
       "categories": [
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 1.87,
-      "k_bb_pct": 38.5,
-      "k_pct": 47.5,
-      "bb_pct": 9.0,
-      "swstr_pct": 21.9,
-      "gb_pct": 48.2
+      "era": 1.96,
+      "k_bb_pct": 39.2,
+      "k_pct": 48.0,
+      "bb_pct": 8.8,
+      "swstr_pct": 22.5,
+      "gb_pct": 47.2
     },
     {
       "id": "mason_montgomery",
       "name": "Mason Montgomery",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "57.2",
-      "innings_num": 57.7,
+      "innings": "58.2",
+      "innings_num": 58.7,
       "categories": [
         "ゴロピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 3.28,
+      "era": 3.22,
       "k_bb_pct": 28.9,
-      "k_pct": 38.3,
-      "bb_pct": 9.4,
-      "swstr_pct": 16.2,
-      "gb_pct": 52.5
+      "k_pct": 38.1,
+      "bb_pct": 9.2,
+      "swstr_pct": 15.9,
+      "gb_pct": 51.6
     },
     {
       "id": "matt_brash",
@@ -10833,19 +10885,19 @@
       "name": "Matt Wilkinson",
       "team": "SF",
       "role": "先発",
-      "innings": "11.2",
-      "innings_num": 11.7,
+      "innings": "14.2",
+      "innings_num": 14.7,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 2.31,
-      "k_bb_pct": 8.5,
-      "k_pct": 12.8,
-      "bb_pct": 4.3,
-      "swstr_pct": 6.6,
-      "gb_pct": 28.3
+      "era": 6.14,
+      "k_bb_pct": 6.2,
+      "k_pct": 12.5,
+      "bb_pct": 6.2,
+      "swstr_pct": 6.2,
+      "gb_pct": 27.0
     },
     {
       "id": "matthew_boyd",
@@ -10889,18 +10941,18 @@
       "name": "Max Fried",
       "team": "NYY",
       "role": "先発",
-      "innings": "88.0",
-      "innings_num": 88.0,
+      "innings": "93.1",
+      "innings_num": 93.3,
       "categories": [
         "カットボールピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 2.56,
-      "k_bb_pct": 15.9,
-      "k_pct": 23.9,
-      "bb_pct": 8.1,
-      "swstr_pct": 11.1,
-      "gb_pct": 49.3
+      "era": 2.51,
+      "k_bb_pct": 15.8,
+      "k_pct": 23.6,
+      "bb_pct": 7.9,
+      "swstr_pct": 11.2,
+      "gb_pct": 49.0
     },
     {
       "id": "max_kranick",
@@ -11022,18 +11074,18 @@
       "name": "Merrill Kelly",
       "team": "AZ",
       "role": "先発",
-      "innings": "127.1",
-      "innings_num": 127.3,
+      "innings": "133.1",
+      "innings_num": 133.3,
       "categories": [
         "チェンジアップピッチャー",
         "フォーシームピッチャー"
       ],
       "era": 4.66,
-      "k_bb_pct": 4.9,
-      "k_pct": 15.3,
-      "bb_pct": 10.4,
-      "swstr_pct": 10.7,
-      "gb_pct": 43.3
+      "k_bb_pct": 5.4,
+      "k_pct": 15.4,
+      "bb_pct": 10.0,
+      "swstr_pct": 10.8,
+      "gb_pct": 42.9
     },
     {
       "id": "michael_fulmer",
@@ -11133,17 +11185,17 @@
       "name": "Michael Lorenzen",
       "team": "TOR",
       "role": "先発",
-      "innings": "112.2",
-      "innings_num": 112.7,
+      "innings": "115.2",
+      "innings_num": 115.7,
       "categories": [
         "チェンジアップピッチャー"
       ],
-      "era": 7.43,
-      "k_bb_pct": 5.4,
+      "era": 7.31,
+      "k_bb_pct": 5.7,
       "k_pct": 14.3,
-      "bb_pct": 8.9,
-      "swstr_pct": 8.1,
-      "gb_pct": 44.2
+      "bb_pct": 8.7,
+      "swstr_pct": 8.2,
+      "gb_pct": 44.4
     },
     {
       "id": "michael_mcgreevy",
@@ -11593,19 +11645,19 @@
       "name": "Nick Martinez",
       "team": "TB",
       "role": "先発",
-      "innings": "146.2",
-      "innings_num": 146.7,
+      "innings": "153.0",
+      "innings_num": 153.0,
       "categories": [
         "シンカーピッチャー",
         "チェンジアップピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 2.76,
-      "k_bb_pct": 11.4,
+      "era": 2.71,
+      "k_bb_pct": 11.3,
       "k_pct": 14.6,
-      "bb_pct": 3.2,
-      "swstr_pct": 8.7,
-      "gb_pct": 39.1
+      "bb_pct": 3.4,
+      "swstr_pct": 9.0,
+      "gb_pct": 39.4
     },
     {
       "id": "nick_mears",
@@ -11762,19 +11814,19 @@
       "name": "Nolan Hoffman",
       "team": "KC",
       "role": "中継ぎ",
-      "innings": "5.2",
-      "innings_num": 5.7,
+      "innings": "7.2",
+      "innings_num": 7.7,
       "categories": [
         "ゴロピッチャー",
-        "カットボールピッチャー",
-        "フォーシームピッチャー"
+        "フォーシームピッチャー",
+        "カットボールピッチャー"
       ],
-      "era": 3.18,
-      "k_bb_pct": 0.0,
-      "k_pct": 12.5,
-      "bb_pct": 12.5,
-      "swstr_pct": 9.5,
-      "gb_pct": 56.9
+      "era": 5.87,
+      "k_bb_pct": 2.9,
+      "k_pct": 14.7,
+      "bb_pct": 11.8,
+      "swstr_pct": 8.7,
+      "gb_pct": 54.1
     },
     {
       "id": "nolan_kingham",
@@ -11799,37 +11851,37 @@
       "name": "Nolan McLean",
       "team": "NYM",
       "role": "先発",
-      "innings": "152.0",
-      "innings_num": 152.0,
+      "innings": "158.0",
+      "innings_num": 158.0,
       "categories": [
         "シンカーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 3.43,
-      "k_bb_pct": 17.2,
+      "era": 3.42,
+      "k_bb_pct": 16.9,
       "k_pct": 26.6,
-      "bb_pct": 9.4,
-      "swstr_pct": 10.7,
-      "gb_pct": 46.8
+      "bb_pct": 9.7,
+      "swstr_pct": 10.5,
+      "gb_pct": 46.9
     },
     {
       "id": "orion_kerkering",
       "name": "Orion Kerkering",
       "team": "PHI",
       "role": "中継ぎ",
-      "innings": "51.1",
-      "innings_num": 51.3,
+      "innings": "52.1",
+      "innings_num": 52.3,
       "categories": [
         "フライピッチャー",
         "スイーパーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 4.91,
-      "k_bb_pct": 13.1,
-      "k_pct": 24.0,
-      "bb_pct": 10.9,
-      "swstr_pct": 11.0,
-      "gb_pct": 37.6
+      "era": 5.16,
+      "k_bb_pct": 12.4,
+      "k_pct": 23.5,
+      "bb_pct": 11.1,
+      "swstr_pct": 10.9,
+      "gb_pct": 37.8
     },
     {
       "id": "orlando_arcia",
@@ -12042,20 +12094,20 @@
       "name": "Paul Blackburn",
       "team": "NYY",
       "role": "中継ぎ",
-      "innings": "73.2",
-      "innings_num": 73.7,
+      "innings": "74.0",
+      "innings_num": 74.0,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "チェンジアップピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 3.05,
-      "k_bb_pct": 11.9,
-      "k_pct": 21.4,
+      "era": 3.28,
+      "k_bb_pct": 12.2,
+      "k_pct": 21.6,
       "bb_pct": 9.5,
       "swstr_pct": 10.8,
-      "gb_pct": 55.5
+      "gb_pct": 54.4
     },
     {
       "id": "paul_gervase",
@@ -12301,18 +12353,18 @@
       "name": "Pierce Johnson",
       "team": "CIN",
       "role": "中継ぎ",
-      "innings": "39.0",
-      "innings_num": 39.0,
+      "innings": "40.0",
+      "innings_num": 40.0,
       "categories": [
         "カーブピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 4.38,
-      "k_bb_pct": 11.5,
-      "k_pct": 19.4,
-      "bb_pct": 7.9,
-      "swstr_pct": 11.2,
-      "gb_pct": 41.6
+      "era": 4.27,
+      "k_bb_pct": 11.8,
+      "k_pct": 19.5,
+      "bb_pct": 7.7,
+      "swstr_pct": 11.1,
+      "gb_pct": 40.7
     },
     {
       "id": "quinn_mathews",
@@ -12354,19 +12406,19 @@
       "name": "Raisel Iglesias",
       "team": "ATL",
       "role": "中継ぎ",
-      "innings": "52.1",
-      "innings_num": 52.3,
+      "innings": "53.1",
+      "innings_num": 53.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 3.44,
-      "k_bb_pct": 17.2,
-      "k_pct": 24.7,
-      "bb_pct": 7.4,
+      "era": 3.38,
+      "k_bb_pct": 17.9,
+      "k_pct": 25.2,
+      "bb_pct": 7.3,
       "swstr_pct": 15.3,
-      "gb_pct": 36.6
+      "gb_pct": 35.9
     },
     {
       "id": "randy_dobnak",
@@ -12411,19 +12463,19 @@
       "name": "Ranger Suarez",
       "team": "BOS",
       "role": "先発",
-      "innings": "125.2",
-      "innings_num": 125.7,
+      "innings": "132.2",
+      "innings_num": 132.7,
       "categories": [
         "シンカーピッチャー",
         "フォーシームピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 3.87,
-      "k_bb_pct": 15.3,
-      "k_pct": 22.7,
-      "bb_pct": 7.4,
-      "swstr_pct": 10.1,
-      "gb_pct": 41.4
+      "era": 3.66,
+      "k_bb_pct": 15.0,
+      "k_pct": 22.2,
+      "bb_pct": 7.2,
+      "swstr_pct": 9.8,
+      "gb_pct": 42.2
     },
     {
       "id": "ray_kerr",
@@ -12563,20 +12615,20 @@
       "name": "Rhett Lowder",
       "team": "CIN",
       "role": "先発",
-      "innings": "114.2",
-      "innings_num": 114.7,
+      "innings": "118.2",
+      "innings_num": 118.7,
       "categories": [
         "シンカーピッチャー",
         "スライダーピッチャー",
-        "チェンジアップピッチャー",
-        "フォーシームピッチャー"
+        "フォーシームピッチャー",
+        "チェンジアップピッチャー"
       ],
-      "era": 4.63,
-      "k_bb_pct": 9.3,
-      "k_pct": 17.7,
-      "bb_pct": 8.3,
-      "swstr_pct": 8.4,
-      "gb_pct": 45.0
+      "era": 4.78,
+      "k_bb_pct": 8.6,
+      "k_pct": 17.3,
+      "bb_pct": 8.7,
+      "swstr_pct": 8.2,
+      "gb_pct": 44.9
     },
     {
       "id": "richard_lovelady",
@@ -12717,17 +12769,17 @@
       "name": "Riley O'Brien",
       "team": "STL",
       "role": "中継ぎ",
-      "innings": "53.1",
-      "innings_num": 53.3,
+      "innings": "54.1",
+      "innings_num": 54.3,
       "categories": [
         "シンカーピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 5.4,
-      "k_bb_pct": 12.3,
-      "k_pct": 22.6,
-      "bb_pct": 10.2,
-      "swstr_pct": 10.8,
+      "era": 5.3,
+      "k_bb_pct": 13.0,
+      "k_pct": 23.0,
+      "bb_pct": 10.0,
+      "swstr_pct": 11.1,
       "gb_pct": 47.8
     },
     {
@@ -12754,20 +12806,20 @@
       "name": "Robby Ahlstrom",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "31.0",
-      "innings_num": 31.0,
+      "innings": "32.0",
+      "innings_num": 32.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 5.23,
-      "k_bb_pct": 15.3,
-      "k_pct": 21.9,
-      "bb_pct": 6.6,
-      "swstr_pct": 13.3,
-      "gb_pct": 34.7
+      "era": 5.06,
+      "k_bb_pct": 14.0,
+      "k_pct": 21.0,
+      "bb_pct": 7.0,
+      "swstr_pct": 13.1,
+      "gb_pct": 34.4
     },
     {
       "id": "robby_snelling",
@@ -12834,20 +12886,20 @@
       "name": "Robert Stock",
       "team": "NYM",
       "role": "先発",
-      "innings": "25.1",
-      "innings_num": 25.3,
+      "innings": "25.2",
+      "innings_num": 25.7,
       "categories": [
         "フライピッチャー",
         "カットボールピッチャー",
         "フォーシームピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 6.04,
-      "k_bb_pct": 9.5,
-      "k_pct": 19.8,
-      "bb_pct": 10.3,
-      "swstr_pct": 12.2,
-      "gb_pct": 36.8
+      "era": 5.96,
+      "k_bb_pct": 9.4,
+      "k_pct": 19.5,
+      "bb_pct": 10.2,
+      "swstr_pct": 12.1,
+      "gb_pct": 31.5
     },
     {
       "id": "robert_suarez",
@@ -13026,18 +13078,18 @@
       "name": "Ryan Feltner",
       "team": "COL",
       "role": "先発",
-      "innings": "94.2",
-      "innings_num": 94.7,
+      "innings": "99.2",
+      "innings_num": 99.7,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 5.7,
-      "k_bb_pct": 7.1,
-      "k_pct": 17.5,
-      "bb_pct": 10.4,
-      "swstr_pct": 11.7,
-      "gb_pct": 42.2
+      "era": 5.78,
+      "k_bb_pct": 7.2,
+      "k_pct": 17.7,
+      "bb_pct": 10.5,
+      "swstr_pct": 11.5,
+      "gb_pct": 42.5
     },
     {
       "id": "ryan_fernandez",
@@ -13098,20 +13150,21 @@
       "name": "Ryan Johnson",
       "team": "LAA",
       "role": "先発",
-      "innings": "75.2",
-      "innings_num": 75.7,
+      "innings": "81.2",
+      "innings_num": 81.7,
       "categories": [
         "フライピッチャー",
         "カットボールピッチャー",
         "スプリットピッチャー",
+        "スイーパーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 5.35,
-      "k_bb_pct": 6.0,
-      "k_pct": 17.1,
-      "bb_pct": 11.1,
-      "swstr_pct": 10.7,
-      "gb_pct": 35.7
+      "era": 5.07,
+      "k_bb_pct": 6.7,
+      "k_pct": 17.6,
+      "bb_pct": 10.9,
+      "swstr_pct": 10.9,
+      "gb_pct": 36.3
     },
     {
       "id": "ryan_rolison",
@@ -13379,19 +13432,19 @@
       "name": "Sam Moll",
       "team": "CIN",
       "role": "中継ぎ",
-      "innings": "53.2",
-      "innings_num": 53.7,
+      "innings": "54.2",
+      "innings_num": 54.7,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 6.2,
-      "k_bb_pct": 9.7,
-      "k_pct": 21.4,
-      "bb_pct": 11.7,
-      "swstr_pct": 9.3,
-      "gb_pct": 56.1
+      "era": 6.75,
+      "k_bb_pct": 10.3,
+      "k_pct": 21.7,
+      "bb_pct": 11.5,
+      "swstr_pct": 9.2,
+      "gb_pct": 56.8
     },
     {
       "id": "sammy_peralta",
@@ -13417,18 +13470,18 @@
       "name": "Samy Natera Jr.",
       "team": "LAA",
       "role": "中継ぎ",
-      "innings": "26.0",
-      "innings_num": 26.0,
+      "innings": "27.0",
+      "innings_num": 27.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 3.46,
-      "k_bb_pct": 28.3,
-      "k_pct": 38.7,
-      "bb_pct": 10.4,
-      "swstr_pct": 17.3,
-      "gb_pct": 21.7
+      "era": 3.33,
+      "k_bb_pct": 27.7,
+      "k_pct": 38.4,
+      "bb_pct": 10.7,
+      "swstr_pct": 17.7,
+      "gb_pct": 22.9
     },
     {
       "id": "sandro_santana",
@@ -13583,18 +13636,18 @@
       "name": "Seranthony Domínguez",
       "team": "SEA",
       "role": "中継ぎ",
-      "innings": "47.2",
-      "innings_num": 47.7,
+      "innings": "49.0",
+      "innings_num": 49.0,
       "categories": [
         "フォーシームピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 5.1,
-      "k_bb_pct": 11.5,
-      "k_pct": 25.8,
-      "bb_pct": 14.4,
-      "swstr_pct": 11.9,
-      "gb_pct": 40.8
+      "era": 4.96,
+      "k_bb_pct": 11.3,
+      "k_pct": 25.4,
+      "bb_pct": 14.1,
+      "swstr_pct": 12.0,
+      "gb_pct": 41.5
     },
     {
       "id": "seth_halvorsen",
@@ -13607,12 +13660,12 @@
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 5.64,
+      "era": 6.04,
       "k_bb_pct": 0.9,
-      "k_pct": 16.8,
-      "bb_pct": 15.9,
-      "swstr_pct": 10.5,
-      "gb_pct": 43.3
+      "k_pct": 16.4,
+      "bb_pct": 15.5,
+      "swstr_pct": 10.4,
+      "gb_pct": 44.3
     },
     {
       "id": "seth_johnson",
@@ -13691,18 +13744,18 @@
       "name": "Shane Baz",
       "team": "BAL",
       "role": "先発",
-      "innings": "155.1",
-      "innings_num": 155.3,
+      "innings": "161.2",
+      "innings_num": 161.7,
       "categories": [
         "フォーシームピッチャー",
         "ナックルカーブピッチャー"
       ],
-      "era": 4.23,
-      "k_bb_pct": 12.5,
-      "k_pct": 20.7,
+      "era": 4.12,
+      "k_bb_pct": 12.6,
+      "k_pct": 20.8,
       "bb_pct": 8.2,
-      "swstr_pct": 11.0,
-      "gb_pct": 39.1
+      "swstr_pct": 10.8,
+      "gb_pct": 38.7
     },
     {
       "id": "shane_bieber",
@@ -13726,19 +13779,19 @@
       "name": "Shane Drohan",
       "team": "MIL",
       "role": "先発",
-      "innings": "108.1",
-      "innings_num": 108.3,
+      "innings": "112.1",
+      "innings_num": 112.3,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 3.99,
+      "era": 4.33,
       "k_bb_pct": 15.7,
-      "k_pct": 23.6,
-      "bb_pct": 7.9,
+      "k_pct": 23.8,
+      "bb_pct": 8.1,
       "swstr_pct": 13.2,
-      "gb_pct": 43.7
+      "gb_pct": 43.8
     },
     {
       "id": "shane_mcclanahan",
@@ -13839,19 +13892,19 @@
       "name": "Shota Imanaga",
       "team": "CHC",
       "role": "先発",
-      "innings": "149.0",
-      "innings_num": 149.0,
+      "innings": "155.0",
+      "innings_num": 155.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スプリットピッチャー"
       ],
-      "era": 3.81,
+      "era": 3.66,
       "k_bb_pct": 18.3,
-      "k_pct": 24.0,
-      "bb_pct": 5.7,
-      "swstr_pct": 14.9,
-      "gb_pct": 34.0
+      "k_pct": 23.8,
+      "bb_pct": 5.5,
+      "swstr_pct": 15.2,
+      "gb_pct": 34.4
     },
     {
       "id": "simeon_woods_richardson",
@@ -13877,19 +13930,18 @@
       "name": "Slade Cecconi",
       "team": "CLE",
       "role": "先発",
-      "innings": "102.0",
-      "innings_num": 102.0,
+      "innings": "104.2",
+      "innings_num": 104.7,
       "categories": [
         "フォーシームピッチャー",
-        "カットボールピッチャー",
-        "シンカーピッチャー"
+        "カットボールピッチャー"
       ],
-      "era": 5.29,
-      "k_bb_pct": 11.2,
+      "era": 5.25,
+      "k_bb_pct": 11.4,
       "k_pct": 18.8,
-      "bb_pct": 7.5,
+      "bb_pct": 7.4,
       "swstr_pct": 9.7,
-      "gb_pct": 44.0
+      "gb_pct": 43.2
     },
     {
       "id": "sonny_gray",
@@ -14254,19 +14306,19 @@
       "name": "Tanner Scott",
       "team": "LAD",
       "role": "中継ぎ",
-      "innings": "53.1",
-      "innings_num": 53.3,
+      "innings": "53.2",
+      "innings_num": 53.7,
       "categories": [
         "フライピッチャー",
         "スライダーピッチャー",
         "フォーシームピッチャー"
       ],
-      "era": 3.71,
-      "k_bb_pct": 25.5,
-      "k_pct": 31.2,
-      "bb_pct": 5.8,
-      "swstr_pct": 18.8,
-      "gb_pct": 33.1
+      "era": 3.69,
+      "k_bb_pct": 25.4,
+      "k_pct": 31.1,
+      "bb_pct": 5.7,
+      "swstr_pct": 19.0,
+      "gb_pct": 32.5
     },
     {
       "id": "tarik_skubal",
@@ -14365,36 +14417,36 @@
       "name": "Taylor Rogers",
       "team": "MIN",
       "role": "中継ぎ",
-      "innings": "49.2",
-      "innings_num": 49.7,
+      "innings": "50.2",
+      "innings_num": 50.7,
       "categories": [
         "フライピッチャー",
         "スイーパーピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 5.62,
-      "k_bb_pct": 6.9,
+      "era": 5.51,
+      "k_bb_pct": 6.8,
       "k_pct": 18.2,
-      "bb_pct": 11.3,
-      "swstr_pct": 7.4,
-      "gb_pct": 37.1
+      "bb_pct": 11.4,
+      "swstr_pct": 7.3,
+      "gb_pct": 36.4
     },
     {
       "id": "tejay_antone",
       "name": "Tejay Antone",
       "team": "CIN",
       "role": "中継ぎ",
-      "innings": "44.2",
-      "innings_num": 44.7,
+      "innings": "45.2",
+      "innings_num": 45.7,
       "categories": [
         "スイーパーピッチャー"
       ],
-      "era": 4.43,
-      "k_bb_pct": 14.7,
-      "k_pct": 21.8,
-      "bb_pct": 7.1,
-      "swstr_pct": 12.6,
-      "gb_pct": 40.4
+      "era": 4.34,
+      "k_bb_pct": 15.9,
+      "k_pct": 22.9,
+      "bb_pct": 7.0,
+      "swstr_pct": 12.9,
+      "gb_pct": 41.7
     },
     {
       "id": "thomas_pannone",
@@ -14456,19 +14508,19 @@
       "name": "Tim Mayza",
       "team": "PHI",
       "role": "中継ぎ",
-      "innings": "58.2",
-      "innings_num": 58.7,
+      "innings": "59.2",
+      "innings_num": 59.7,
       "categories": [
         "ゴロピッチャー",
         "シンカーピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.84,
-      "k_bb_pct": 18.6,
-      "k_pct": 24.9,
-      "bb_pct": 6.3,
+      "era": 3.77,
+      "k_bb_pct": 18.3,
+      "k_pct": 24.5,
+      "bb_pct": 6.2,
       "swstr_pct": 10.6,
-      "gb_pct": 53.2
+      "gb_pct": 52.7
     },
     {
       "id": "tobias_myers",
@@ -14706,17 +14758,17 @@
       "name": "Trevor Megill",
       "team": "MIL",
       "role": "中継ぎ",
-      "innings": "51.1",
-      "innings_num": 51.3,
+      "innings": "52.1",
+      "innings_num": 52.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "ナックルカーブピッチャー"
       ],
-      "era": 2.45,
-      "k_bb_pct": 20.1,
-      "k_pct": 27.1,
-      "bb_pct": 7.0,
+      "era": 2.41,
+      "k_bb_pct": 21.3,
+      "k_pct": 28.2,
+      "bb_pct": 6.9,
       "swstr_pct": 16.8,
       "gb_pct": 33.0
     },
@@ -14762,19 +14814,18 @@
       "name": "Trevor Williams",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "18.1",
-      "innings_num": 18.3,
+      "innings": "19.1",
+      "innings_num": 19.3,
       "categories": [
-        "ゴロピッチャー",
         "フォーシームピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 5.4,
-      "k_bb_pct": 19.8,
-      "k_pct": 28.4,
-      "bb_pct": 8.6,
-      "swstr_pct": 12.4,
-      "gb_pct": 51.6
+      "era": 5.12,
+      "k_bb_pct": 21.4,
+      "k_pct": 29.8,
+      "bb_pct": 8.3,
+      "swstr_pct": 13.1,
+      "gb_pct": 46.5
     },
     {
       "id": "trey_gibson",
@@ -14932,19 +14983,19 @@
       "name": "Tyler Alexander",
       "team": "TEX",
       "role": "中継ぎ",
-      "innings": "58.0",
-      "innings_num": 58.0,
+      "innings": "59.1",
+      "innings_num": 59.3,
       "categories": [
         "ゴロピッチャー",
         "チェンジアップピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 3.72,
-      "k_bb_pct": 12.6,
-      "k_pct": 20.1,
-      "bb_pct": 7.5,
+      "era": 3.64,
+      "k_bb_pct": 12.8,
+      "k_pct": 20.2,
+      "bb_pct": 7.4,
       "swstr_pct": 9.9,
-      "gb_pct": 53.5
+      "gb_pct": 53.7
     },
     {
       "id": "tyler_callihan",
@@ -15061,36 +15112,36 @@
       "name": "Tyler Holton",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "60.0",
-      "innings_num": 60.0,
+      "innings": "62.0",
+      "innings_num": 62.0,
       "categories": [
         "ゴロピッチャー",
         "カットボールピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 4.05,
+      "era": 3.92,
       "k_bb_pct": 13.1,
-      "k_pct": 19.2,
-      "bb_pct": 6.2,
-      "swstr_pct": 11.0,
-      "gb_pct": 52.8
+      "k_pct": 19.4,
+      "bb_pct": 6.3,
+      "swstr_pct": 10.9,
+      "gb_pct": 52.9
     },
     {
       "id": "tyler_kinley",
       "name": "Tyler Kinley",
       "team": "DET",
       "role": "中継ぎ",
-      "innings": "45.0",
-      "innings_num": 45.0,
+      "innings": "46.0",
+      "innings_num": 46.0,
       "categories": [
         "フライピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.4,
-      "k_bb_pct": 11.5,
-      "k_pct": 23.0,
-      "bb_pct": 11.5,
-      "swstr_pct": 11.8,
+      "era": 4.3,
+      "k_bb_pct": 11.3,
+      "k_pct": 22.7,
+      "bb_pct": 11.3,
+      "swstr_pct": 12.0,
       "gb_pct": 32.7
     },
     {
@@ -15230,19 +15281,19 @@
       "name": "Tyler Wells",
       "team": "TB",
       "role": "中継ぎ",
-      "innings": "65.1",
-      "innings_num": 65.3,
+      "innings": "66.1",
+      "innings_num": 66.3,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "カットボールピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 3.17,
-      "k_bb_pct": 18.8,
-      "k_pct": 25.5,
-      "bb_pct": 6.7,
-      "swstr_pct": 15.8,
+      "era": 3.26,
+      "k_bb_pct": 18.6,
+      "k_pct": 25.2,
+      "bb_pct": 6.6,
+      "swstr_pct": 15.7,
       "gb_pct": 32.9
     },
     {
@@ -15458,17 +15509,17 @@
       "name": "Walker Buehler",
       "team": "SD",
       "role": "先発",
-      "innings": "129.2",
-      "innings_num": 129.7,
+      "innings": "134.0",
+      "innings_num": 134.0,
       "categories": [
         "カットボールピッチャー"
       ],
-      "era": 4.37,
-      "k_bb_pct": 11.1,
-      "k_pct": 19.8,
+      "era": 4.3,
+      "k_bb_pct": 11.4,
+      "k_pct": 20.2,
       "bb_pct": 8.8,
-      "swstr_pct": 8.8,
-      "gb_pct": 46.6
+      "swstr_pct": 8.9,
+      "gb_pct": 46.9
     },
     {
       "id": "wandy_peralta",
@@ -15532,19 +15583,19 @@
       "name": "Wilber Dotel",
       "team": "PIT",
       "role": "中継ぎ",
-      "innings": "28.2",
-      "innings_num": 28.7,
+      "innings": "30.2",
+      "innings_num": 30.7,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 4.4,
+      "era": 4.11,
       "k_bb_pct": 14.6,
-      "k_pct": 25.2,
-      "bb_pct": 10.6,
+      "k_pct": 25.4,
+      "bb_pct": 10.8,
       "swstr_pct": 11.6,
-      "gb_pct": 44.1
+      "gb_pct": 44.4
     },
     {
       "id": "wilkin_ramos",
@@ -15626,18 +15677,18 @@
       "name": "Will Warren",
       "team": "NYY",
       "role": "先発",
-      "innings": "133.0",
-      "innings_num": 133.0,
+      "innings": "135.1",
+      "innings_num": 135.3,
       "categories": [
         "フォーシームピッチャー",
         "シンカーピッチャー"
       ],
-      "era": 4.74,
-      "k_bb_pct": 14.8,
-      "k_pct": 22.7,
-      "bb_pct": 7.8,
-      "swstr_pct": 9.8,
-      "gb_pct": 45.6
+      "era": 4.66,
+      "k_bb_pct": 14.5,
+      "k_pct": 22.4,
+      "bb_pct": 7.9,
+      "swstr_pct": 9.7,
+      "gb_pct": 46.5
     },
     {
       "id": "william_kempner",
@@ -15945,19 +15996,19 @@
       "name": "Yuki Matsui",
       "team": "SD",
       "role": "中継ぎ",
-      "innings": "50.2",
-      "innings_num": 50.7,
+      "innings": "51.2",
+      "innings_num": 51.7,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー",
         "スプリットピッチャー"
       ],
-      "era": 2.84,
-      "k_bb_pct": 12.1,
+      "era": 2.79,
+      "k_bb_pct": 12.4,
       "k_pct": 26.6,
-      "bb_pct": 14.5,
-      "swstr_pct": 16.2,
+      "bb_pct": 14.2,
+      "swstr_pct": 16.1,
       "gb_pct": 34.0
     },
     {
@@ -15965,19 +16016,19 @@
       "name": "Yunior Marte",
       "team": "SF",
       "role": "中継ぎ",
-      "innings": "5.0",
-      "innings_num": 5.0,
+      "innings": "10.0",
+      "innings_num": 10.0,
       "categories": [
         "フライピッチャー",
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
       "era": 5.4,
-      "k_bb_pct": 4.2,
-      "k_pct": 16.7,
-      "bb_pct": 12.5,
-      "swstr_pct": 12.9,
-      "gb_pct": 15.4
+      "k_bb_pct": 2.2,
+      "k_pct": 13.3,
+      "bb_pct": 11.1,
+      "swstr_pct": 10.4,
+      "gb_pct": 18.1
     },
     {
       "id": "yunior_tur",
@@ -16359,18 +16410,18 @@
       "name": "Zebby Matthews",
       "team": "MIN",
       "role": "先発",
-      "innings": "110.2",
-      "innings_num": 110.7,
+      "innings": "115.2",
+      "innings_num": 115.7,
       "categories": [
         "フォーシームピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.55,
-      "k_bb_pct": 13.0,
+      "era": 4.67,
+      "k_bb_pct": 13.1,
       "k_pct": 19.9,
       "bb_pct": 6.8,
-      "swstr_pct": 10.5,
-      "gb_pct": 44.9
+      "swstr_pct": 10.4,
+      "gb_pct": 43.3
     }
   ]
 }
