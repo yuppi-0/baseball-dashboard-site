@@ -1556,8 +1556,10 @@ function hexToRgb(hex){
 
 // 球種フィルターボタン + 結果フィルタータブ + 9/25分割トグル（比較パネル全体で共有・1セットだけ表示）
 function hmControlsHtml(allPitchKeysMap){
+  // 「全球種」が選ばれている（＝絞り込みなし）ときは、個別の球種ボタンまで
+  // 緑色にする必要はないので、全球種以外がactiveになるのは個別に選択されている場合のみにする
   const pitchBtns = Object.entries(allPitchKeysMap).map(([key, info]) => `
-    <button class="hm-pitch-btn ${!window._hmSelectedPitchKeys || window._hmSelectedPitchKeys.has(key) ? 'active' : ''}" data-pkey="${key}">
+    <button class="hm-pitch-btn ${window._hmSelectedPitchKeys && window._hmSelectedPitchKeys.has(key) ? 'active' : ''}" data-pkey="${key}">
       <span class="hm-pdot" style="background:${info.color}"></span>${escapeHtml(info.name)}
     </button>
   `).join("");
