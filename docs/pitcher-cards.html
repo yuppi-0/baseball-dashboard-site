@@ -83,6 +83,15 @@
   }
   .search-box input:focus{ border-color: var(--blue); }
   .player-list{ overflow-y:auto; flex:1; padding:6px; }
+  .player-list-box{ flex:1; min-height:0; display:flex; flex-direction:column; }
+  .player-list-toggle{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px;
+    border:none; background:transparent; color:var(--text-dim); font-size:10.5px; font-weight:700;
+    padding:8px 14px; cursor:pointer; text-align:left; flex-shrink:0; border-bottom:1px solid var(--border);
+  }
+  .player-list-toggle .chev{ font-size:9px; transition:transform 0.15s; flex-shrink:0; transform:rotate(180deg); }
+  .player-list-box.collapsed .player-list-toggle .chev{ transform:rotate(0deg); }
+  .player-list-box.collapsed .player-list{ display:none; }
   .player-item{
     display:flex; flex-direction:column; gap:2px; padding:10px 12px; border-radius:8px;
     cursor:pointer; margin-bottom:2px;
@@ -180,9 +189,9 @@
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
 
   /* 比較・日付・対戦の3列を横スクロール時も固定表示 */
-  .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; }
-  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:84px; z-index:2; }
-  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:120px; width:76px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:84px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:120px; width:76px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); -webkit-transform:translateZ(0); transform:translateZ(0); }
   .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; padding-left:16px; }
   /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
@@ -221,8 +230,8 @@
   .pmix-dot{ width:8px; height:8px; border-radius:50%; flex-shrink:0; display:inline-block; }
 
   /* 球種・投球数（先頭2列）を横スクロール時も固定表示 */
-  .pmix-table th:nth-child(1), .pmix-table td:nth-child(1){ position:sticky; left:0; width:104px; z-index:2; overflow:hidden; text-overflow:ellipsis; }
-  .pmix-table th:nth-child(2), .pmix-table td:nth-child(2){ position:sticky; left:104px; width:52px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
+  .pmix-table th:nth-child(1), .pmix-table td:nth-child(1){ position:sticky; left:0; width:104px; z-index:2; overflow:hidden; text-overflow:ellipsis; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .pmix-table th:nth-child(2), .pmix-table td:nth-child(2){ position:sticky; left:104px; width:52px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); -webkit-transform:translateZ(0); transform:translateZ(0); }
   .pmix-table th:nth-child(1), .pmix-table th:nth-child(2){ background:var(--panel-alt); z-index:3; }
   .pmix-table td:nth-child(1), .pmix-table td:nth-child(2){ background:var(--panel); }
   .pmix-table tfoot td:nth-child(1), .pmix-table tfoot td:nth-child(2){ background:var(--panel-alt); }
@@ -311,8 +320,8 @@
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
 
   @media (max-width:720px){
-    html{ overflow:hidden; }
-    body{ overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
+    html, body{ height:auto; overflow:visible; }
+    body{ overflow-x:hidden; }
     .app{ height:auto; min-height:100vh; }
     .body-layout{ flex-direction:column; }
     .sidebar{ width:100%; max-height:none; height:auto; border-right:none; border-bottom:1px solid var(--border); }
@@ -331,7 +340,7 @@
       flex-shrink:0; border:none; background:var(--blue); color:#fff; font-size:12px; font-weight:700;
       padding:8px 14px; border-radius:8px; cursor:pointer;
     }
-    .sidebar.collapsed .search-box, .sidebar.collapsed .filter-box, .sidebar.collapsed .category-box, .sidebar.collapsed .player-list{ display:none; }
+    .sidebar.collapsed .search-box, .sidebar.collapsed .filter-box, .sidebar.collapsed .category-box, .sidebar.collapsed .player-list-box{ display:none; }
     .sidebar:not(.collapsed) .player-list{ max-height:55vh; }
 
     /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
@@ -381,8 +390,14 @@
         </label>
       </div>
       <div class="category-box" id="categoryBox"></div>
-      <div class="player-list" id="playerList">
-        <div class="empty-list">読み込み中…</div>
+      <div class="player-list-box" id="playerListBox">
+        <button type="button" class="player-list-toggle" id="playerListToggle">
+          <span>選手で絞り込む</span>
+          <span class="chev">︾</span>
+        </button>
+        <div class="player-list" id="playerList">
+          <div class="empty-list">読み込み中…</div>
+        </div>
       </div>
     </aside>
 
@@ -687,6 +702,12 @@ function renderCategoryChips(){
 
 searchInputEl.addEventListener("input", () => {
   renderPlayerList(applyFilters());
+});
+
+const playerListBoxEl = el("#playerListBox");
+const playerListToggleEl = el("#playerListToggle");
+playerListToggleEl.addEventListener("click", () => {
+  playerListBoxEl.classList.toggle("collapsed");
 });
 
 teamSelectEl.addEventListener("change", () => {
