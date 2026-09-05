@@ -91,7 +91,7 @@
   main{ flex:1; overflow-y:auto; padding:20px; display:flex; justify-content:center; }
   .placeholder{ color:var(--text-dim); font-size:13px; padding-top:60px; text-align:center; width:100%; }
 
-  .card{ width:100%; max-width:920px; text-align:left; }
+  .card{ width:100%; max-width:1120px; text-align:left; }
   .p-header{ display:flex; align-items:center; gap:12px; margin-bottom:14px; text-align:left; }
   .p-avatar{
     width:44px; height:44px; border-radius:10px; background:#1E3A5F; color:#93C5FD;
@@ -957,6 +957,11 @@ function renderCard(d){
     </div>
   `;
 
+  // #mainContent自体が初期HTMLでclass="placeholder"のままになっており、
+  // 「選手を選んでください」用のpadding-top:60pxなどが実カード表示時にも
+  // 残ってしまい、才木浩人のような選手名の上に余計な余白ができていたため、
+  // 実カードを描画する際はここで明示的に外している。
+  mainContentEl.classList.remove("placeholder");
   mainContentEl.innerHTML = `
     <div class="card">
       <div class="p-header">
