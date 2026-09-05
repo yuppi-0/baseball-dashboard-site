@@ -134,7 +134,7 @@
   .section-weakness{ background:#221417; border:1px solid rgba(248,113,113,0.25); }
   .section-pitches{ background:var(--panel); }
   .section-design{ background:#1A140B; border:1px solid rgba(245,158,11,0.3); }
-  .section-gamelog{ background:var(--panel); }
+  .section-gamelog{ background:var(--panel); border:1px solid rgba(148,163,184,0.15); }
   .section-profile{ background:var(--panel); border:1px solid rgba(148,163,184,0.15); }
 
   .section-title{
@@ -175,26 +175,30 @@
      autoレイアウトのままだと、日付や対戦カードの文字量によって実際の列幅が
      sticky指定のleft/widthの想定値とズレてしまい、固定列の間に隙間や
      他の列の値が透けて見える不具合が起きていたため。 */
-  .gamelog-table{ width:932px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
+  .gamelog-table{ width:980px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
   .gamelog-table th{
     text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:nowrap;
     border-bottom:1px solid rgba(148,163,184,0.15);
     overflow:hidden; text-overflow:ellipsis;
     box-sizing:border-box;
   }
-  .gamelog-table td{ padding:6px; white-space:nowrap; text-align:left; overflow:hidden; text-overflow:ellipsis; box-sizing:border-box; }
+  .gamelog-table td{ padding:6px; text-align:left; box-sizing:border-box; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
   .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
+  /* 比較・日付・対戦の3列は短い固定文言のみなので、これまで通り1行・省略表示のままでよい */
+  .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  /* 結果列以降は、値が長いと"..."で切れて読めなくなっていたため折り返し表示にして省略しない */
+  .gamelog-table td:nth-child(n+4){ white-space:normal; overflow:visible; text-overflow:clip; line-height:1.3; }
 
   /* 比較・日付・対戦の3列を横スクロール時も固定表示 */
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
-  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:84px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
-  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:120px; width:76px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:50px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:86px; width:76px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
   .gamelog-table th:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
   .gamelog-table td:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
-  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; padding-left:16px; }
+  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:210px; padding-left:16px; }
   /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
      固定列の間に他の値が透けて見える不具合が再発するため。 */
@@ -253,17 +257,18 @@
   .gamelog-table .cmp-checkbox{ accent-color:var(--blue); cursor:pointer; }
   .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; }
 
-  /* 年フォルダ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備） */
+  /* 年グループ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備）。
+     横スクロール時も他の固定列と同じように常に見えるよう sticky left:0 にしておく。 */
   .gamelog-table tr.row-folder{ cursor:pointer; }
   .gamelog-table tr.row-folder td{
-    position:static; left:auto; width:auto; box-shadow:none;
-    background:rgba(59,130,246,0.10); color:var(--text-bright); font-weight:700;
-    padding:7px 8px; text-align:left; border-bottom:1px solid rgba(59,130,246,0.2);
+    position:sticky; left:0; width:auto; z-index:2; box-shadow:none;
+    background:#111F33; color:var(--text-bright); font-weight:700;
+    padding:8px 10px; text-align:left; border-bottom:1px solid rgba(59,130,246,0.25);
+    white-space:nowrap; overflow:visible; text-overflow:clip;
   }
-  .gamelog-table tr.row-folder:hover td{ background:rgba(59,130,246,0.16); }
-  .gamelog-table .folder-chevron{ display:inline-block; margin-right:4px; color:var(--blue); font-size:9px; transition:transform 0.15s ease; }
-  .gamelog-table .folder-icon{ margin-right:4px; }
-  .gamelog-table .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; }
+  .gamelog-table tr.row-folder:hover td{ background:#16233a; }
+  .gamelog-table .folder-chevron{ display:inline-block; margin-right:6px; color:var(--blue-text); font-size:9px; transition:transform 0.15s ease; }
+  .gamelog-table .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; margin-left:4px; }
 
   /* 比較パネル（試合ログの下部に表示） */
   #comparePanel{ margin-top:14px; }
@@ -297,10 +302,14 @@
 
   /* 複数選択時の球種比較テーブル（投球数・投球割合を選択項目ぶん横並びにする） */
   .pcompare-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:4px; }
-  .pcompare-table{ border-collapse:collapse; font-family:'DM Mono',monospace; min-width:100%; }
+  /* table-layout:fixed にして列幅をcolgroupの指定に固定する。autoレイアウトのままだと、
+     ブラウザが内容の長さに応じて列幅を再配分してしまい、sticky指定している「球種」列の
+     想定位置とズレて、横スクロール時に隣の指標セルの色（カラースケール）がその隙間から
+     透けて見える不具合になっていたため（試合ログ表と同じ原因）。 */
+  .pcompare-table{ border-collapse:collapse; font-family:'DM Mono',monospace; table-layout:fixed; }
   .pcompare-table th, .pcompare-table td{
-    padding:6px 10px; font-size:11px; text-align:center; white-space:nowrap;
-    border-bottom:1px solid rgba(255,255,255,0.06);
+    padding:6px 8px; font-size:11px; text-align:center; white-space:nowrap;
+    border-bottom:1px solid rgba(255,255,255,0.06); box-sizing:border-box; overflow:hidden; text-overflow:ellipsis;
   }
   .pcompare-table thead th{ color:var(--text-dim); font-weight:700; background:var(--panel-alt); font-size:10px; }
   .pcompare-table tbody td:first-child{ text-align:left; font-size:12px; }
@@ -310,12 +319,14 @@
      ヘッダーは1行目の「球種」セルだけがrowspan=2でこの列を占めており、2行目の先頭セルは
      実際には1つ目の指標グループの1つ目のラベル（例:「シーズン」）なので、
      :first-child で両方の行を一緒に拾うと2行目のラベルまで固定列扱いになって
-     「球種」列にラベル文字が被って見える不具合になる。専用クラスだけを対象にする。 */
-  .pcompare-table .pcompare-namecol{ position:sticky; left:0; width:110px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); text-align:left; }
+     「球種」列にラベル文字が被って見える不具合になる。専用クラスだけを対象にする。
+     余白（padding）の分だけ隣の指標セルの色が透けて見えないよう、固定列は左右のpaddingを詰める。 */
+  .pcompare-table .pcompare-namecol{ position:sticky; left:0; width:110px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); text-align:left; padding-left:8px; padding-right:4px; }
   .pcompare-table thead th.pcompare-namecol{ background:var(--panel-alt); z-index:3; }
   .pcompare-table tbody td.pcompare-namecol{ background:var(--panel); font-size:12px; }
   .pcompare-table tbody tr:last-child td.pcompare-namecol{ background:var(--panel-alt); }
   .course-row{ display:flex; gap:40px; flex-wrap:wrap; margin-bottom:6px; }
+  .course-entry + .course-entry{ margin-top:16px; padding-top:14px; border-top:1px solid rgba(148,163,184,0.12); }
   .course-pair{ display:flex; gap:10px; align-items:flex-start; flex-wrap:wrap; }
   .hm-canvas-wrap{ display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; }
   .hm-canvas-block{ width:150px; flex-shrink:0; }
@@ -1216,9 +1227,16 @@ function buildPitchCompareTable(entries){
   `;
 
   const n = entries.length;
+  // table-layout:fixedで列幅を確実に固定するため、colgroupで各列の幅を明示する。
+  // ここを明示しないと、横スクロール中に列幅がブラウザ側で再計算されてsticky列の位置とズレ、
+  // 隣の指標セルの色（カラースケール）が固定列の隙間から透けて見える不具合になる。
+  const COL_W = 78;
+  const totalWidth = 110 + metrics.length * n * COL_W;
+  const colgroupHtml = `<colgroup><col style="width:110px">${metrics.map(() => entries.map(() => `<col style="width:${COL_W}px">`).join("")).join("")}</colgroup>`;
   return `
     <div class="pcompare-scroll">
-      <table class="pcompare-table">
+      <table class="pcompare-table" style="width:${totalWidth}px">
+        ${colgroupHtml}
         <thead>
           <tr>
             <th rowspan="2" class="pcompare-namecol">球種</th>
@@ -1551,19 +1569,20 @@ function buildGameLogTable(d){
   const folderRowsHtml = yearGroups.map((grp, gi) => {
     const isOpen = gi === 0; // 最新（先頭）の年だけデフォルトで開いておく
     const rows = grp.indices.map(i => gameRowHtml(d.game_log[i], i)).join("");
+    // シーズン集計行は「現在のシーズン」＝一番新しい年グループの先頭に含める
+    const seasonRowHtml = gi === 0 ? seasonRow : "";
     return `
       <tbody class="folder-head-body">
         <tr class="row-folder" data-year="${escapeHtml(grp.year)}">
           <td colspan="${colCount}">
-            <span class="folder-chevron" style="transform:${isOpen ? "rotate(90deg)" : "rotate(0deg)"}">▶</span>
-            <span class="folder-icon">📁</span>
+            <span class="folder-chevron" style="transform:${isOpen ? "rotate(90deg)" : "rotate(0deg)"}">▸</span>
             <span class="folder-label">${escapeHtml(grp.year)}年</span>
             <span class="folder-count">（${grp.indices.length}試合）</span>
           </td>
         </tr>
       </tbody>
       <tbody class="folder-body" data-year-body="${escapeHtml(grp.year)}" style="display:${isOpen ? "table-row-group" : "none"}">
-        ${rows}
+        ${seasonRowHtml}${rows}
       </tbody>
     `;
   }).join("");
@@ -1578,7 +1597,6 @@ function buildGameLogTable(d){
               <th>比較</th><th>日付</th><th>対戦</th><th>結果</th>
               ${cols.map(c => `<th>${c.label}</th>`).join("")}
             </tr></thead>
-            <tbody>${seasonRow}</tbody>
             ${folderRowsHtml}
           </table>
         </div>
@@ -1617,8 +1635,9 @@ function renderComparePanel(d){
   const flipR = hmDisplayFlip(currentLeague, d.throws, true);
   const flipL = hmDisplayFlip(currentLeague, d.throws, false);
 
-  // 2件以上選択時：球種ごとの投球数・投球割合を選択項目ぶん横並びにした比較テーブルを1つだけ表示する
-  const compareTableHtml = isMulti ? (() => {
+  // Box A：球種の投球数・割合などの「表」部分（複数選択なら球種比較テーブル、単一選択ならそのゲームの球種内訳表）。
+  // タブや配球図とは分けて、これだけで1つの囲み枠にする。
+  const statsBoxHtml = isMulti ? (() => {
     const entries = keys.map(gidx => {
       const rd = getRowDataFor(d, gidx);
       const pitches = rd && rd.pitchDetail ? rd.pitchDetail[compareHand] : null;
@@ -1636,15 +1655,30 @@ function renderComparePanel(d){
         <div class="compare-block-title">球種比較</div>
         ${handButtons}
         ${buildPitchCompareTable(entries)}
-        ${controlsHtml}
       </div>
     `;
-  })() : "";
+  })() : (() => {
+    const gidx = keys[0];
+    const rd = getRowDataFor(d, gidx);
+    if(!rd || !rd.pitchDetail || !rd.pitchDetail.all) return "";
+    return `
+      <div class="compare-block" data-cmp-gidx="${gidx}">
+        <div class="compare-block-title">${escapeHtml(rd.label)}</div>
+        ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
+        <div class="hand-toggle" data-gidx="${gidx}">
+          <button class="hand-btn active" data-hand="all">全体</button>
+          <button class="hand-btn" data-hand="vsR">対右</button>
+          <button class="hand-btn" data-hand="vsL">対左</button>
+        </div>
+        <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(rd.pitchDetail.all)}</div>
+      </div>
+    `;
+  })();
 
-  const blocksHtml = keys.map((gidx, idx) => {
+  // Box B：結果/分割/球種のタブと、選択ぶんの配球グリッド＋配球図をまとめて1つの囲み枠にする
+  const courseEntriesHtml = keys.map(gidx => {
     const rd = getRowDataFor(d, gidx);
     if(!rd) return "";
-    const pitchDetail = rd.pitchDetail || {};
     const courseLocs = rd.courseLocs || {};
     const locsR = hmCombinedLocs(courseLocs, true);
     const locsL = hmCombinedLocs(courseLocs, false);
@@ -1652,20 +1686,12 @@ function renderComparePanel(d){
     const allLocsR = isAllFilter ? null : hmCombinedLocs(courseLocs, true, "all");
     const allLocsL = isAllFilter ? null : hmCombinedLocs(courseLocs, false, "all");
     const canvasIdR = `hmcanvas-${gidx}-R`, canvasIdL = `hmcanvas-${gidx}-L`;
-
     return `
-      <div class="compare-block" data-cmp-gidx="${gidx}">
-        <div class="compare-block-title">${escapeHtml(rd.label)}</div>
-        ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
-        ${(!isMulti && pitchDetail.all) ? `
-          <div class="hand-toggle" data-gidx="${gidx}">
-            <button class="hand-btn active" data-hand="all">全体</button>
-            <button class="hand-btn" data-hand="vsR">対右</button>
-            <button class="hand-btn" data-hand="vsL">対左</button>
-          </div>
-          <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(pitchDetail.all)}</div>
+      <div class="course-entry" data-cmp-gidx="${gidx}">
+        ${isMulti ? `
+          <div class="compare-block-title">${escapeHtml(rd.label)}</div>
+          ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
         ` : ""}
-        ${(!isMulti && idx === 0) ? controlsHtml : ""}
         <div class="course-row">
           <div class="course-pair">
             ${hmBuildGridHtml("対右打者", locsR, flipR, allLocsR)}
@@ -1686,9 +1712,14 @@ function renderComparePanel(d){
     `;
   }).join("");
 
-  // フィルター（結果・分割・球種）は、単一選択時は1つ目のブロックの球種テーブルの直下、
-  // 複数選択時は球種比較テーブルの直下に1セットだけ表示する
-  panel.innerHTML = `<div class="compare-blocks">${compareTableHtml}${blocksHtml}</div>`;
+  const courseBoxHtml = `
+    <div class="compare-block">
+      ${controlsHtml}
+      ${courseEntriesHtml}
+    </div>
+  `;
+
+  panel.innerHTML = `<div class="compare-blocks">${statsBoxHtml}${courseBoxHtml}</div>`;
 
 
   // canvas描画（DOM挿入後に実行する必要がある）
