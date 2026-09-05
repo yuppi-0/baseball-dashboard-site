@@ -11,7 +11,7 @@ on:
         required: false
         default: ''
       steps:
-        description: '実行ステップ（games / highlights / datamart / all。スペース区切りで複数可）'
+        description: '実行ステップ（games / highlights / datamart / llm_input / all。スペース区切りで複数可）'
         required: false
         default: 'all'
       source:
