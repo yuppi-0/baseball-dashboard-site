@@ -60,6 +60,7 @@
     color:var(--text); font-size:11px; padding:3px 6px; outline:none;
   }
   .search-box{ padding:14px; border-bottom:1px solid var(--border); }
+  .sidebar-summary{ display:none; }
   .search-box input{
     width:100%; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:8px;
     padding:9px 12px; color:var(--text); font-size:13px; outline:none;
@@ -87,6 +88,11 @@
   }
   .p-name{ font-size:18px; font-weight:700; color:var(--text-bright); }
   .p-meta{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .p-type-tag{
+    display:inline-block; margin-top:6px; padding:3px 10px; border-radius:20px;
+    font-size:11px; font-weight:700; color:var(--blue-text);
+    background:rgba(59,130,246,0.14); border:1px solid rgba(59,130,246,0.3);
+  }
 
   .stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:16px; }
   .stat-box{ background:var(--panel); border-radius:8px; padding:10px 6px; text-align:center; }
@@ -289,8 +295,24 @@
     body{ overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; }
     .app{ height:auto; min-height:100vh; }
     .body-layout{ flex-direction:column; }
-    .sidebar{ width:100%; max-height:260px; height:auto; border-right:none; border-bottom:1px solid var(--border); }
+    .sidebar{ width:100%; max-height:none; height:auto; border-right:none; border-bottom:1px solid var(--border); }
     main{ padding:14px; overflow-y:visible; }
+
+    /* 選手を選ぶまでは検索欄・一覧を大きく開いておき、選んだ後はサマリー1行だけに畳んで
+       カード本体をすぐ見られるようにする。「選手を変更」で再度開閉できる。 */
+    .sidebar-summary{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px 14px; border-bottom:1px solid var(--border); background:var(--panel-alt);
+    }
+    .sidebar-summary-info{ min-width:0; }
+    .sidebar-summary-name{ font-size:14px; font-weight:700; color:var(--text-bright); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sidebar-summary-team{ font-size:11px; color:var(--text-dim); margin-top:1px; }
+    .sidebar-summary button{
+      flex-shrink:0; border:none; background:var(--blue); color:#fff; font-size:12px; font-weight:700;
+      padding:8px 14px; border-radius:8px; cursor:pointer;
+    }
+    .sidebar.collapsed .search-box, .sidebar.collapsed .filter-box, .sidebar.collapsed .player-list{ display:none; }
+    .sidebar:not(.collapsed) .player-list{ max-height:55vh; }
 
     /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
        画面幅が狭い分、配球キャンバスの表示サイズだけ縮める（グリッド側のセル幅はJS側でも縮小）。 */
@@ -316,7 +338,14 @@
   </header>
 
   <div class="body-layout">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-summary" id="sidebarSummary">
+        <div class="sidebar-summary-info">
+          <div class="sidebar-summary-name" id="sidebarSummaryName">選手を選択してください</div>
+          <div class="sidebar-summary-team" id="sidebarSummaryTeam"></div>
+        </div>
+        <button type="button" id="sidebarToggleBtn">選手を変更</button>
+      </div>
       <div class="search-box">
         <input id="searchInput" type="text" placeholder="選手名で検索">
       </div>
@@ -367,6 +396,21 @@ const searchInputEl = el("#searchInput");
 const teamSelectEl = el("#teamSelect");
 const aiOnlyFilterEl = el("#aiOnlyFilter");
 const minIpFilterEl = el("#minIpFilter");
+const sidebarEl = el("#sidebar");
+const sidebarSummaryNameEl = el("#sidebarSummaryName");
+const sidebarSummaryTeamEl = el("#sidebarSummaryTeam");
+
+// モバイル：選手を選んだら検索欄・一覧を畳んでカード本体をすぐ見せる。「選手を変更」で開閉。
+function updateSidebarSummary(name, meta){
+  sidebarSummaryNameEl.textContent = name;
+  sidebarSummaryTeamEl.textContent = meta || "";
+}
+function collapseSidebarOnMobile(){
+  if(window.innerWidth <= 720) sidebarEl.classList.add("collapsed");
+}
+el("#sidebarToggleBtn").addEventListener("click", () => {
+  sidebarEl.classList.toggle("collapsed");
+});
 
 // AIコメントがある選手名の集合。リーグを開いたときに一度だけバッチ全件を読んで作る
 let playersWithLlmData = new Set();
@@ -394,6 +438,8 @@ async function loadPlayerIndex(league){
   llmDataLoaded = false;
   playersWithLlmData = new Set();
   aiOnlyFilterEl.checked = false;
+  sidebarEl.classList.remove("collapsed");
+  updateSidebarSummary("選手を選択してください", "");
   try{
     // 選手一覧は「数値データ」側のindex.jsonを正とする（LLM解釈がまだない選手も一覧には出す）
     const res = await fetch(bust(`${LEAGUE_PATHS[league].numeric}/index.json`), { cache: "no-store" });
@@ -425,7 +471,11 @@ function renderPlayerList(players){
     </div>
   `).join("");
   playerListEl.querySelectorAll(".player-item").forEach(item => {
-    item.addEventListener("click", () => selectPlayer(item.dataset.id, item.dataset.name));
+    item.addEventListener("click", () => {
+      selectPlayer(item.dataset.id, item.dataset.name);
+      updateSidebarSummary(item.dataset.name, item.querySelector(".meta")?.textContent || "");
+      collapseSidebarOnMobile();
+    });
   });
 }
 
@@ -648,6 +698,31 @@ function sectionHeader({bar, label, labelColor, sub}){
   `;
 }
 
+// ── 球種構成とゴロ/フライ傾向から、ざっくりした「タイプ」ラベルを機械的に組み立てる ──
+// LLM解釈とは独立（数値データだけで決まるので、AIコメント未生成の選手でも常に表示できる）
+function classifyPitcherType(d){
+  const pitches = (d.season_pitch_detail && d.season_pitch_detail.all) || [];
+  if(!pitches.length) return null;
+
+  // ゴロ/フライ傾向（シーズンゴロ率basis）
+  let battedTag = "";
+  if(d.gb_pct_season != null){
+    if(d.gb_pct_season >= 50) battedTag = "ゴロ型";
+    else if(d.gb_pct_season <= 38) battedTag = "フライ型";
+  }
+
+  // 持ち味の球種：投球割合15%以上を「主要球種」とし、上位2つまでを採用
+  // （1つしか無ければ1つだけ、ストレート1本槍のようなタイプもそのまま表現する）
+  const main = pitches
+    .filter(p => p.pct != null && p.pct >= 15)
+    .sort((a,b) => (b.pct||0) - (a.pct||0))
+    .slice(0, 2)
+    .map(p => p.name);
+  if(!main.length) return null;
+
+  return `${battedTag}${main.join("・")}ピッチャー`;
+}
+
 function renderCard(d){
   const initial = (d.name || "?").trim().charAt(0);
   const rk = d.rankings || {};
@@ -677,6 +752,7 @@ function renderCard(d){
   `;}).join("");
 
   const gameLogHtml = buildGameLogTable(d);
+  const typeTag = classifyPitcherType(d);
 
   // 選手特徴・強み・弱み を1つの枠にまとめる（区切り線つき）
   const profileHtml = `
@@ -712,10 +788,10 @@ function renderCard(d){
         <div>
           <div class="p-name">${escapeHtml(d.name)}</div>
           <div class="p-meta">${escapeHtml(d.team || "")}・${escapeHtml(d.throws_bats || "")}・${escapeHtml(d.role || "")}・${d.games ?? "-"}登板 ${d.innings ?? "-"}回</div>
+          ${typeTag ? `<div class="p-type-tag">${escapeHtml(typeTag)}</div>` : ""}
         </div>
       </div>
 
-      <div class="stat-grid">
         ${stats.map(s => `
           <div class="stat-box">
             <div class="label">${s.label}</div>
@@ -1313,14 +1389,14 @@ function renderComparePanel(d){
             ${hmBuildGridHtml("対右打者", locsR)}
             <div class="hm-canvas-block">
               <div class="hm-canvas-title">対右打者 配球</div>
-              <canvas id="${canvasIdR}" width="300" height="300"></canvas>
+              <canvas id="${canvasIdR}" width="200" height="210"></canvas>
             </div>
           </div>
           <div class="course-pair">
             ${hmBuildGridHtml("対左打者", locsL)}
             <div class="hm-canvas-block">
               <div class="hm-canvas-title">対左打者 配球</div>
-              <canvas id="${canvasIdL}" width="300" height="300"></canvas>
+              <canvas id="${canvasIdL}" width="200" height="210"></canvas>
             </div>
           </div>
         </div>
