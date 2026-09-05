@@ -883,6 +883,29 @@ def determine_pitcher_role(appearances: list[dict]) -> str:
     return "starter" if most_common == "先発" else "reliever"
 
 
+def classify_pitcher_categories(card: dict) -> list:
+    """
+    球種構成・ゴロ/フライ傾向から、選手一覧で絞り込みに使えるカテゴリタグを機械的に組み立てる。
+    複数タグが同時に付き得る（例：「フライピッチャー」＋「ストレートピッチャー」＋「スライダーピッチャー」）。
+    """
+    cats = []
+    gb = card.get("gb_pct")
+    if gb is not None:
+        if gb >= 50:
+            cats.append("ゴロピッチャー")
+        elif gb <= 38:
+            cats.append("フライピッチャー")
+
+    pitches = ((card.get("season_pitch_detail") or {}).get("all")) or []
+    for p in pitches:
+        name = p.get("name")
+        pct = p.get("pct")
+        # 投球割合20%以上を「持ち味の球種」とみなす（1人の投手が複数該当してOK）
+        if name and pct is not None and pct >= 20:
+            cats.append(f"{name}ピッチャー")
+    return cats
+
+
 def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.0,
                            target_names: list[str] | None = None,
                            numeric_json_dir: str | None = None) -> str:
@@ -1041,6 +1064,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
         index_players = []
         for name, card in numeric_cards.items():
             card["rankings"] = rankings.get(name, {})
+            card["categories"] = classify_pitcher_categories(card)
             player_id = _slugify_name(name)
             with open(os.path.join(numeric_json_dir, f"{player_id}.json"), "w", encoding="utf-8") as f:
                 json.dump(card, f, ensure_ascii=False)
@@ -1048,6 +1072,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             index_players.append({
                 "id": player_id, "name": name, "team": card.get("team"), "role": card.get("role"),
                 "innings": card.get("innings"), "innings_num": round(ip_float, 1),
+                "categories": card["categories"],
             })
         with open(os.path.join(numeric_json_dir, "index.json"), "w", encoding="utf-8") as f:
             json.dump({"players": index_players}, f, ensure_ascii=False, indent=2)
