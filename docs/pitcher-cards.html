@@ -41,65 +41,50 @@
     padding:6px 14px; border-radius:6px; cursor:pointer;
   }
   .league-toggle button.active{ background:var(--panel-alt); color:var(--text-bright); }
-  .team-select{
-    background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:8px;
-    color:var(--text); font-size:12px; padding:7px 10px; outline:none;
-  }
   .header-controls{ display:flex; gap:8px; align-items:center; }
 
   .body-layout{ display:flex; flex:1; min-height:0; }
   .sidebar{
-    width:260px; flex-shrink:0; border-right:1px solid var(--border);
+    width:280px; flex-shrink:0; border-right:1px solid var(--border);
     display:flex; flex-direction:column; height:100%;
   }
-  .filter-box{ padding:10px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; }
-  .category-box{ padding:8px 14px; border-bottom:1px solid var(--border); }
-  .category-box-toggle{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px;
-    border:none; background:transparent; color:var(--text-dim); font-size:10.5px; font-weight:700;
-    padding:4px 0; cursor:pointer; text-align:left;
-  }
-  .category-box-toggle .chev{ font-size:9px; transition:transform 0.15s; flex-shrink:0; }
-  .category-chips{ flex-wrap:wrap; gap:5px; margin-top:8px; }
-  .category-chip{
-    border:1px solid rgba(148,163,184,0.25); background:var(--panel); color:var(--text-dim);
-    font-size:10.5px; font-weight:700; padding:4px 9px; border-radius:14px; cursor:pointer;
-    display:flex; align-items:center; gap:5px;
-  }
-  .category-chip .cnt{ color:var(--text-dim); font-weight:400; }
-  .category-chip.active{ background:var(--blue); border-color:var(--blue); color:#fff; }
-  .category-chip.active .cnt{ color:rgba(255,255,255,0.8); }
-  .filter-row{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
-  .filter-row input[type="checkbox"]{ accent-color:var(--blue); }
-  .filter-row input[type="number"]{
-    width:56px; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:6px;
-    color:var(--text); font-size:11px; padding:3px 6px; outline:none;
-  }
-  .search-box{ padding:14px; border-bottom:1px solid var(--border); }
-  .sidebar-summary{ display:none; }
-  .search-box input{
+  /* 検索・チーム・カテゴリ・並び替え・その他絞り込みを1か所にまとめたパネル */
+  .filter-panel{ padding:12px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
+  .filter-panel-label{ font-size:9.5px; font-weight:700; color:var(--text-dim); letter-spacing:0.02em; margin:4px 0 -2px; }
+  .filter-panel-label:first-child{ margin-top:0; }
+  .search-input{
     width:100%; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:8px;
     padding:9px 12px; color:var(--text); font-size:13px; outline:none;
   }
-  .search-box input:focus{ border-color: var(--blue); }
-  .player-list{ overflow-y:auto; flex:1; padding:6px; }
-  .player-list-box{ flex:1; min-height:0; display:flex; flex-direction:column; }
-  .player-list-toggle{
-    width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px;
-    border:none; background:transparent; color:var(--text-dim); font-size:10.5px; font-weight:700;
-    padding:8px 14px; cursor:pointer; text-align:left; flex-shrink:0; border-bottom:1px solid var(--border);
+  .search-input:focus{ border-color:var(--blue); }
+  .filter-panel-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-select{
+    flex:1; min-width:0; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:8px;
+    color:var(--text); font-size:12px; padding:8px 10px; outline:none;
   }
-  .player-list-toggle .chev{ font-size:9px; transition:transform 0.15s; flex-shrink:0; transform:rotate(180deg); }
-  .player-list-box.collapsed .player-list-toggle .chev{ transform:rotate(0deg); }
-  .player-list-box.collapsed .player-list{ display:none; }
+  .sort-dir-btn{
+    flex-shrink:0; border:1px solid rgba(148,163,184,0.2); background:var(--panel); color:var(--text-dim);
+    font-size:12px; font-weight:700; padding:8px 12px; border-radius:8px; cursor:pointer; white-space:nowrap;
+  }
+  .sort-dir-btn:hover{ color:var(--text-bright); }
+  .filter-row{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
+  .filter-row input[type="checkbox"]{ accent-color:var(--blue); width:15px; height:15px; }
+  .filter-row input[type="number"]{
+    width:56px; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:6px;
+    color:var(--text); font-size:11px; padding:5px 6px; outline:none;
+  }
+  .sidebar-summary{ display:none; }
+  .player-list{ overflow-y:auto; flex:1; padding:6px; min-height:0; }
   .player-item{
-    display:flex; flex-direction:column; gap:2px; padding:10px 12px; border-radius:8px;
+    display:flex; flex-direction:column; gap:2px; padding:11px 12px; border-radius:8px;
     cursor:pointer; margin-bottom:2px;
   }
   .player-item:hover{ background:var(--panel); }
   .player-item.active{ background:var(--panel-alt); }
   .player-item .name{ font-size:13px; font-weight:700; color:var(--text-bright); }
-  .player-item .meta{ font-size:11px; color:var(--text-dim); }
+  .player-item .meta{ font-size:11px; color:var(--text-dim); display:flex; gap:8px; flex-wrap:wrap; }
+  .player-item .meta .metric{ color:var(--text-dim); }
+  .player-item .meta .metric b{ color:var(--text); font-weight:700; }
   .empty-list{ padding:20px 14px; font-size:12px; color:var(--text-dim); }
 
   main{ flex:1; overflow-y:auto; padding:20px; display:flex; justify-content:center; }
@@ -175,34 +160,35 @@
      autoレイアウトのままだと、日付や対戦カードの文字量によって実際の列幅が
      sticky指定のleft/widthの想定値とズレてしまい、固定列の間に隙間や
      他の列の値が透けて見える不具合が起きていたため。 */
-  .gamelog-table{ width:980px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
+  .gamelog-table{ width:1110px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
   .gamelog-table th{
-    text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:nowrap;
+    text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:normal;
     border-bottom:1px solid rgba(148,163,184,0.15);
-    overflow:hidden; text-overflow:ellipsis;
-    box-sizing:border-box;
+    box-sizing:border-box; line-height:1.25;
   }
   .gamelog-table td{ padding:6px; text-align:left; box-sizing:border-box; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
   .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
-  /* 比較・日付・対戦の3列は短い固定文言のみなので、これまで通り1行・省略表示のままでよい */
-  .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  /* 比較・日付・対戦の3列も、長いチーム名などで見切れないよう折り返しを許可する
+     （「シーズン」「vs ソフトバンク」のような文言がまれに1行に収まらないため）*/
+  .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ white-space:normal; line-height:1.25; overflow:visible; text-overflow:clip; }
   /* 結果列以降は、値が長いと"..."で切れて読めなくなっていたため折り返し表示にして省略しない */
   .gamelog-table td:nth-child(n+4){ white-space:normal; overflow:visible; text-overflow:clip; line-height:1.3; }
 
   /* 比較・日付・対戦の3列を横スクロール時も固定表示 */
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
-  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:50px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
-  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:86px; width:76px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:64px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:100px; width:116px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
   .gamelog-table th:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
   .gamelog-table td:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
-  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:210px; padding-left:16px; }
+  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:190px; padding-left:16px; }
   /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
-     固定列の間に他の値が透けて見える不具合が再発するため。 */
-  .gamelog-table th:nth-child(n+5), .gamelog-table td:nth-child(n+5){ width:76px; }
+     固定列の間に他の値が透けて見える不具合が再発するため。
+     「ボール球SW%」「ストライク率」のような長めの見出しも1行で収まる幅にしてある。 */
+  .gamelog-table th:nth-child(n+5), .gamelog-table td:nth-child(n+5){ width:88px; }
   .gamelog-table th:nth-child(1), .gamelog-table th:nth-child(2), .gamelog-table th:nth-child(3){ background:var(--panel-alt); z-index:3; }
   .gamelog-table td:nth-child(1), .gamelog-table td:nth-child(2), .gamelog-table td:nth-child(3){ background:var(--panel); }
   .gamelog-table .row-season td:nth-child(1), .gamelog-table .row-season td:nth-child(2), .gamelog-table .row-season td:nth-child(3){ background:#111F33; }
@@ -258,15 +244,21 @@
   .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; }
 
   /* 年グループ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備）。
-     横スクロール時も他の固定列と同じように常に見えるよう sticky left:0 にしておく。 */
+     colspanの1セルだけでsticky leftを使うと横スクロール中に固定されない不具合があったため、
+     比較・日付・対戦の3列ぶんを2つの固定セルで占め（既に動作実績のあるnth-child(1)のsticky指定と、
+     日付+対戦をまとめた専用の固定セル）、それ以降の指標列ぶんは非固定の塗りつぶしセルにしている。 */
   .gamelog-table tr.row-folder{ cursor:pointer; }
   .gamelog-table tr.row-folder td{
-    position:sticky; left:0; width:auto; z-index:2; box-shadow:none;
-    background:#111F33; color:var(--text-bright); font-weight:700;
-    padding:8px 10px; text-align:left; border-bottom:1px solid rgba(59,130,246,0.25);
-    white-space:nowrap; overflow:visible; text-overflow:clip;
+    background:#0F1F38; color:var(--text-bright); font-weight:700;
+    padding:9px 10px; border-bottom:1px solid rgba(59,130,246,0.3); border-top:1px solid rgba(59,130,246,0.15);
   }
-  .gamelog-table tr.row-folder:hover td{ background:#16233a; }
+  .gamelog-table tr.row-folder td:nth-child(1){ border-left:3px solid var(--blue); }
+  .gamelog-table tr.row-folder td.folder-lead-cell{
+    position:sticky; left:36px; width:180px; z-index:2;
+    white-space:nowrap; overflow:visible; box-shadow:2px 0 4px rgba(0,0,0,0.25);
+  }
+  .gamelog-table tr.row-folder td.folder-fill-cell{ position:static; left:auto; width:auto; box-shadow:none; }
+  .gamelog-table tr.row-folder:hover td{ background:#152645; }
   .gamelog-table .folder-chevron{ display:inline-block; margin-right:6px; color:var(--blue-text); font-size:9px; transition:transform 0.15s ease; }
   .gamelog-table .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; margin-left:4px; }
 
@@ -299,6 +291,8 @@
   }
   .compare-block-title{ font-size:12.5px; font-weight:700; color:var(--text-bright); margin-bottom:2px; }
   .compare-block-summary{ font-size:11px; color:var(--text-dim); font-family:'DM Mono',monospace; margin-bottom:10px; }
+  /* 表部分と配球部分（タブ＋グリッド）を、2つの枠に分けず1つの枠の中で区切る境界線 */
+  .compare-divider{ height:1px; background:rgba(148,163,184,0.15); margin:16px 0; }
 
   /* 複数選択時の球種比較テーブル（投球数・投球割合を選択項目ぶん横並びにする） */
   .pcompare-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:4px; }
@@ -375,8 +369,15 @@
       flex-shrink:0; border:none; background:var(--blue); color:#fff; font-size:12px; font-weight:700;
       padding:8px 14px; border-radius:8px; cursor:pointer;
     }
-    .sidebar.collapsed .search-box, .sidebar.collapsed .filter-box, .sidebar.collapsed .category-box, .sidebar.collapsed .player-list-box{ display:none; }
+    .sidebar.collapsed .filter-panel, .sidebar.collapsed .player-list{ display:none; }
     .sidebar:not(.collapsed) .player-list{ max-height:55vh; }
+
+    /* 検索・フィルタ・並び替えをまとめたパネル：狭い画面ではセレクトを横並びにせず縦に積んで
+       誤タップを防ぐ。input系はiOSでの自動ズームを避けるため16px以上にしておく。 */
+    .filter-panel-row{ flex-direction:column; }
+    .filter-panel-row .filter-select, .filter-panel-row .sort-dir-btn{ width:100%; }
+    .search-input, .filter-select, .filter-row input[type="number"]{ font-size:16px; }
+    .player-item{ padding:13px 12px; }
 
     /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
        画面幅が狭い分、配球キャンバスの表示サイズだけ縮める（グリッド側のセル幅はJS側でも縮小）。 */
@@ -391,9 +392,6 @@
   <header>
     <h1>投手 AI解釈カード</h1>
     <div class="header-controls">
-      <select id="teamSelect" class="team-select">
-        <option value="">全チーム</option>
-      </select>
       <div class="league-toggle">
         <button data-league="npb" class="active">プロ野球</button>
         <button data-league="mlb">MLB</button>
@@ -410,29 +408,46 @@
         </div>
         <button type="button" id="sidebarToggleBtn">選手を変更</button>
       </div>
-      <div class="search-box">
-        <input id="searchInput" type="text" placeholder="選手名で検索">
-      </div>
-      <div class="filter-box">
-        <label class="filter-row">
-          <input id="aiOnlyFilter" type="checkbox">
-          AIコメントがある選手のみ
-        </label>
-        <label class="filter-row">
-          投球回
-          <input id="minIpFilter" type="number" min="0" step="1" placeholder="0">
-          回以上
-        </label>
-      </div>
-      <div class="category-box" id="categoryBox"></div>
-      <div class="player-list-box" id="playerListBox">
-        <button type="button" class="player-list-toggle" id="playerListToggle">
-          <span>選手で絞り込む</span>
-          <span class="chev">︾</span>
-        </button>
-        <div class="player-list" id="playerList">
-          <div class="empty-list">読み込み中…</div>
+      <div class="filter-panel">
+        <input id="searchInput" type="text" class="search-input" placeholder="選手名で検索">
+        <div class="filter-panel-row">
+          <select id="teamSelect" class="filter-select">
+            <option value="">全チーム</option>
+          </select>
+          <select id="categorySelect" class="filter-select">
+            <option value="">全カテゴリ</option>
+          </select>
         </div>
+        <div class="filter-panel-label">並び替え</div>
+        <div class="filter-panel-row">
+          <select id="sortField" class="filter-select">
+            <option value="name">名前</option>
+            <option value="era">防御率</option>
+            <option value="k_bb_pct">K-BB%</option>
+            <option value="k_pct">K%</option>
+            <option value="bb_pct">BB%</option>
+            <option value="swstr_pct">空振り率</option>
+            <option value="gb_pct">ゴロ率</option>
+            <option value="innings_num">投球回</option>
+          </select>
+          <button type="button" id="sortDirBtn" class="sort-dir-btn" data-dir="asc">昇順 ↑</button>
+        </div>
+        <div class="filter-panel-row">
+          <label class="filter-row">
+            <input id="aiOnlyFilter" type="checkbox">
+            AIコメントがある選手のみ
+          </label>
+        </div>
+        <div class="filter-panel-row">
+          <label class="filter-row">
+            投球回
+            <input id="minIpFilter" type="number" min="0" step="1" placeholder="0">
+            回以上
+          </label>
+        </div>
+      </div>
+      <div class="player-list" id="playerList">
+        <div class="empty-list">読み込み中…</div>
       </div>
     </aside>
 
@@ -460,12 +475,17 @@ let currentLeague = "npb";
 let allPlayers = [];
 let selectedCategory = null; // カテゴリで絞り込み中の値（null=絞り込みなし）
 let activePlayerId = null;
+let sortField = "name";
+let sortDir = "asc"; // "asc" | "desc"
 
 const el = (sel) => document.querySelector(sel);
 const playerListEl = el("#playerList");
 const mainContentEl = el("#mainContent");
 const searchInputEl = el("#searchInput");
 const teamSelectEl = el("#teamSelect");
+const categorySelectEl = el("#categorySelect");
+const sortFieldEl = el("#sortField");
+const sortDirBtnEl = el("#sortDirBtn");
 const aiOnlyFilterEl = el("#aiOnlyFilter");
 const minIpFilterEl = el("#minIpFilter");
 const sidebarEl = el("#sidebar");
@@ -522,7 +542,12 @@ async function loadPlayerIndex(league){
   playersWithLlmData = new Set();
   aiOnlyFilterEl.checked = false;
   selectedCategory = null;
-  categoryBoxOpen = false;
+  categorySelectEl.value = "";
+  sortField = "name";
+  sortDir = "asc";
+  sortFieldEl.value = "name";
+  sortDirBtnEl.dataset.dir = "asc";
+  sortDirBtnEl.textContent = "昇順 ↑";
   sidebarEl.classList.remove("collapsed");
   updateSidebarSummary("選手を選択してください", "");
   try{
@@ -532,7 +557,7 @@ async function loadPlayerIndex(league){
     const data = await res.json();
     allPlayers = data.players || [];
     populateTeamSelect(allPlayers);
-    renderCategoryChips();
+    populateCategorySelect(allPlayers);
     renderPlayerList(applyFilters());
   }catch(e){
     playerListEl.innerHTML = `<div class="empty-list">選手一覧を読み込めませんでした。<br>(${escapeHtml(e.message)})</div>`;
@@ -545,17 +570,43 @@ function populateTeamSelect(players){
     teams.map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join("");
 }
 
+// カテゴリ絞り込み用セレクト：選手一覧に登場する全カテゴリを人数の多い順に表示する
+function populateCategorySelect(players){
+  const counts = {};
+  players.forEach(p => (p.categories || []).forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
+  const cats = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
+  categorySelectEl.innerHTML = '<option value="">全カテゴリ</option>' +
+    cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}（${counts[c]}）</option>`).join("");
+}
+
+const SORT_FIELD_LABELS = {
+  name: "名前", era: "防御率", k_bb_pct: "K-BB%", k_pct: "K%", bb_pct: "BB%",
+  swstr_pct: "空振り率", gb_pct: "ゴロ率", innings_num: "投球回",
+};
+
 function renderPlayerList(players){
   if(!players.length){
     playerListEl.innerHTML = '<div class="empty-list">該当する選手がいません</div>';
     return;
   }
-  playerListEl.innerHTML = players.map(p => `
+  // 名前以外でソート中は、一覧上でも並び替え基準の数値がひと目でわかるよう表示する
+  const showMetric = sortField !== "name";
+  const metricLabel = SORT_FIELD_LABELS[sortField] || "";
+  playerListEl.innerHTML = players.map(p => {
+    const metricVal = p[sortField];
+    const metricHtml = showMetric
+      ? `<span class="metric">${escapeHtml(metricLabel)}: <b>${metricVal != null ? metricVal : "—"}${metricVal != null && sortField !== "era" && sortField !== "innings_num" ? "%" : ""}</b></span>`
+      : "";
+    return `
     <div class="player-item ${p.id === activePlayerId ? 'active' : ''}" data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}">
       <div class="name">${escapeHtml(p.name)}</div>
-      <div class="meta">${escapeHtml(p.team || "")}${p.role ? " ・ " + escapeHtml(p.role) : ""}</div>
+      <div class="meta">
+        <span>${escapeHtml(p.team || "")}${p.role ? " ・ " + escapeHtml(p.role) : ""}</span>
+        ${metricHtml}
+      </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
   playerListEl.querySelectorAll(".player-item").forEach(item => {
     item.addEventListener("click", () => {
       selectPlayer(item.dataset.id, item.dataset.name);
@@ -702,7 +753,7 @@ function applyFilters(){
   const team = teamSelectEl.value;
   const aiOnly = aiOnlyFilterEl.checked;
   const minIp = parseFloat(minIpFilterEl.value);
-  return allPlayers.filter(p => {
+  const filtered = allPlayers.filter(p => {
     const matchesQuery = !q || (p.name || "").toLowerCase().includes(q);
     const matchesTeam = !team || p.team === team;
     const matchesAi = !aiOnly || playersWithLlmData.has(p.name);
@@ -710,50 +761,44 @@ function applyFilters(){
     const matchesCategory = !selectedCategory || (p.categories || []).includes(selectedCategory);
     return matchesQuery && matchesTeam && matchesAi && matchesIp && matchesCategory;
   });
+  return sortPlayers(filtered);
 }
 
-// カテゴリ絞り込みチップ：選手一覧に登場する全カテゴリを人数の多い順に表示する
-let categoryBoxOpen = false; // カテゴリチップ一覧の開閉状態（デフォルトは閉じて選手一覧を優先表示）
-
-function renderCategoryChips(){
-  const box = document.getElementById("categoryBox");
-  if(!box) return;
-  const counts = {};
-  allPlayers.forEach(p => (p.categories || []).forEach(c => { counts[c] = (counts[c] || 0) + 1; }));
-  const cats = Object.keys(counts).sort((a,b) => counts[b] - counts[a]);
-  if(!cats.length){ box.innerHTML = ""; return; }
-  const isOpen = categoryBoxOpen || !!selectedCategory; // 選択中は常に開いておく
-  box.innerHTML = `
-    <button class="category-box-toggle" id="categoryBoxToggle">
-      <span>カテゴリで絞り込む${selectedCategory ? `：${escapeHtml(selectedCategory)}` : ""}</span>
-      <span class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</span>
-    </button>
-    <div class="category-chips" style="display:${isOpen ? 'flex' : 'none'}">
-      ${cats.map(c => `<button class="category-chip ${selectedCategory===c?'active':''}" data-category="${escapeHtml(c)}">${escapeHtml(c)}<span class="cnt">${counts[c]}</span></button>`).join("")}
-    </div>
-  `;
-  document.getElementById("categoryBoxToggle").addEventListener("click", () => {
-    categoryBoxOpen = !categoryBoxOpen;
-    renderCategoryChips();
+// 名前は50音/アルファベット順、それ以外の指標は数値順（データが無い選手は常に末尾）で並び替える
+function sortPlayers(players){
+  const dir = sortDir === "desc" ? -1 : 1;
+  const sorted = players.slice().sort((a, b) => {
+    if(sortField === "name"){
+      return dir * String(a.name || "").localeCompare(String(b.name || ""), "ja");
+    }
+    const av = a[sortField], bv = b[sortField];
+    if(av == null && bv == null) return 0;
+    if(av == null) return 1;  // データが無い選手は並び替え基準に関わらず末尾へ
+    if(bv == null) return -1;
+    return dir * (av - bv);
   });
-  box.querySelectorAll(".category-chip").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const c = btn.dataset.category;
-      selectedCategory = (selectedCategory === c) ? null : c; // もう一度押すと解除
-      renderCategoryChips();
-      renderPlayerList(applyFilters());
-    });
-  });
+  return sorted;
 }
 
 searchInputEl.addEventListener("input", () => {
   renderPlayerList(applyFilters());
 });
 
-const playerListBoxEl = el("#playerListBox");
-const playerListToggleEl = el("#playerListToggle");
-playerListToggleEl.addEventListener("click", () => {
-  playerListBoxEl.classList.toggle("collapsed");
+categorySelectEl.addEventListener("change", () => {
+  selectedCategory = categorySelectEl.value || null;
+  renderPlayerList(applyFilters());
+});
+
+sortFieldEl.addEventListener("change", () => {
+  sortField = sortFieldEl.value;
+  renderPlayerList(applyFilters());
+});
+
+sortDirBtnEl.addEventListener("click", () => {
+  sortDir = sortDir === "asc" ? "desc" : "asc";
+  sortDirBtnEl.dataset.dir = sortDir;
+  sortDirBtnEl.textContent = sortDir === "asc" ? "昇順 ↑" : "降順 ↓";
+  renderPlayerList(applyFilters());
 });
 
 teamSelectEl.addEventListener("change", () => {
@@ -962,7 +1007,7 @@ function renderCard(d){
   mainContentEl.querySelectorAll(".p-type-tag").forEach(tag => {
     tag.addEventListener("click", () => {
       selectedCategory = tag.dataset.category;
-      renderCategoryChips();
+      categorySelectEl.value = selectedCategory;
       sidebarEl.classList.remove("collapsed");
       renderPlayerList(applyFilters());
       sidebarEl.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1176,6 +1221,17 @@ function pitchDetailTableHtml(pitches){
 const PITCH_COLORS = ["#34D399","#FB923C","#F87171","#EC4899","#A78BFA","#60A5FA","#FBBF24","#22D3EE"];
 function pitchColor(i){ return PITCH_COLORS[i % PITCH_COLORS.length]; }
 
+// 日本語（全角）と英数字（半角）が混ざった短い文言のセル幅を見積もる。
+// 「8/30 vs ソフトバンク」のような長いチーム名でも列が見切れないようにするため、
+// 表示する文言の長さに応じて列幅を動的に決める（固定幅だと長いチーム名で切れてしまうため）。
+function estimateLabelWidth(s){
+  let w = 20; // 左右パディング分
+  for(const ch of String(s || "")){
+    w += /[\x00-\x7F]/.test(ch) ? 7 : 12;
+  }
+  return w;
+}
+
 // ── 複数選択時：指標ごとに、選択項目の数だけ横並びで比較するテーブル ──
 // entries: [{label, pitches}]（pitchesは pitchDetailTableHtml に渡すのと同じ球種配列）
 function buildPitchCompareTable(entries){
@@ -1230,7 +1286,9 @@ function buildPitchCompareTable(entries){
   // table-layout:fixedで列幅を確実に固定するため、colgroupで各列の幅を明示する。
   // ここを明示しないと、横スクロール中に列幅がブラウザ側で再計算されてsticky列の位置とズレ、
   // 隣の指標セルの色（カラースケール）が固定列の隙間から透けて見える不具合になる。
-  const COL_W = 78;
+  // 列幅は「8/30 vs ソフトバンク」のような長いチーム名でも見切れないよう、
+  // 実際に表示するラベルの長さから動的に決める。
+  const COL_W = Math.max(64, Math.min(150, ...entries.map(e => estimateLabelWidth(e.label))));
   const totalWidth = 110 + metrics.length * n * COL_W;
   const colgroupHtml = `<colgroup><col style="width:110px">${metrics.map(() => entries.map(() => `<col style="width:${COL_W}px">`).join("")).join("")}</colgroup>`;
   return `
@@ -1574,11 +1632,13 @@ function buildGameLogTable(d){
     return `
       <tbody class="folder-head-body">
         <tr class="row-folder" data-year="${escapeHtml(grp.year)}">
-          <td colspan="${colCount}">
+          <td></td>
+          <td colspan="2" class="folder-lead-cell">
             <span class="folder-chevron" style="transform:${isOpen ? "rotate(90deg)" : "rotate(0deg)"}">▸</span>
             <span class="folder-label">${escapeHtml(grp.year)}年</span>
             <span class="folder-count">（${grp.indices.length}試合）</span>
           </td>
+          <td colspan="${colCount - 3}" class="folder-fill-cell"></td>
         </tr>
       </tbody>
       <tbody class="folder-body" data-year-body="${escapeHtml(grp.year)}" style="display:${isOpen ? "table-row-group" : "none"}">
@@ -1589,7 +1649,7 @@ function buildGameLogTable(d){
 
   return `
     <div class="section section-gamelog">
-      ${sectionHeader({ bar:"var(--amber)", label:`${d.season_label || "シーズン"}成績`, labelColor:"var(--text-bright)", sub:`${d.games ?? "-"}試合・チェックで比較` })}
+      ${sectionHeader({ bar:"var(--amber)", label:`${d.season_label || "シーズン"}成績`, labelColor:"var(--text-bright)" })}
       <div class="section-body">
         <div class="gamelog-scroll">
           <table class="gamelog-table">
@@ -1635,9 +1695,8 @@ function renderComparePanel(d){
   const flipR = hmDisplayFlip(currentLeague, d.throws, true);
   const flipL = hmDisplayFlip(currentLeague, d.throws, false);
 
-  // Box A：球種の投球数・割合などの「表」部分（複数選択なら球種比較テーブル、単一選択ならそのゲームの球種内訳表）。
-  // タブや配球図とは分けて、これだけで1つの囲み枠にする。
-  const statsBoxHtml = isMulti ? (() => {
+  // 表部分：球種の投球数・割合など（複数選択なら球種比較テーブル、単一選択ならそのゲームの球種内訳表）
+  const statsInnerHtml = isMulti ? (() => {
     const entries = keys.map(gidx => {
       const rd = getRowDataFor(d, gidx);
       const pitches = rd && rd.pitchDetail ? rd.pitchDetail[compareHand] : null;
@@ -1651,31 +1710,27 @@ function renderComparePanel(d){
       </div>
     `;
     return `
-      <div class="compare-block">
-        <div class="compare-block-title">球種比較</div>
-        ${handButtons}
-        ${buildPitchCompareTable(entries)}
-      </div>
+      <div class="compare-block-title">球種比較</div>
+      ${handButtons}
+      ${buildPitchCompareTable(entries)}
     `;
   })() : (() => {
     const gidx = keys[0];
     const rd = getRowDataFor(d, gidx);
     if(!rd || !rd.pitchDetail || !rd.pitchDetail.all) return "";
     return `
-      <div class="compare-block" data-cmp-gidx="${gidx}">
-        <div class="compare-block-title">${escapeHtml(rd.label)}</div>
-        ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
-        <div class="hand-toggle" data-gidx="${gidx}">
-          <button class="hand-btn active" data-hand="all">全体</button>
-          <button class="hand-btn" data-hand="vsR">対右</button>
-          <button class="hand-btn" data-hand="vsL">対左</button>
-        </div>
-        <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(rd.pitchDetail.all)}</div>
+      <div class="compare-block-title">${escapeHtml(rd.label)}</div>
+      ${rd.summary ? `<div class="compare-block-summary">${escapeHtml(rd.summary)}</div>` : ""}
+      <div class="hand-toggle" data-gidx="${gidx}">
+        <button class="hand-btn active" data-hand="all">全体</button>
+        <button class="hand-btn" data-hand="vsR">対右</button>
+        <button class="hand-btn" data-hand="vsL">対左</button>
       </div>
+      <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(rd.pitchDetail.all)}</div>
     `;
   })();
 
-  // Box B：結果/分割/球種のタブと、選択ぶんの配球グリッド＋配球図をまとめて1つの囲み枠にする
+  // 配球部分：結果/分割/球種のタブと、選択ぶんの配球グリッド＋配球図
   const courseEntriesHtml = keys.map(gidx => {
     const rd = getRowDataFor(d, gidx);
     if(!rd) return "";
@@ -1712,14 +1767,17 @@ function renderComparePanel(d){
     `;
   }).join("");
 
-  const courseBoxHtml = `
+  // 表部分と配球部分は、2つの枠に分けず1つの囲み枠の中を区切り線で分ける
+  const combinedBoxHtml = `
     <div class="compare-block">
+      ${statsInnerHtml}
+      <div class="compare-divider"></div>
       ${controlsHtml}
       ${courseEntriesHtml}
     </div>
   `;
 
-  panel.innerHTML = `<div class="compare-blocks">${statsBoxHtml}${courseBoxHtml}</div>`;
+  panel.innerHTML = `<div class="compare-blocks">${combinedBoxHtml}</div>`;
 
 
   // canvas描画（DOM挿入後に実行する必要がある）
