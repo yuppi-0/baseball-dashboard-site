@@ -175,7 +175,7 @@
      autoレイアウトのままだと、日付や対戦カードの文字量によって実際の列幅が
      sticky指定のleft/widthの想定値とズレてしまい、固定列の間に隙間や
      他の列の値が透けて見える不具合が起きていたため。 */
-  .gamelog-table{ width:auto; min-width:964px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
+  .gamelog-table{ width:932px; table-layout:fixed; border-collapse:collapse; font-size:11px; }
   .gamelog-table th{
     text-align:left; font-weight:700; color:var(--text-dim); padding:5px 6px; white-space:nowrap;
     border-bottom:1px solid rgba(148,163,184,0.15);
@@ -191,7 +191,9 @@
   /* 比較・日付・対戦の3列を横スクロール時も固定表示 */
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
   .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:84px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
-  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:120px; width:76px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:120px; width:76px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .gamelog-table th:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
+  .gamelog-table td:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
   .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; padding-left:16px; }
   /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
@@ -218,7 +220,7 @@
   }
   .chand-toggle .hand-btn.active{ background:#fff; color:#000; }
   .pmix-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:14px; }
-  .pmix-table{ width:100%; border-collapse:collapse; min-width:560px; table-layout:fixed; font-family:'DM Mono',monospace; }
+  .pmix-table{ border-collapse:collapse; table-layout:fixed; font-family:'DM Mono',monospace; }
   .pmix-table th{
     padding:6px 8px; font-size:9px; font-weight:600; color:var(--text-dim); white-space:nowrap;
     text-align:left; background:var(--panel-alt); border-bottom:1px solid rgba(148,163,184,0.15);
@@ -231,7 +233,9 @@
 
   /* 球種・投球数（先頭2列）を横スクロール時も固定表示 */
   .pmix-table th:nth-child(1), .pmix-table td:nth-child(1){ position:sticky; left:0; width:104px; z-index:2; overflow:hidden; text-overflow:ellipsis; -webkit-transform:translateZ(0); transform:translateZ(0); }
-  .pmix-table th:nth-child(2), .pmix-table td:nth-child(2){ position:sticky; left:104px; width:52px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .pmix-table th:nth-child(2), .pmix-table td:nth-child(2){ position:sticky; left:104px; width:52px; z-index:2; -webkit-transform:translateZ(0); transform:translateZ(0); }
+  .pmix-table th:nth-child(2){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
+  .pmix-table td:nth-child(2){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
   .pmix-table th:nth-child(1), .pmix-table th:nth-child(2){ background:var(--panel-alt); z-index:3; }
   .pmix-table td:nth-child(1), .pmix-table td:nth-child(2){ background:var(--panel); }
   .pmix-table tfoot td:nth-child(1), .pmix-table tfoot td:nth-child(2){ background:var(--panel-alt); }
@@ -326,6 +330,11 @@
     .body-layout{ flex-direction:column; }
     .sidebar{ width:100%; max-height:none; height:auto; border-right:none; border-bottom:1px solid var(--border); }
     main{ padding:14px; overflow-y:visible; }
+
+    /* ヘッダー（タイトル・チーム/リーグ切替）と選手サマリー（選手名・選手を変更ボタン）を
+       画面上部に固定表示する。ヘッダーの実際の高さはJS側で測って --header-h に反映する。 */
+    header{ position:sticky; top:0; z-index:20; background:var(--bg); }
+    .sidebar-summary{ position:sticky; top:var(--header-h, 60px); z-index:19; }
 
     /* 選手を選ぶまでは検索欄・一覧を大きく開いておき、選んだ後はサマリー1行だけに畳んで
        カード本体をすぐ見られるようにする。「選手を変更」で再度開閉できる。 */
@@ -436,6 +445,17 @@ const minIpFilterEl = el("#minIpFilter");
 const sidebarEl = el("#sidebar");
 const sidebarSummaryNameEl = el("#sidebarSummaryName");
 const sidebarSummaryTeamEl = el("#sidebarSummaryTeam");
+
+// スマホ表示：ヘッダー（タイトル・チーム/リーグ切替）は折り返しで高さが変わるため、
+// 実測してCSS変数 --header-h に反映し、選手サマリーバーがヘッダー直下にぴったり固定されるようにする。
+function updateHeaderHeightVar(){
+  const header = document.querySelector("header");
+  if(!header) return;
+  document.documentElement.style.setProperty("--header-h", header.offsetHeight + "px");
+}
+updateHeaderHeightVar();
+window.addEventListener("resize", updateHeaderHeightVar);
+window.addEventListener("orientationchange", () => setTimeout(updateHeaderHeightVar, 100));
 
 // モバイル：選手を選んだら検索欄・一覧を畳んでカード本体をすぐ見せる。「選手を変更」で開閉。
 function updateSidebarSummary(name, meta){
@@ -975,23 +995,30 @@ function setupGamelogSnap(){
     acc += headerCells[i].offsetWidth;
     boundaries.push(acc);
   }
+  const doSnap = () => {
+    const maxScroll = table.offsetWidth - scrollEl.clientWidth;
+    const sl = scrollEl.scrollLeft;
+    if(sl <= 0 || sl >= maxScroll - 1) return; // 端まで来ている場合はそのまま
+    let nearest = boundaries[0], best = Infinity;
+    for(const b of boundaries){
+      if(b > maxScroll) break;
+      const d = Math.abs(b - sl);
+      if(d < best){ best = d; nearest = b; }
+    }
+    if(Math.abs(nearest - sl) > 1){
+      scrollEl.scrollTo({ left: nearest, behavior: "smooth" });
+    }
+  };
+  // "scrollend"に対応するブラウザ（iOS16.4+のSafari含む）では、慣性スクロールも含めた
+  // 本当の停止タイミングを直接検知できるので最優先で使う。未対応環境向けに、通常のscrollイベント
+  // ＋短いデバウンスによるフォールバックも併用する（両方登録しても、境界に既に合っていれば何もしない）。
+  if("onscrollend" in window){
+    scrollEl.addEventListener("scrollend", doSnap);
+  }
   let snapTimer = null;
   scrollEl.addEventListener("scroll", () => {
     clearTimeout(snapTimer);
-    snapTimer = setTimeout(() => {
-      const maxScroll = table.offsetWidth - scrollEl.clientWidth;
-      const sl = scrollEl.scrollLeft;
-      if(sl <= 0 || sl >= maxScroll - 1) return; // 端まで来ている場合はそのまま
-      let nearest = boundaries[0], best = Infinity;
-      for(const b of boundaries){
-        if(b > maxScroll) break;
-        const d = Math.abs(b - sl);
-        if(d < best){ best = d; nearest = b; }
-      }
-      if(Math.abs(nearest - sl) > 1){
-        scrollEl.scrollTo({ left: nearest, behavior: "smooth" });
-      }
-    }, 120);
+    snapTimer = setTimeout(doSnap, 80);
   });
 }
 
@@ -1063,6 +1090,10 @@ function pitchDetailTableHtml(pitches){
     return wsum > 0 ? withVal.reduce((s,m)=>s+(m[key]*(m.count||0)), 0) / wsum : null;
   };
   const maxVel = pitches.reduce((mx,m) => (m.max_vel != null && m.max_vel > mx) ? m.max_vel : mx, 0);
+  // table-layout:fixedは、テーブル自身の幅がautoのままだと内容の長さに引っ張られて列幅がズレてしまう
+  // （固定列の位置計算の前提が崩れ、スクロール時に他の値が透けて見える原因になる）ため、
+  // 列幅の合計と完全に一致する幅をここで計算してテーブルに明示的に指定する。
+  const totalWidth = 104 + 52 + 60 + metrics.reduce((s,m) => s + m.width, 0);
   const rows = pitches.map((p,i) => `
     <tr>
       <td style="width:104px"><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(i)}"></span>${escapeHtml(p.name)}</span></td>
@@ -1078,7 +1109,7 @@ function pitchDetailTableHtml(pitches){
   `).join("");
   return `
     <div class="pmix-scroll">
-      <table class="pmix-table">
+      <table class="pmix-table" style="width:${totalWidth}px">
         <thead><tr><th style="width:104px">球種</th><th style="width:52px">投球数</th><th style="width:60px">投球割合</th>${metrics.map(m => `<th style="width:${m.width}px">${m.label}</th>`).join("")}</tr></thead>
         <tbody>${rows}</tbody>
         <tfoot><tr><td style="width:104px">合計</td><td style="width:52px">${tc}</td><td style="width:60px">100%</td>${metrics.map(m => {
