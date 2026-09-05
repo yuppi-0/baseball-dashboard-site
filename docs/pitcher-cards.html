@@ -48,30 +48,31 @@
     width:280px; flex-shrink:0; border-right:1px solid var(--border);
     display:flex; flex-direction:column; height:100%;
   }
-  /* 検索・チーム・カテゴリ・並び替え・その他絞り込みを1か所にまとめたパネル */
-  .filter-panel{ padding:12px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:8px; flex-shrink:0; }
-  .filter-panel-label{ font-size:9.5px; font-weight:700; color:var(--text-dim); letter-spacing:0.02em; margin:4px 0 -2px; }
+  /* 検索・チーム・カテゴリ・並び替え・その他絞り込みを1か所にまとめたパネル。
+     選手一覧により多くの縦幅を割けるよう、各要素の余白を詰めてコンパクトにしている。 */
+  .filter-panel{ padding:10px 14px; border-bottom:1px solid var(--border); display:flex; flex-direction:column; gap:6px; flex-shrink:0; }
+  .filter-panel-label{ font-size:9.5px; font-weight:700; color:var(--text-dim); letter-spacing:0.02em; margin:2px 0 -2px; }
   .filter-panel-label:first-child{ margin-top:0; }
   .search-input{
     width:100%; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:8px;
-    padding:9px 12px; color:var(--text); font-size:13px; outline:none;
+    padding:7px 12px; color:var(--text); font-size:13px; outline:none;
   }
   .search-input:focus{ border-color:var(--blue); }
-  .filter-panel-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .filter-panel-row{ display:flex; gap:6px; flex-wrap:wrap; }
   .filter-select{
     flex:1; min-width:0; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:8px;
-    color:var(--text); font-size:12px; padding:8px 10px; outline:none;
+    color:var(--text); font-size:12px; padding:6px 8px; outline:none;
   }
   .sort-dir-btn{
     flex-shrink:0; border:1px solid rgba(148,163,184,0.2); background:var(--panel); color:var(--text-dim);
-    font-size:12px; font-weight:700; padding:8px 12px; border-radius:8px; cursor:pointer; white-space:nowrap;
+    font-size:12px; font-weight:700; padding:6px 10px; border-radius:8px; cursor:pointer; white-space:nowrap;
   }
   .sort-dir-btn:hover{ color:var(--text-bright); }
-  .filter-row{ display:flex; align-items:center; gap:6px; font-size:11px; color:var(--text-dim); }
+  .filter-row{ display:flex; align-items:center; gap:5px; font-size:11px; color:var(--text-dim); }
   .filter-row input[type="checkbox"]{ accent-color:var(--blue); width:15px; height:15px; }
   .filter-row input[type="number"]{
-    width:56px; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:6px;
-    color:var(--text); font-size:11px; padding:5px 6px; outline:none;
+    width:50px; background:var(--panel); border:1px solid rgba(148,163,184,0.2); border-radius:6px;
+    color:var(--text); font-size:11px; padding:4px 6px; outline:none;
   }
   .sidebar-summary{ display:none; }
   .player-list{ overflow-y:auto; flex:1; padding:6px; min-height:0; }
@@ -156,7 +157,8 @@
   .bullets.tone-negative div b{ color:#FECACA; }
 
   /* 試合ログテーブル */
-  /* table-layout:fixed にして列幅をthead側の指定に固定する。
+  /* table-layout:fixed にして列幅をcolgroupの指定に固定する（カラム見出し行が
+     年フォルダの中に入り、閉じている間は非表示になるため、幅の基準はcolgroup側に持たせている）。
      autoレイアウトのままだと、日付や対戦カードの文字量によって実際の列幅が
      sticky指定のleft/widthの想定値とズレてしまい、固定列の間に隙間や
      他の列の値が透けて見える不具合が起きていたため。 */
@@ -168,6 +170,8 @@
   }
   .gamelog-table td{ padding:6px; text-align:left; box-sizing:border-box; }
   .gamelog-table .row-season td{ font-weight:700; color:var(--amber-text); border-bottom:1px solid rgba(59,130,246,0.25); }
+  /* シーズン集計行の「21登板 130.0回 防2.63 155K 26BB」は改行させず1行で見せる */
+  .gamelog-table .row-season td:nth-child(4){ white-space:nowrap; overflow:visible; }
   .gamelog-table .row-game td{ border-bottom:1px solid rgba(148,163,184,0.08); color:var(--text); cursor:pointer; }
   .gamelog-table .row-game:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table .row-detail td{ border-bottom:1px solid rgba(148,163,184,0.08); padding:10px 8px; }
@@ -244,23 +248,26 @@
   .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; }
 
   /* 年グループ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備）。
+     以前は濃い青のボックスで強調していたが、選手プロフィール（選手特徴・強み・弱み）の
+     見出しと比べて浮いて見えたため、そちらと揃えて「細いバー＋控えめなラベル」の
+     サブ見出し的な見た目に統一した。
      colspanの1セルだけでsticky leftを使うと横スクロール中に固定されない不具合があったため、
      比較・日付・対戦の3列ぶんを2つの固定セルで占め（既に動作実績のあるnth-child(1)のsticky指定と、
      日付+対戦をまとめた専用の固定セル）、それ以降の指標列ぶんは非固定の塗りつぶしセルにしている。 */
   .gamelog-table tr.row-folder{ cursor:pointer; }
   .gamelog-table tr.row-folder td{
-    background:#0F1F38; color:var(--text-bright); font-weight:700;
-    padding:9px 10px; border-bottom:1px solid rgba(59,130,246,0.3); border-top:1px solid rgba(59,130,246,0.15);
+    background:var(--panel); padding:10px; border-bottom:1px solid rgba(148,163,184,0.12); border-top:none;
   }
-  .gamelog-table tr.row-folder td:nth-child(1){ border-left:3px solid var(--blue); }
+  .gamelog-table tr.row-folder:hover td{ background:rgba(148,163,184,0.06); }
   .gamelog-table tr.row-folder td.folder-lead-cell{
     position:sticky; left:36px; width:180px; z-index:2;
-    white-space:nowrap; overflow:visible; box-shadow:2px 0 4px rgba(0,0,0,0.25);
+    white-space:nowrap; overflow:visible; box-shadow:none;
   }
   .gamelog-table tr.row-folder td.folder-fill-cell{ position:static; left:auto; width:auto; box-shadow:none; }
-  .gamelog-table tr.row-folder:hover td{ background:#152645; }
-  .gamelog-table .folder-chevron{ display:inline-block; margin-right:6px; color:var(--blue-text); font-size:9px; transition:transform 0.15s ease; }
-  .gamelog-table .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; margin-left:4px; }
+  .gamelog-table .folder-bar{ display:inline-block; width:3px; height:12px; border-radius:2px; background:var(--blue); margin-right:6px; vertical-align:middle; }
+  .gamelog-table .folder-chevron{ display:inline-block; margin-right:5px; color:var(--blue-text); font-size:9px; transition:transform 0.15s ease; vertical-align:middle; }
+  .gamelog-table .folder-label{ font-size:10px; font-weight:700; letter-spacing:0.06em; color:#CBD5E1; vertical-align:middle; }
+  .gamelog-table .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; margin-left:4px; vertical-align:middle; }
 
   /* 比較パネル（試合ログの下部に表示） */
   #comparePanel{ margin-top:14px; }
@@ -423,22 +430,20 @@
           <select id="sortField" class="filter-select">
             <option value="name">名前</option>
             <option value="era">防御率</option>
-            <option value="k_bb_pct">K-BB%</option>
+            <option value="k_bb_pct" selected>K-BB%</option>
             <option value="k_pct">K%</option>
             <option value="bb_pct">BB%</option>
             <option value="swstr_pct">空振り率</option>
             <option value="gb_pct">ゴロ率</option>
             <option value="innings_num">投球回</option>
           </select>
-          <button type="button" id="sortDirBtn" class="sort-dir-btn" data-dir="asc">昇順 ↑</button>
+          <button type="button" id="sortDirBtn" class="sort-dir-btn" data-dir="desc">降順 ↓</button>
         </div>
         <div class="filter-panel-row">
           <label class="filter-row">
-            <input id="aiOnlyFilter" type="checkbox">
+            <input id="aiOnlyFilter" type="checkbox" checked>
             AIコメントがある選手のみ
           </label>
-        </div>
-        <div class="filter-panel-row">
           <label class="filter-row">
             投球回
             <input id="minIpFilter" type="number" min="0" step="1" placeholder="0">
@@ -475,8 +480,9 @@ let currentLeague = "npb";
 let allPlayers = [];
 let selectedCategory = null; // カテゴリで絞り込み中の値（null=絞り込みなし）
 let activePlayerId = null;
-let sortField = "name";
-let sortDir = "asc"; // "asc" | "desc"
+// デフォルトはK-BB%の降順・AIコメントがある選手のみ表示
+let sortField = "k_bb_pct";
+let sortDir = "desc"; // "asc" | "desc"
 
 const el = (sel) => document.querySelector(sel);
 const playerListEl = el("#playerList");
@@ -540,14 +546,15 @@ async function loadPlayerIndex(league){
   activePlayerId = null;
   llmDataLoaded = false;
   playersWithLlmData = new Set();
-  aiOnlyFilterEl.checked = false;
+  // デフォルトはAIコメントがある選手のみ・K-BB%降順
+  aiOnlyFilterEl.checked = true;
   selectedCategory = null;
   categorySelectEl.value = "";
-  sortField = "name";
-  sortDir = "asc";
-  sortFieldEl.value = "name";
-  sortDirBtnEl.dataset.dir = "asc";
-  sortDirBtnEl.textContent = "昇順 ↑";
+  sortField = "k_bb_pct";
+  sortDir = "desc";
+  sortFieldEl.value = "k_bb_pct";
+  sortDirBtnEl.dataset.dir = "desc";
+  sortDirBtnEl.textContent = "降順 ↓";
   sidebarEl.classList.remove("collapsed");
   updateSidebarSummary("選手を選択してください", "");
   try{
@@ -558,6 +565,13 @@ async function loadPlayerIndex(league){
     allPlayers = data.players || [];
     populateTeamSelect(allPlayers);
     populateCategorySelect(allPlayers);
+    // デフォルトで「AIコメントがある選手のみ」がONのため、絞り込みが正しく効くよう
+    // 一覧を描画する前にAIコメントの有無データを読み込んでおく
+    if(aiOnlyFilterEl.checked && !llmDataLoaded){
+      aiOnlyFilterEl.disabled = true;
+      await loadAllLlmPlayerNames();
+      aiOnlyFilterEl.disabled = false;
+    }
     renderPlayerList(applyFilters());
   }catch(e){
     playerListEl.innerHTML = `<div class="empty-list">選手一覧を読み込めませんでした。<br>(${escapeHtml(e.message)})</div>`;
@@ -1071,12 +1085,14 @@ function setupGamelogSnap(){
   const scrollEl = mainContentEl.querySelector(".gamelog-scroll");
   const table = scrollEl && scrollEl.querySelector(".gamelog-table");
   if(!scrollEl || !table) return;
-  const headerCells = table.querySelectorAll("thead th");
-  if(headerCells.length < 5) return;
+  // カラム見出し行は年フォルダを閉じている間は非表示（display:none）になり、
+  // offsetWidthが0になってしまうため、DOM上のth幅ではなくcolgroupの指定値から直接計算する。
+  const colEls = table.querySelectorAll("colgroup col");
+  if(colEls.length < 5) return;
   const boundaries = [0];
   let acc = 0;
-  for(let i = 3; i < headerCells.length; i++){
-    acc += headerCells[i].offsetWidth;
+  for(let i = 3; i < colEls.length; i++){
+    acc += parseInt(colEls[i].style.width, 10) || 0;
     boundaries.push(acc);
   }
   const doSnap = () => {
@@ -1600,6 +1616,16 @@ function buildGameLogTable(d){
 
   const colCount = 4 + cols.length; // 比較・日付・対戦・結果 + 指標列
 
+  // カラム見出し行：以前は年フォルダの外側に固定表示していたが、年フォルダを開くまで
+  // 中身（試合行）が見えないのに見出しだけ先に見えているのは不自然、という指摘を受けて
+  // 各年フォルダの中身（folder-body）の先頭行として、フォルダを開いたときだけ表示するようにした。
+  const headerRowHtml = `
+    <tr class="row-col-header">
+      <th>比較</th><th>日付</th><th>対戦</th><th>結果</th>
+      ${cols.map(c => `<th>${c.label}</th>`).join("")}
+    </tr>
+  `;
+
   const gameRowHtml = (g, i) => `
     <tr class="row-game" data-gidx="${i}">
       <td>${chk(String(i))}</td>
@@ -1634,7 +1660,7 @@ function buildGameLogTable(d){
         <tr class="row-folder" data-year="${escapeHtml(grp.year)}">
           <td></td>
           <td colspan="2" class="folder-lead-cell">
-            <span class="folder-chevron" style="transform:${isOpen ? "rotate(90deg)" : "rotate(0deg)"}">▸</span>
+            <span class="folder-bar"></span><span class="folder-chevron" style="transform:${isOpen ? "rotate(90deg)" : "rotate(0deg)"}">▸</span>
             <span class="folder-label">${escapeHtml(grp.year)}年</span>
             <span class="folder-count">（${grp.indices.length}試合）</span>
           </td>
@@ -1642,10 +1668,21 @@ function buildGameLogTable(d){
         </tr>
       </tbody>
       <tbody class="folder-body" data-year-body="${escapeHtml(grp.year)}" style="display:${isOpen ? "table-row-group" : "none"}">
-        ${seasonRowHtml}${rows}
+        ${headerRowHtml}${seasonRowHtml}${rows}
       </tbody>
     `;
   }).join("");
+
+  // table-layout:fixed の列幅は本来thead側の指定で決まるが、カラム見出し行を
+  // 各年フォルダの中（開いたときだけ表示）に移したことで、閉じている間は
+  // 幅の基準になる行が無くなってしまう。そのためcolgroupで列幅を明示し、
+  // フォルダの開閉状態に関わらず常に同じ列幅になるようにしている。
+  const colgroupHtml = `
+    <colgroup>
+      <col style="width:36px"><col style="width:64px"><col style="width:116px"><col style="width:190px">
+      ${cols.map(() => `<col style="width:88px">`).join("")}
+    </colgroup>
+  `;
 
   return `
     <div class="section section-gamelog">
@@ -1653,10 +1690,7 @@ function buildGameLogTable(d){
       <div class="section-body">
         <div class="gamelog-scroll">
           <table class="gamelog-table">
-            <thead><tr>
-              <th>比較</th><th>日付</th><th>対戦</th><th>結果</th>
-              ${cols.map(c => `<th>${c.label}</th>`).join("")}
-            </tr></thead>
+            ${colgroupHtml}
             ${folderRowsHtml}
           </table>
         </div>
