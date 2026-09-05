@@ -106,11 +106,13 @@
     display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; flex-shrink:0;
   }
   .p-name{ font-size:18px; font-weight:700; color:var(--text-bright); line-height:1.25; }
-  .p-meta{ font-size:12px; color:var(--text-dim); margin-top:2px; }
-  .p-type-tags{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  /* チーム/登板情報とタイプタグを同じ行に並べ、固定ヘッダーの高さを抑える */
+  .p-meta-row{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:3px; }
+  .p-meta{ font-size:12px; color:var(--text-dim); }
+  .p-type-tags{ display:flex; flex-wrap:wrap; gap:6px; }
   .p-type-tag{
-    display:inline-block; padding:3px 10px; border-radius:20px; cursor:pointer;
-    font-size:11px; font-weight:700; color:var(--blue-text);
+    display:inline-block; padding:2px 9px; border-radius:20px; cursor:pointer;
+    font-size:10.5px; font-weight:700; color:var(--blue-text);
     background:rgba(59,130,246,0.14); border:1px solid rgba(59,130,246,0.3);
   }
   .p-type-tag:hover{ background:rgba(59,130,246,0.24); }
@@ -912,9 +914,9 @@ function renderCard(d){
   const rk = d.rankings || {};
   const rankText = (key) => rk[key] ? `<div class="rank"><b>${rk[key].rank}</b>位 / ${rk[key].total}人中</div>` : "";
   // 決め球：専用フィールドが無い場合は、球種評価タグに「決め球」と付いている球種から補う。
-  // それも無ければ「-」ではなく「なし」と明記する。
-  const signaturePitchEntry = (d.pitch_evaluations || []).find(p => p.tag && p.tag.includes("決め球"));
-  const signaturePitch = d.signature_pitch || (signaturePitchEntry ? signaturePitchEntry.name : null);
+  // タグが複数球種に付いていれば、2つまでは並べて表示して構わない。それも無ければ「なし」と明記する。
+  const signaturePitchEntries = (d.pitch_evaluations || []).filter(p => p.tag && p.tag.includes("決め球"));
+  const signaturePitch = d.signature_pitch || (signaturePitchEntries.length ? signaturePitchEntries.map(p => p.name).join("・") : null);
   const stats = [
     { label: "防御率", value: d.era, color: (d.era != null && d.era < 3.5) ? "var(--green-text)" : "var(--red-text)", rankKey: "era" },
     { label: "K-BB%", value: d.k_bb_pct != null ? d.k_bb_pct + "%" : "-", color: "var(--green-text)", rankKey: "k_bb_pct" },
@@ -980,8 +982,10 @@ function renderCard(d){
         <div class="p-avatar">${escapeHtml(initial)}</div>
         <div>
           <div class="p-name">${escapeHtml(d.name)}</div>
-          <div class="p-meta">${escapeHtml(d.team || "")}・${escapeHtml(d.throws_bats || "")}・${escapeHtml(d.role || "")}・${d.games ?? "-"}登板 ${d.innings ?? "-"}回</div>
-          ${typeCats.length ? `<div class="p-type-tags">${typeCats.map(c => `<button class="p-type-tag" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}</div>` : ""}
+          <div class="p-meta-row">
+            <span class="p-meta">${escapeHtml(d.team || "")}・${escapeHtml(d.throws_bats || "")}・${escapeHtml(d.role || "")}・${d.games ?? "-"}登板 ${d.innings ?? "-"}回</span>
+            ${typeCats.length ? `<div class="p-type-tags">${typeCats.map(c => `<button class="p-type-tag" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}</div>` : ""}
+          </div>
         </div>
       </div>
 
@@ -1514,7 +1518,10 @@ function hmDrawHeatmap(canvasId, locs, isBatterRight, flipX){
     const [x,y] = loc;
     const pc = hexToRgb(loc._color || "#3B82F6");
     const px = flipX ? -x : x;
-    const BALL_COMPRESS = 0.28, SZ = 1.0;
+    // ボール球（ゾーン外）はもとの座標をそのまま使うとキャンバス端に寄りすぎて見づらいため
+    // 少し圧縮しているが、値が小さすぎるとストライクゾーンのすぐ外側に張り付いて見えてしまう。
+    // ボールゾーン側にもう少し広がって見えるよう圧縮率を弱めている。
+    const BALL_COMPRESS = 0.55, SZ = 1.0;
     const compress = v => { if(Math.abs(v)<=SZ) return v; const sign=v>0?1:-1; return sign*(SZ+(Math.abs(v)-SZ)*BALL_COMPRESS); };
     const cx2 = toX(compress(px)), cy2 = toY(compress(y));
     const grd = ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,dotR*2.2);
