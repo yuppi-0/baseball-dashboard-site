@@ -182,7 +182,7 @@
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; }
   .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:100px; z-index:2; }
   .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:136px; width:92px; z-index:2; box-shadow:2px 0 4px rgba(0,0,0,0.25); }
-  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; }
+  .gamelog-table th:nth-child(4), .gamelog-table td:nth-child(4){ width:128px; padding-left:12px; }
   /* 5列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
      固定列の間に他の値が透けて見える不具合が再発するため。 */
@@ -573,6 +573,7 @@ function mergeCardData(numeric, llm){
     name: numeric.name,
     team: numeric.team,
     throws_bats: llm.throws_bats || "",
+    throws: numeric.throws || null,
     role: numeric.role,
     games: numeric.games,
     innings: numeric.innings,
@@ -1142,7 +1143,19 @@ function hmCombinedLocs(pitchLocsMap, isBatterRight){
   return keys.flatMap(k => hmFilterLocs(pitchLocsMap[k][locsKey] || [], window._hmResultFilter));
 }
 
-function hmBuildGridHtml(label, locs){
+// 本家 index.html の表示用フリップ（_fR/_fL）の移植。
+// データ生成側で既にflip_x正規化はしてあるが、それとは別に「投手の利き腕」に応じて
+// 対右／対左どちらか一方の見た目だけをもう一段階左右反転する表示ロジックが本家にあり、
+// これが無いと球種比較で見え方が本家と食い違う（＝反転して見える）ため移植する。
+function hmDisplayFlip(league, pitcherHand, isBatterRight){
+  if(!pitcherHand) return false;
+  if(isBatterRight){
+    return league === "mlb" ? (pitcherHand === "R") : (pitcherHand === "L");
+  }
+  return league === "mlb" ? (pitcherHand === "L") : (pitcherHand === "R");
+}
+
+function hmBuildGridHtml(label, locs, flipX){
   const ZONE = 1.0, OUTER = 1.67;
   const edges9  = [-ZONE, -ZONE/3, ZONE/3, ZONE];
   const edges25 = [-OUTER, -ZONE, -ZONE/3, ZONE/3, ZONE, OUTER];
@@ -1153,7 +1166,7 @@ function hmBuildGridHtml(label, locs){
   const zoneLocs = mode === "9" ? locs.filter(l => l[3] === 1) : locs;
   const denom = zoneLocs.length;
   const counts = Array.from({length:N}, () => new Array(N).fill(0));
-  zoneLocs.forEach(([x,y]) => { counts[hmGetCell(-y, edges)][hmGetCell(x, edges)]++; });
+  zoneLocs.forEach(([x,y]) => { const dispX = flipX ? -x : x; counts[hmGetCell(-y, edges)][hmGetCell(dispX, edges)]++; });
   const maxCnt = Math.max(...counts.flat(), 1);
   // スマホ幅では「グリッド＋配球キャンバス」を横並びのまま収めたいので、セルを一回り小さくする
   const isNarrow = window.innerWidth <= 720;
@@ -1191,7 +1204,7 @@ function hmBuildGridHtml(label, locs){
 }
 
 // 本家 _drawZoneHeatmapMulti の移植（バッターシルエット込み）
-function hmDrawHeatmap(canvasId, locs, isBatterRight){
+function hmDrawHeatmap(canvasId, locs, isBatterRight, flipX){
   const canvas = document.getElementById(canvasId);
   if(!canvas) return;
   const ctx = canvas.getContext("2d");
@@ -1218,7 +1231,7 @@ function hmDrawHeatmap(canvasId, locs, isBatterRight){
   locs.forEach(loc => {
     const [x,y] = loc;
     const pc = hexToRgb(loc._color || "#3B82F6");
-    const px = x;
+    const px = flipX ? -x : x;
     const BALL_COMPRESS = 0.42, SZ = 1.0;
     const compress = v => { if(Math.abs(v)<=SZ) return v; const sign=v>0?1:-1; return sign*(SZ+(Math.abs(v)-SZ)*BALL_COMPRESS); };
     const cx2 = toX(compress(px)), cy2 = toY(compress(y));
@@ -1395,6 +1408,9 @@ function renderComparePanel(d){
   });
   const controlsHtml = hmControlsHtml(allPitchKeysMap);
   const isMulti = keys.length >= 2;
+  // 投手の利き腕に応じた表示用フリップ（対右/対左それぞれ独立）。本家index.htmlの_fR/_fLと同じ計算。
+  const flipR = hmDisplayFlip(currentLeague, d.throws, true);
+  const flipL = hmDisplayFlip(currentLeague, d.throws, false);
 
   // 2件以上選択時：球種ごとの投球数・投球割合を選択項目ぶん横並びにした比較テーブルを1つだけ表示する
   const compareTableHtml = isMulti ? (() => {
@@ -1444,14 +1460,14 @@ function renderComparePanel(d){
         ${(!isMulti && idx === 0) ? controlsHtml : ""}
         <div class="course-row">
           <div class="course-pair">
-            ${hmBuildGridHtml("対右打者", locsR)}
+            ${hmBuildGridHtml("対右打者", locsR, flipR)}
             <div class="hm-canvas-block">
               <div class="hm-canvas-title">対右打者 配球</div>
               <canvas id="${canvasIdR}" width="200" height="210"></canvas>
             </div>
           </div>
           <div class="course-pair">
-            ${hmBuildGridHtml("対左打者", locsL)}
+            ${hmBuildGridHtml("対左打者", locsL, flipL)}
             <div class="hm-canvas-block">
               <div class="hm-canvas-title">対左打者 配球</div>
               <canvas id="${canvasIdL}" width="200" height="210"></canvas>
@@ -1480,8 +1496,8 @@ function renderComparePanel(d){
       });
       return out;
     };
-    hmDrawHeatmap(`hmcanvas-${gidx}-R`, buildColored(true), true);
-    hmDrawHeatmap(`hmcanvas-${gidx}-L`, buildColored(false), false);
+    hmDrawHeatmap(`hmcanvas-${gidx}-R`, buildColored(true), true, flipR);
+    hmDrawHeatmap(`hmcanvas-${gidx}-L`, buildColored(false), false, flipL);
   });
 
   wireComparePanelEvents(d);
