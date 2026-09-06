@@ -370,11 +370,14 @@
     .app{ height:auto; min-height:100vh; }
     .body-layout{ flex-direction:column; }
     .sidebar{ width:100%; max-height:none; height:auto; border-right:none; border-bottom:1px solid var(--border); }
-    main{ padding:14px; overflow-y:visible; }
-    /* .cardはPC版で余白を埋めるためmax-width:1120pxにしているが、スマホ幅では
-       これがそのまま残っているとmainのjustify-content:centerで中央寄せされたカードが
-       画面より大きくなり、左右がoverflow-hiddenで切れて中央部分しか見えなくなってしまう
-       （KPIの真ん中の項目だけ見えて両端が切れる不具合の原因）。スマホでは画面幅いっぱいにする。 */
+    /* main はPC版ではdisplay:flex+justify-content:centerでカードを中央寄せしているが、
+       スマホでは.cardの子孫（成績テーブルなど、overflow-x:autoで横スクロールさせている
+       固定幅のテーブル）がある場合、flexのアイテムサイズ計算に巻き込まれて.card自体が
+       テーブル幅（900px超）まで広がってしまい、中央寄せの結果、両端が切れて表示が
+       おかしくなる不具合があった（KPIやタグの左端が欠けて見える／サイズ感がおかしい、
+       という指摘の原因）。スマホでは中央寄せ自体が不要（カードは常に画面幅いっぱい）なので
+       flexをやめて通常のブロック表示にし、この巻き込みを起こさないようにする。 */
+    main{ padding:14px; overflow-y:visible; display:block; }
     .card{ max-width:100%; }
 
     /* ヘッダー（タイトル・チーム/リーグ切替）は画面上部に固定表示する。
@@ -572,8 +575,11 @@ function updateSidebarSummary(name, meta){
 function collapseSidebarOnMobile(){
   if(window.innerWidth <= 720) sidebarEl.classList.add("collapsed");
 }
+// 「選手を変更」：カード表示をやめて選手選択画面（検索・一覧）に戻る
 el("#sidebarToggleBtn").addEventListener("click", () => {
-  sidebarEl.classList.toggle("collapsed");
+  sidebarEl.classList.remove("collapsed");
+  bodyLayoutEl.classList.remove("has-selection");
+  window.scrollTo(0, 0);
 });
 
 // AIコメントがある選手名の集合。リーグを開いたときに一度だけバッチ全件を読んで作る
