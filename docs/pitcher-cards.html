@@ -692,8 +692,12 @@ function renderPlayerList(players){
   });
 }
 
-// ── LLMバッチを新しい順に検索し、該当選手のデータを見つけたら返す（見つからなければnull）──
-// バッチファイル名は日付時刻順にソートできる形式（例: 20260901_1400.json）を前提とする
+// ── LLMバッチから該当選手のデータを見つけたら返す（見つからなければnull）──
+// バッチファイル名は「{所属チーム}_{役割}.json」（例: 巨人_先発.json）を基本形式とする。
+// team/roleが分かっている場合は該当ファイルを直接fetchするのが最も確実（1チーム1役割=1ファイルの
+// ため、複数バッチを跨いだ「どれが最新か」の判定が不要になる）。
+// 見つからない場合（未移行の選手・旧形式の日付名バッチにしかデータが無い場合など）は、
+// index.json内の全バッチを新しい順（ファイル名降順）に走査するフォールバックを行う。
 // バッチのJSONを {選手名: データ} のペア配列に正規化する。
 // 対応形式: ① [{"選手名":"...",...}, ...]（配列形式） ② {"選手名":{...}, "選手名":{...}}（オブジェクト形式）
 function normalizeBatchEntries(batch){
@@ -709,21 +713,50 @@ function normalizeBatchEntries(batch){
   return [];
 }
 
-async function findLlmDataForPlayer(playerName){
+async function fetchBatchFile(file){
+  const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/${encodeURIComponent(file)}`), { cache: "no-store" });
+  if(!res.ok) return null;
+  return await res.json();
+}
+
+async function findLlmDataForPlayer(playerName, team, role){
   const debugLog = [];
   const charCodes = [...playerName].map(c=>c.codePointAt(0).toString(16)).join(" ");
   debugLog.push(`探している名前: ${JSON.stringify(playerName)} / 文字コード: ${charCodes}`);
+
+  // ① team/roleが分かっていれば、{team}_{role}.json を直接fetch（最優先・最速経路）
+  if(team && role){
+    const directFile = `${team}_${role}.json`;
+    try{
+      const batch = await fetchBatchFile(directFile);
+      if(batch){
+        const entries = normalizeBatchEntries(batch);
+        const hit = entries.find(e => e.name === playerName);
+        if(hit){ debugLog.push(`ヒット（直接fetch）: ${directFile}`); return { data: hit.data, debugLog }; }
+        debugLog.push(`${directFile} は取得できたが、この選手名は含まれていなかった`);
+      } else {
+        debugLog.push(`${directFile} が見つからない（未生成、または旧形式のバッチのみ存在する可能性）`);
+      }
+    }catch(e){ debugLog.push(`${directFile} 取得エラー: ${e.message}`); }
+  } else {
+    debugLog.push("team/roleが不明なため、直接fetchはスキップしてフォールバックへ");
+  }
+
+  // ② フォールバック: index.json内の全バッチをファイル名降順（新しい順）で走査
+  //    旧・日付名バッチ（例: 20260903_2001.json）にしかデータが無い選手のためのルート。
+  //    ※ team_role形式のファイル名同士では「降順」に新しい順という意味は無いが、
+  //      ①で見つからなかった場合の最後の手段として、念のため全件を見に行く。
   try{
     const idxRes = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/index.json`), { cache: "no-store" });
     if(!idxRes.ok){ debugLog.push(`index.json取得失敗: ${idxRes.status}`); return { data: null, debugLog }; }
     const idx = await idxRes.json();
-    const files = (idx.batches || []).slice().sort().reverse(); // ファイル名降順 = 新しい順
-    debugLog.push(`バッチファイル一覧: ${JSON.stringify(files)}`);
+    const directFile = (team && role) ? `${team}_${role}.json` : null;
+    const files = (idx.batches || []).filter(f => f !== directFile).slice().sort().reverse(); // ①で試した分は除外
+    debugLog.push(`バッチファイル一覧（フォールバック走査対象）: ${JSON.stringify(files)}`);
     for(const file of files){
       try{
-        const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].batches}/${file}`), { cache: "no-store" });
-        if(!res.ok) continue;
-        const batch = await res.json();
+        const batch = await fetchBatchFile(file);
+        if(!batch) continue;
         const entries = normalizeBatchEntries(batch);
         const namesWithCodes = entries.map(e => {
           const cc = e.name ? [...e.name].map(c=>c.codePointAt(0).toString(16)).join(" ") : "";
@@ -731,13 +764,12 @@ async function findLlmDataForPlayer(playerName){
         });
         debugLog.push(`${file} 内の選手名: ${namesWithCodes.join(" / ")}`);
         const hit = entries.find(e => e.name === playerName);
-        if(hit){ debugLog.push(`ヒット: ${file}`); return { data: hit.data, debugLog }; }
+        if(hit){ debugLog.push(`ヒット（フォールバック走査）: ${file}`); return { data: hit.data, debugLog }; }
       }catch(e){ continue; }
     }
     debugLog.push("どのバッチにも見つかりませんでした");
   }catch(e){ debugLog.push(`エラー: ${e.message}`); }
   return { data: null, debugLog };
-  return null;
 }
 
 // ── 数値データ(numeric) + LLM解釈テキスト(llm) をブラウザ内でマージする ──
@@ -811,7 +843,7 @@ async function selectPlayer(id, name){
     const res = await fetch(bust(`${LEAGUE_PATHS[currentLeague].numeric}/${id}.json`), { cache: "no-store" });
     if(!res.ok) throw new Error(`選手データの取得に失敗しました (${res.status})`);
     const numeric = await res.json();
-    const { data: llm, debugLog } = await findLlmDataForPlayer(name || numeric.name);
+    const { data: llm, debugLog } = await findLlmDataForPlayer(name || numeric.name, numeric.team, numeric.role);
     const merged = mergeCardData(numeric, llm);
     renderCard(merged);
     if(!llm){
