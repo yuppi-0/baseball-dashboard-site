@@ -169,16 +169,22 @@
 
   /* ピッチングデザイン提案：球種ごとにグルーピングし、その下に「目的→コース」の
      エントリを複数並べる。1球種が複数の役割（釣り球/決め球/回避など）を持つケースに
-     対応するための構造。 */
-  .design-pitch-group{ border:1px solid rgba(148,163,184,0.16); border-radius:8px; overflow:hidden; margin-bottom:10px; }
+     対応するための構造。優先度の高い球種のみ初期展開し、残りはヘッダーに1行プレビュー
+     を出したアコーディオンにして、全球種を載せても見づらくならないようにする。 */
+  .design-pitch-group{ border:1px solid rgba(148,163,184,0.16); border-radius:10px; overflow:hidden; margin-bottom:8px; background:rgba(15,17,21,0.35); }
   .design-pitch-group:last-child{ margin-bottom:0; }
-  .design-pitch-name{ padding:8px 12px; background:rgba(148,163,184,0.08); font-size:12.5px; font-weight:700; color:var(--text-bright); text-align:left; }
-  .design-entry{ padding:10px 12px; border-top:1px solid rgba(148,163,184,0.12); text-align:left; }
-  .design-entry-head{ display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
-  .design-badge{ font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px; background:rgba(245,158,11,0.16); color:var(--amber-text); white-space:nowrap; }
-  .design-arrow{ font-size:11px; color:var(--text-dim); }
-  .design-course{ font-size:12px; color:var(--text-dim); }
-  .design-text{ font-size:12.5px; line-height:1.6; color:var(--text); }
+  .design-pitch-row{ padding:11px 13px; display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; user-select:none; }
+  .design-pitch-row .name{ font-size:13px; font-weight:700; color:var(--text-bright); flex-shrink:0; }
+  .design-pitch-row .teaser{ font-size:11.5px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
+  .design-pitch-row .name-wrap{ display:flex; align-items:center; gap:8px; min-width:0; flex:1; }
+  .design-pitch-row .chev{ flex-shrink:0; color:#64748B; font-size:14px; transition:transform 0.15s; }
+  .design-pitch-body{ padding:0 13px 11px; }
+  .design-entry{ padding:9px 0; border-top:1px solid rgba(148,163,184,0.12); text-align:left; }
+  .design-entry:first-child{ border-top:none; padding-top:2px; }
+  .design-entry-head{ display:flex; align-items:center; gap:7px; margin-bottom:6px; flex-wrap:wrap; }
+  .design-badge{ font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:6px; white-space:nowrap; }
+  .design-badge.course{ background:rgba(148,163,184,0.16); color:#CBD5E1; }
+  .design-text{ font-size:12.5px; line-height:1.65; color:var(--text); }
 
   /* 決め球スタッツボックス：複数球種が「・」区切りで入ると横幅に収まらず詰まって
      見えていたため、複数ある場合は球種ごとに改行して表示する。 */
@@ -986,10 +992,23 @@ function bulletsHtml(items, dotColor, tone){
   `).join("")}</div>`;
 }
 
+// 目的（purpose）の文言から大まかなカテゴリを推定し、バッジの色を決める。
+// LLM側は自由記述のためキーワードマッチで判定し、該当がなければ中立色にする。
+function designPurposeColor(purpose){
+  const p = purpose || "";
+  if(p.includes("回避")) return { bg: "rgba(248,113,113,0.16)", text: "#FCA5A5" };
+  if(p.includes("空振り") || p.includes("釣り")) return { bg: "rgba(167,139,250,0.18)", text: "#C4B5FD" };
+  if(p.includes("ゴロ")) return { bg: "rgba(251,146,60,0.18)", text: "#FDBA74" };
+  if(p.includes("見逃し") || p.includes("ストライク")) return { bg: "rgba(74,222,128,0.16)", text: "#86EFAC" };
+  return { bg: "rgba(245,158,11,0.16)", text: "var(--amber-text)" };
+}
+
 // ピッチングデザイン提案：球種ごとにグルーピングして表示する。
 // 1球種が複数の役割（釣り球/決め球/回避など）を持つ場合に対応するため、
 // { pitch, entries:[{purpose, course, text}] } の配列を受け取る。
 // 球種の並び順は、球種評価（pitch_evaluations、既に使用数降順）の順番に合わせる。
+// 優先度トップの球種のみ初期展開し、残りはヘッダーに1行プレビューを出したアコーディオンにして、
+// 全球種を掲載しても見づらくならないようにする（クリックで開閉）。
 // 旧フォーマット（文字列の配列）が来た場合は、これまで通りbulletsHtmlで表示する。
 function designSideHtml(groups, pitchOrderIndex){
   if(!groups || !groups.length) return "";
@@ -1001,20 +1020,35 @@ function designSideHtml(groups, pitchOrderIndex){
     return ia - ib;
   });
 
-  return sorted.map(g => `
+  return sorted.map((g, gi) => {
+    const isOpen = gi === 0; // 優先度トップの球種のみ初期展開
+    const entries = g.entries || [];
+    const first = entries[0];
+    const teaser = (!isOpen && first) ? `${escapeHtml(first.purpose || "")}${first.course ? " ・ " + escapeHtml(first.course) : ""}` : "";
+    return `
     <div class="design-pitch-group">
-      <div class="design-pitch-name">${escapeHtml(g.pitch || "")}</div>
-      ${(g.entries || []).map(e => `
-        <div class="design-entry">
-          <div class="design-entry-head">
-            <span class="design-badge">${escapeHtml(e.purpose || "")}</span>
-            ${e.course ? `<span class="design-arrow">→</span><span class="design-course">${escapeHtml(e.course)}</span>` : ""}
-          </div>
-          <div class="design-text">${escapeHtml(e.text || "")}</div>
+      <div class="design-pitch-row">
+        <div class="name-wrap">
+          <span class="name">${escapeHtml(g.pitch || "")}</span>
+          ${teaser ? `<span class="teaser">${teaser}</span>` : ""}
         </div>
-      `).join("")}
+        <i class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</i>
+      </div>
+      <div class="design-pitch-body" style="display:${isOpen ? "block" : "none"}">
+        ${entries.map(e => {
+          const c = designPurposeColor(e.purpose);
+          return `
+          <div class="design-entry">
+            <div class="design-entry-head">
+              <span class="design-badge" style="background:${c.bg}; color:${c.text}">${escapeHtml(e.purpose || "")}</span>
+              ${e.course ? `<span class="design-badge course">${escapeHtml(e.course)}</span>` : ""}
+            </div>
+            <div class="design-text">${escapeHtml(e.text || "")}</div>
+          </div>
+        `;}).join("")}
+      </div>
     </div>
-  `).join("");
+  `;}).join("");
 }
 
 // section-title (開閉ヘッダー) を統一生成
@@ -1182,6 +1216,20 @@ function renderCard(d){
       const isOpen = body.style.display !== "none";
       body.style.display = isOpen ? "none" : "block";
       chev.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+    });
+  });
+
+  // ピッチングデザイン提案: 球種ごとの開閉（優先度トップ以外は初期状態で折りたたみ、
+  // 見出しの1行プレビューをタップで全entry表示に切り替える）
+  mainContentEl.querySelectorAll(".design-pitch-row").forEach(row => {
+    row.addEventListener("click", () => {
+      const body = row.nextElementSibling;
+      const chev = row.querySelector(".chev");
+      const teaser = row.querySelector(".teaser");
+      const isOpen = body.style.display !== "none";
+      body.style.display = isOpen ? "none" : "block";
+      chev.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+      if(teaser) teaser.style.display = isOpen ? "" : "none";
     });
   });
 
