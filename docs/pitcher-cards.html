@@ -377,30 +377,33 @@
        （KPIの真ん中の項目だけ見えて両端が切れる不具合の原因）。スマホでは画面幅いっぱいにする。 */
     .card{ max-width:100%; }
 
-    /* ヘッダー（タイトル・チーム/リーグ切替）と選手サマリー（選手名・選手を変更ボタン）を
-       画面上部に固定表示する。ヘッダーの実際の高さはJS側で測って --header-h に反映する。 */
+    /* ヘッダー（タイトル・チーム/リーグ切替）は画面上部に固定表示する。
+       ヘッダーの実際の高さはJS側で測って --header-h に反映する。 */
     header{ position:sticky; top:0; z-index:20; background:var(--bg); }
-    .sidebar-summary{ position:sticky; top:var(--header-h, 60px); z-index:19; }
 
-    /* 選手を選ぶまでは検索欄・一覧を大きく開いておき、選んだ後はサマリー1行だけに畳んで
-       カード本体をすぐ見られるようにする。「選手を変更」で再度開閉できる。 */
-    .sidebar-summary{
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      padding:12px 14px; border-bottom:1px solid var(--border); background:var(--panel-alt);
+    /* 選手選択前は「選手を選択してください」バーは不要なので非表示。
+       選手を選んだあとは、名前・チームはカード側のsticky見出し（.p-sticky-header）に
+       すでに出るのでここでは表示せず、「選手を変更」ボタンだけを幅を取らない
+       小さな固定ボタンとして右上に浮かせて表示する。 */
+    .sidebar-summary{ display:none; }
+    .body-layout.has-selection .sidebar-summary{
+      display:block; position:fixed; top:calc(var(--header-h, 60px) + 8px); right:12px; z-index:25;
     }
-    .sidebar-summary-info{ min-width:0; }
-    .sidebar-summary-name{ font-size:14px; font-weight:700; color:var(--text-bright); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .sidebar-summary-team{ font-size:11px; color:var(--text-dim); margin-top:1px; }
+    .sidebar-summary-info{ display:none; }
     .sidebar-summary button{
-      flex-shrink:0; border:none; background:var(--blue); color:#fff; font-size:12px; font-weight:700;
-      padding:8px 14px; border-radius:8px; cursor:pointer;
+      border:none; background:var(--blue); color:#fff; font-size:12px; font-weight:700;
+      padding:8px 14px; border-radius:20px; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,0.4);
     }
     .sidebar.collapsed .filter-panel, .sidebar.collapsed .player-list{ display:none; }
     .sidebar:not(.collapsed) .player-list{ max-height:55vh; }
 
+    /* 選手を選ぶまでは一覧の下に空の本文エリアを出さない（選手一覧より下にスクロールさせない） */
+    .body-layout:not(.has-selection) main{ display:none; }
+
     /* 選手名・KPIのsticky領域は、PC版だとmainの左上（padding分だけ）に固定しているが、
-       スマホ版はヘッダー＋選手サマリーバーの2段がすでに上に固定表示されているため、
-       その直下にぴったり重ならず固定されるよう、JSで測った実測の合計高さを使う。 */
+       スマホ版は固定ヘッダーがすでに上にあるため、その直下にぴったり重ならず固定されるよう、
+       JSで測った実測のヘッダー高さを使う（「選手を変更」ボタンは幅を取らない固定表示のため
+       ここには含めない）。 */
     .p-sticky-header{
       top: var(--sticky-stack-h, 108px);
       padding: 14px 0;
@@ -408,11 +411,14 @@
       z-index: 15;
     }
 
-    /* 検索・フィルタ・並び替えをまとめたパネル：狭い画面ではセレクトを横並びにせず縦に積んで
-       誤タップを防ぐ。input系はiOSでの自動ズームを避けるため16px以上にしておく。 */
-    .filter-panel-row{ flex-direction:column; }
-    .filter-panel-row .filter-select, .filter-panel-row .sort-dir-btn{ width:100%; }
-    .search-input, .filter-select, .filter-row input[type="number"]{ font-size:16px; }
+    /* 検索・フィルタ・並び替えをまとめたパネル：並び替え/降順昇順、全チーム/全カテゴリ、
+       投球回/AIコメントのみ、をそれぞれ1行に収める。検索欄はiOSでの自動ズームを避けるため
+       16px以上にしておく（select/チェックボックス行はコンパクトさ優先で少し小さくする）。 */
+    .search-input{ font-size:16px; }
+    .filter-select{ font-size:12.5px; padding:6px 5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .sort-dir-btn{ font-size:11px; padding:6px 8px; }
+    .filter-row{ font-size:10.5px; gap:4px; }
+    .filter-row input[type="number"]{ width:36px; font-size:13px; padding:4px; }
     .player-item{ padding:13px 12px; }
 
     /* KPI（防御率〜決め球）は横6列のままだとスマホでは狭すぎて数字や順位が詰まって見づらいので、
@@ -489,8 +495,6 @@
             <input id="minIpFilter" type="number" min="0" step="1" placeholder="0">
             回以上
           </label>
-        </div>
-        <div class="filter-panel-row">
           <label class="filter-row">
             <input id="aiOnlyFilter" type="checkbox" checked>
             AIコメントがある選手のみ
@@ -541,21 +545,20 @@ const sortDirBtnEl = el("#sortDirBtn");
 const aiOnlyFilterEl = el("#aiOnlyFilter");
 const minIpFilterEl = el("#minIpFilter");
 const sidebarEl = el("#sidebar");
+const bodyLayoutEl = document.querySelector(".body-layout");
 const sidebarSummaryNameEl = el("#sidebarSummaryName");
 const sidebarSummaryTeamEl = el("#sidebarSummaryTeam");
 
 // スマホ表示：ヘッダー（タイトル・チーム/リーグ切替）は折り返しで高さが変わるため、
-// 実測してCSS変数 --header-h に反映し、選手サマリーバーがヘッダー直下にぴったり固定されるようにする。
-// あわせて「ヘッダー＋選手サマリーバー」の合計高さも --sticky-stack-h に反映し、
-// 選手名・KPIのsticky領域（.p-sticky-header）がその直下にぴったり重ならず固定されるようにする。
+// 実測してCSS変数 --header-h に反映する。「選手を変更」ボタンは幅を取らない固定表示の
+// 小さなボタンにしたため（レイアウトの高さには影響しない）、選手名・KPIのsticky領域
+// （.p-sticky-header）はヘッダー直下にそのまま固定すればよい。
 function updateHeaderHeightVar(){
   const header = document.querySelector("header");
-  const summary = document.getElementById("sidebarSummary");
   if(!header) return;
   const headerH = header.offsetHeight;
   document.documentElement.style.setProperty("--header-h", headerH + "px");
-  const summaryH = (summary && getComputedStyle(summary).display !== "none") ? summary.offsetHeight : 0;
-  document.documentElement.style.setProperty("--sticky-stack-h", (headerH + summaryH) + "px");
+  document.documentElement.style.setProperty("--sticky-stack-h", headerH + "px");
 }
 updateHeaderHeightVar();
 window.addEventListener("resize", updateHeaderHeightVar);
@@ -608,6 +611,7 @@ async function loadPlayerIndex(league){
   sortDirBtnEl.dataset.dir = "desc";
   sortDirBtnEl.textContent = "降順 ↓";
   sidebarEl.classList.remove("collapsed");
+  bodyLayoutEl.classList.remove("has-selection");
   updateSidebarSummary("選手を選択してください", "");
   try{
     // 選手一覧は「数値データ」側のindex.jsonを正とする（LLM解釈がまだない選手も一覧には出す）
@@ -787,6 +791,7 @@ function mergeCardData(numeric, llm){
 
 async function selectPlayer(id, name){
   activePlayerId = id;
+  bodyLayoutEl.classList.add("has-selection");
   renderPlayerList(applyFilters());
   mainContentEl.innerHTML = '<div class="placeholder">読み込み中…</div>';
   // 選手を切り替えたら、前の選手で選んでいた比較チェックボックス／フィルターは引き継がない
