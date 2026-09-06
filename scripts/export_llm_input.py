@@ -19,7 +19,7 @@ Pythonに移植し、Claudeへ渡すLLM入力用xlsx（縦持ち・複数シー�
 
 出力:
   1つのxlsxに以下のシートを縦持ち（long形式）で書き出す。
-    - シーズン集計       : 1行 = 1投手
+    - シーズン集計       : 1行 = 1投手（選手名・投球成績に加え「所属チーム」「役割」列を含む）
     - 球種別詳細         : 1行 = 1投手 × 1球種
     - コース分布         : 1行 = 1投手 × 対戦打者(右/左) × ゾーン(1-9、全球種合算)
     - コースグリッド25分割 : 1行 = 1投手 × 球種 × 対戦打者(右/左) × セル(5x5、ボール域込み)
@@ -1047,12 +1047,14 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
 
             role_key = determine_pitcher_role(appearances)
             season["役割"] = "先発" if role_key == "starter" else "中継ぎ"
-            season_rows.append(season)
 
             # 直近の登板からチーム名を推定（home/awayどちら側だったかで判定）
             last_ap = appearances[-1]
             last_game = last_ap.get("game") or {}
             team = last_game.get(last_ap.get("side")) if isinstance(last_game, dict) else None
+            season["所属チーム"] = team
+
+            season_rows.append(season)
 
             season_mix_all = aggregate_season_mix(appearances, "mix")
             season_mix_vs_r = aggregate_season_mix(appearances, "mixVsR")
