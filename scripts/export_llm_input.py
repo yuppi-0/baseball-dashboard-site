@@ -21,7 +21,8 @@ Pythonに移植し、Claudeへ渡すLLM入力用xlsx（縦持ち・複数シー�
   1つのxlsxに以下のシートを縦持ち（long形式）で書き出す。
     - シーズン集計       : 1行 = 1投手
     - 球種別詳細         : 1行 = 1投手 × 1球種
-    - コース分布         : 1行 = 1投手 × 対戦打者(右/左) × ゾーン(1-9)
+    - コース分布         : 1行 = 1投手 × 対戦打者(右/左) × ゾーン(1-9、全球種合算)
+    - コースグリッド25分割 : 1行 = 1投手 × 球種 × 対戦打者(右/左) × セル(5x5、ボール域込み)
     - カウント別パターン : 1行 = 1投手 × 球種 × カウント状況
 
 使い方:
@@ -402,6 +403,109 @@ def _get_cell(v: float) -> int:
         if _EDGES9[i] <= v < _EDGES9[i + 1]:
             return i
     return 0 if v < _EDGES9[0] else len(_EDGES9) - 2
+
+
+_OUTER = 1.67
+_EDGES25 = [-_OUTER, -_ZONE, -_ZONE / 3, _ZONE / 3, _ZONE, _OUTER]
+
+# pitcher-cards.html の hmBuildGridHtml と同じ5x5ビニング（ボール域込み）。
+# row/col とも 0〜4。0/4がボール域、1〜3がストライクゾーン内3分割。
+_ROW_LABELS = {0: "ボール高め", 1: "高め", 2: "真ん中", 3: "低め", 4: "ボール低め"}
+_COL_LABELS = {0: "ボール外角", 1: "外角", 2: "真ん中", 3: "内角", 4: "ボール内角"}
+
+
+def _get_cell25(v: float) -> int:
+    for i in range(len(_EDGES25) - 1):
+        if _EDGES25[i] <= v < _EDGES25[i + 1]:
+            return i
+    return 0 if v < _EDGES25[0] else len(_EDGES25) - 2
+
+
+def _pct(numer: int, denom: int) -> float | None:
+    return round(numer / denom * 100, 1) if denom > 0 else None
+
+
+def aggregate_course_grid25(locs_by_pitch: dict) -> list[dict]:
+    """
+    season_course_locs形式（{球種コード: {name, color, locsR, locsL}}）から、
+    球種×対戦打者×25分割セルごとの球数・結果別割合を集計する。
+    loc = [x, y, flag, inZone, rtype, isStrike]
+      flag:  -1=見逃し/ボール, 0=スイング(空振り以外), 1=空振り
+      rtype: 0=その他, 1=ゴロ, 2=フライ/ライナー, 3=単打, 4=二/三塁打, 5=本塁打
+
+    サンプル閾値（プロンプト側のルールと一致させる）:
+      - ゾーン内セル（row・colとも1〜3）: 15球以上
+      - ボール域セル（row・colどちらかが0か4）: 10球以上
+    「無駄球/釣り球」判定はボール域セルかつ閾値以上の場合のみ付与する:
+      - 見逃し率75%以上 → "無駄球"
+      - 空振り率20%以上 → "釣り球"
+      - それ以外 → None
+    """
+    rows_out: list[dict] = []
+    for pt_code, obj in (locs_by_pitch or {}).items():
+        pt_name = obj.get("name") or pt_code
+        for side_key, side_label in (("locsR", "対右打者"), ("locsL", "対左打者")):
+            cells: dict[tuple[int, int], dict] = {}
+            for loc in (obj.get(side_key) or []):
+                if not isinstance(loc, list) or len(loc) < 5:
+                    continue
+                x, y, flag, _in_zone, rtype = loc[0], loc[1], loc[2], loc[3], loc[4]
+                col = _get_cell25(x)
+                row = _get_cell25(-y)
+                key = (row, col)
+                if key not in cells:
+                    cells[key] = {"total": 0, "take": 0, "whiff": 0,
+                                  "ground": 0, "fly": 0, "single": 0, "xbh": 0, "hr": 0}
+                c = cells[key]
+                c["total"] += 1
+                if flag == -1:
+                    c["take"] += 1
+                elif flag == 1:
+                    c["whiff"] += 1
+                if rtype == 1:
+                    c["ground"] += 1
+                elif rtype == 2:
+                    c["fly"] += 1
+                elif rtype == 3:
+                    c["single"] += 1
+                elif rtype in (4, 5):
+                    c["xbh"] += 1
+                    if rtype == 5:
+                        c["hr"] += 1
+
+            for row in range(5):
+                for col in range(5):
+                    c = cells.get((row, col))
+                    total = c["total"] if c else 0
+                    is_ball_zone = row in (0, 4) or col in (0, 4)
+                    threshold = 10 if is_ball_zone else 15
+                    sample_ok = total >= threshold
+                    take_pct = _pct(c["take"], total) if c else None
+                    whiff_pct = _pct(c["whiff"], total) if c else None
+                    waste_flag = None
+                    if sample_ok and is_ball_zone:
+                        if take_pct is not None and take_pct >= 75:
+                            waste_flag = "無駄球"
+                        elif whiff_pct is not None and whiff_pct >= 20:
+                            waste_flag = "釣り球"
+                    rows_out.append({
+                        "球種名": pt_name,
+                        "対戦打者": side_label,
+                        "縦位置": _ROW_LABELS[row],
+                        "横位置": _COL_LABELS[col],
+                        "ボール域": is_ball_zone,
+                        "球数": total,
+                        "見逃し率%": take_pct,
+                        "空振り率%": whiff_pct,
+                        "ゴロ率%": _pct(c["ground"], total) if c else None,
+                        "フライ率%": _pct(c["fly"], total) if c else None,
+                        "単打率%": _pct(c["single"], total) if c else None,
+                        "長打率%": _pct(c["xbh"], total) if c else None,
+                        "本塁打数": c["hr"] if c else 0,
+                        "サンプル十分": sample_ok,
+                        "判定": waste_flag,
+                    })
+    return rows_out
 
 
 def aggregate_course_distribution(appearances: list[dict]) -> dict:
@@ -922,6 +1026,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
     pitch_scale_stats = build_pitch_color_scale_stats(all_data)
 
     season_rows, mix_rows, course_rows, count_rows, gamelog_rows = [], [], [], [], []
+    course_grid_rows = []
     numeric_cards: dict[str, dict] = {}  # {選手名: numeric card dict}（xlsx書き出し後、rankings付与してからJSON化）
 
     tier_fields = ["空振り率", "ゾーン外スイング率", "ストライク率", "ゾーン率", "GB%"]
@@ -991,6 +1096,9 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             season_course_detail = _course_result_to_detail(course)
             season_course_locs = build_season_course_locs(appearances)
 
+            for row in aggregate_course_grid25(season_course_locs):
+                course_grid_rows.append({"選手名": name, **row})
+
             # 試合ログ（1試合=1行。pitch_detail/course_detailはネスト構造なのでJSON文字列として保持）
             game_log_dicts = build_game_log_rows(name, appearances, role_key, pitch_scale_stats)
             for g in game_log_dicts:
@@ -1058,6 +1166,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
         pd.DataFrame(season_rows).to_excel(writer, sheet_name="シーズン集計", index=False)
         pd.DataFrame(mix_rows).to_excel(writer, sheet_name="球種別詳細", index=False)
         pd.DataFrame(course_rows).to_excel(writer, sheet_name="コース分布", index=False)
+        pd.DataFrame(course_grid_rows).to_excel(writer, sheet_name="コースグリッド25分割", index=False)
         pd.DataFrame(count_rows).to_excel(writer, sheet_name="カウント別パターン", index=False)
         pd.DataFrame(gamelog_rows).to_excel(writer, sheet_name="試合ログ", index=False)
 
