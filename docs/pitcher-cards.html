@@ -167,6 +167,23 @@
   .bullets.tone-positive div b{ color:#A7F3D0; }
   .bullets.tone-negative div b{ color:#FECACA; }
 
+  /* ピッチングデザイン提案：球種ごとにグルーピングし、その下に「目的→コース」の
+     エントリを複数並べる。1球種が複数の役割（釣り球/決め球/回避など）を持つケースに
+     対応するための構造。 */
+  .design-pitch-group{ border:1px solid rgba(148,163,184,0.16); border-radius:8px; overflow:hidden; margin-bottom:10px; }
+  .design-pitch-group:last-child{ margin-bottom:0; }
+  .design-pitch-name{ padding:8px 12px; background:rgba(148,163,184,0.08); font-size:12.5px; font-weight:700; color:var(--text-bright); text-align:left; }
+  .design-entry{ padding:10px 12px; border-top:1px solid rgba(148,163,184,0.12); text-align:left; }
+  .design-entry-head{ display:flex; align-items:center; gap:6px; margin-bottom:6px; flex-wrap:wrap; }
+  .design-badge{ font-size:10.5px; font-weight:700; padding:2px 8px; border-radius:6px; background:rgba(245,158,11,0.16); color:var(--amber-text); white-space:nowrap; }
+  .design-arrow{ font-size:11px; color:var(--text-dim); }
+  .design-course{ font-size:12px; color:var(--text-dim); }
+  .design-text{ font-size:12.5px; line-height:1.6; color:var(--text); }
+
+  /* 決め球スタッツボックス：複数球種が「・」区切りで入ると横幅に収まらず詰まって
+     見えていたため、複数ある場合は球種ごとに改行して表示する。 */
+  .stat-box .value.multi-line{ display:flex; flex-direction:column; gap:2px; line-height:1.3; }
+
   /* 試合ログテーブル */
   /* table-layout:fixed にして列幅をcolgroupの指定に固定する（カラム見出し行が
      年フォルダの中に入り、閉じている間は非表示になるため、幅の基準はcolgroup側に持たせている）。
@@ -969,6 +986,37 @@ function bulletsHtml(items, dotColor, tone){
   `).join("")}</div>`;
 }
 
+// ピッチングデザイン提案：球種ごとにグルーピングして表示する。
+// 1球種が複数の役割（釣り球/決め球/回避など）を持つ場合に対応するため、
+// { pitch, entries:[{purpose, course, text}] } の配列を受け取る。
+// 球種の並び順は、球種評価（pitch_evaluations、既に使用数降順）の順番に合わせる。
+// 旧フォーマット（文字列の配列）が来た場合は、これまで通りbulletsHtmlで表示する。
+function designSideHtml(groups, pitchOrderIndex){
+  if(!groups || !groups.length) return "";
+  if(typeof groups[0] === "string") return bulletsHtml(groups, "var(--amber)");
+
+  const sorted = groups.slice().sort((a, b) => {
+    const ia = pitchOrderIndex.has(a.pitch) ? pitchOrderIndex.get(a.pitch) : 999;
+    const ib = pitchOrderIndex.has(b.pitch) ? pitchOrderIndex.get(b.pitch) : 999;
+    return ia - ib;
+  });
+
+  return sorted.map(g => `
+    <div class="design-pitch-group">
+      <div class="design-pitch-name">${escapeHtml(g.pitch || "")}</div>
+      ${(g.entries || []).map(e => `
+        <div class="design-entry">
+          <div class="design-entry-head">
+            <span class="design-badge">${escapeHtml(e.purpose || "")}</span>
+            ${e.course ? `<span class="design-arrow">→</span><span class="design-course">${escapeHtml(e.course)}</span>` : ""}
+          </div>
+          <div class="design-text">${escapeHtml(e.text || "")}</div>
+        </div>
+      `).join("")}
+    </div>
+  `).join("");
+}
+
 // section-title (開閉ヘッダー) を統一生成
 function sectionHeader({bar, label, labelColor, sub}){
   return `
@@ -1000,14 +1048,18 @@ function renderCard(d){
   // 決め球：専用フィールドが無い場合は、球種評価タグに「決め球」と付いている球種から補う。
   // タグが複数球種に付いていれば、2つまでは並べて表示して構わない。それも無ければ「なし」と明記する。
   const signaturePitchEntries = (d.pitch_evaluations || []).filter(p => p.tag && p.tag.includes("決め球"));
-  const signaturePitch = d.signature_pitch || (signaturePitchEntries.length ? signaturePitchEntries.map(p => p.name).join("・") : null);
+  // 決め球が複数ある場合、value側で単一文字列として結合すると狭いスタッツボックス内で
+  // 詰まって見えるため、球種名のリストとして保持し、表示側で球種ごとに改行する。
+  const signaturePitchList = d.signature_pitch
+    ? [d.signature_pitch]
+    : signaturePitchEntries.map(p => p.name);
   const stats = [
     { label: "防御率", value: d.era, color: (d.era != null && d.era < 3.5) ? "var(--green-text)" : "var(--red-text)", rankKey: "era" },
     { label: "K-BB%", value: d.k_bb_pct != null ? d.k_bb_pct + "%" : "-", color: "var(--green-text)", rankKey: "k_bb_pct" },
     { label: "K%", value: d.k_pct_season != null ? d.k_pct_season + "%" : "-", color: "var(--green-text)", rankKey: "k_pct" },
     { label: "BB%", value: d.bb_pct_season != null ? d.bb_pct_season + "%" : "-", color: (d.bb_pct_season != null && d.bb_pct_season <= 8) ? "var(--green-text)" : "var(--red-text)", rankKey: "bb_pct" },
     { label: "ゴロ率", value: d.gb_pct != null ? d.gb_pct + "%" : "-", color: "var(--green-text)", rankKey: "gb_pct" },
-    { label: "決め球", value: signaturePitch || "なし", color: "var(--blue-text)", small: true }
+    { label: "決め球", valueList: signaturePitchList.length ? signaturePitchList : ["なし"], color: "var(--blue-text)", small: true }
   ];
 
   const pitchesHtml = (d.pitch_evaluations || []).map((p, i) => {
@@ -1027,6 +1079,9 @@ function renderCard(d){
 
   const gameLogHtml = buildGameLogTable(d);
   const typeCats = (d.categories && d.categories.length) ? d.categories : classifyPitcherType(d);
+  // pitch_evaluationsは既に使用数降順のため、その並びをそのままピッチングデザイン提案の
+  // 球種グループの並び順（投球使用優先度が高い順）として流用する。
+  const pitchOrderIndex = new Map((d.pitch_evaluations || []).map((p, i) => [p.name, i]));
 
   // 選手特徴・強み・弱み を1つの枠にまとめる（区切り線つき）
   const profileHtml = `
@@ -1075,13 +1130,17 @@ function renderCard(d){
         </div>
 
         <div class="stat-grid">
-          ${stats.map(s => `
+          ${stats.map(s => {
+            const valueHtml = s.valueList
+              ? `<div class="value multi-line" style="color:${s.color}; ${s.small ? 'font-size:13px' : ''}">${s.valueList.map(v => `<span>${escapeHtml(v)}</span>`).join("")}</div>`
+              : `<div class="value" style="color:${s.color}; ${s.small ? 'font-size:13px' : ''}">${escapeHtml(String(s.value))}</div>`;
+            return `
             <div class="stat-box">
               <div class="label">${s.label}</div>
-              <div class="value" style="color:${s.color}; ${s.small ? 'font-size:13px' : ''}">${escapeHtml(String(s.value))}</div>
+              ${valueHtml}
               ${s.rankKey ? rankText(s.rankKey) : ""}
             </div>
-          `).join("")}
+          `;}).join("")}
         </div>
       </div>
 
@@ -1100,12 +1159,12 @@ function renderCard(d){
           ${d.design_suggestions?.vs_right?.length ? `
           <div class="profile-sub">
             <div class="profile-sub-title"><span class="bar" style="background:var(--amber)"></span><span class="label" style="color:var(--amber-text)">対右打者</span></div>
-            ${bulletsHtml(d.design_suggestions.vs_right, "var(--amber)")}
+            ${designSideHtml(d.design_suggestions.vs_right, pitchOrderIndex)}
           </div>` : ""}
           ${d.design_suggestions?.vs_left?.length ? `
           <div class="profile-sub">
             <div class="profile-sub-title"><span class="bar" style="background:var(--amber)"></span><span class="label" style="color:var(--amber-text)">対左打者</span></div>
-            ${bulletsHtml(d.design_suggestions.vs_left, "var(--amber)")}
+            ${designSideHtml(d.design_suggestions.vs_left, pitchOrderIndex)}
           </div>` : ""}
         </div>
       </div>` : ""}
