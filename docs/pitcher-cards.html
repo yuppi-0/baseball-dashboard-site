@@ -371,6 +371,11 @@
     .body-layout{ flex-direction:column; }
     .sidebar{ width:100%; max-height:none; height:auto; border-right:none; border-bottom:1px solid var(--border); }
     main{ padding:14px; overflow-y:visible; }
+    /* .cardはPC版で余白を埋めるためmax-width:1120pxにしているが、スマホ幅では
+       これがそのまま残っているとmainのjustify-content:centerで中央寄せされたカードが
+       画面より大きくなり、左右がoverflow-hiddenで切れて中央部分しか見えなくなってしまう
+       （KPIの真ん中の項目だけ見えて両端が切れる不具合の原因）。スマホでは画面幅いっぱいにする。 */
+    .card{ max-width:100%; }
 
     /* ヘッダー（タイトル・チーム/リーグ切替）と選手サマリー（選手名・選手を変更ボタン）を
        画面上部に固定表示する。ヘッダーの実際の高さはJS側で測って --header-h に反映する。 */
@@ -393,12 +398,36 @@
     .sidebar.collapsed .filter-panel, .sidebar.collapsed .player-list{ display:none; }
     .sidebar:not(.collapsed) .player-list{ max-height:55vh; }
 
+    /* 選手名・KPIのsticky領域は、PC版だとmainの左上（padding分だけ）に固定しているが、
+       スマホ版はヘッダー＋選手サマリーバーの2段がすでに上に固定表示されているため、
+       その直下にぴったり重ならず固定されるよう、JSで測った実測の合計高さを使う。 */
+    .p-sticky-header{
+      top: var(--sticky-stack-h, 108px);
+      padding: 14px 0;
+      margin: 0;
+      z-index: 15;
+    }
+
     /* 検索・フィルタ・並び替えをまとめたパネル：狭い画面ではセレクトを横並びにせず縦に積んで
        誤タップを防ぐ。input系はiOSでの自動ズームを避けるため16px以上にしておく。 */
     .filter-panel-row{ flex-direction:column; }
     .filter-panel-row .filter-select, .filter-panel-row .sort-dir-btn{ width:100%; }
     .search-input, .filter-select, .filter-row input[type="number"]{ font-size:16px; }
     .player-item{ padding:13px 12px; }
+
+    /* KPI（防御率〜決め球）は横6列のままだとスマホでは狭すぎて数字や順位が詰まって見づらいので、
+       3列×2段に組み替える */
+    .stat-grid{ grid-template-columns:repeat(3,1fr); gap:6px; }
+    .stat-box{ padding:8px 4px; }
+    .stat-box .label{ font-size:10.5px; }
+    .stat-box .value{ font-size:15px; }
+    .stat-box .rank{ font-size:9.5px; }
+
+    /* 結果／球種／分割タブと、フィルタ（全チーム・全カテゴリ・並び替え）はPC版と同じ大きさだと
+       ボタンが窮屈に折り返して縦に長くなりがちなので、文字とパディングを一回り小さくする */
+    .hm-controls-label{ font-size:9.5px; width:24px; }
+    .hm-filter-btn, .hm-pitch-btn{ font-size:9.5px; padding:3px 7px; }
+    .hm-pdot{ width:6px; height:6px; }
 
     /* コース分布：対右／対左それぞれ「グリッド＋配球」を横並びのまま1行にする。
        画面幅が狭い分、配球キャンバスの表示サイズだけ縮める（グリッド側のセル幅はJS側でも縮小）。 */
@@ -517,10 +546,16 @@ const sidebarSummaryTeamEl = el("#sidebarSummaryTeam");
 
 // スマホ表示：ヘッダー（タイトル・チーム/リーグ切替）は折り返しで高さが変わるため、
 // 実測してCSS変数 --header-h に反映し、選手サマリーバーがヘッダー直下にぴったり固定されるようにする。
+// あわせて「ヘッダー＋選手サマリーバー」の合計高さも --sticky-stack-h に反映し、
+// 選手名・KPIのsticky領域（.p-sticky-header）がその直下にぴったり重ならず固定されるようにする。
 function updateHeaderHeightVar(){
   const header = document.querySelector("header");
+  const summary = document.getElementById("sidebarSummary");
   if(!header) return;
-  document.documentElement.style.setProperty("--header-h", header.offsetHeight + "px");
+  const headerH = header.offsetHeight;
+  document.documentElement.style.setProperty("--header-h", headerH + "px");
+  const summaryH = (summary && getComputedStyle(summary).display !== "none") ? summary.offsetHeight : 0;
+  document.documentElement.style.setProperty("--sticky-stack-h", (headerH + summaryH) + "px");
 }
 updateHeaderHeightVar();
 window.addEventListener("resize", updateHeaderHeightVar);
