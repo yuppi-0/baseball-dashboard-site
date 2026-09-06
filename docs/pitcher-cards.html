@@ -790,7 +790,7 @@ function mergeCardData(numeric, llm){
     strengths: llm.strengths || [],
     weaknesses: llm.weaknesses || [],
     pitch_evaluations,
-    design_suggestions: llm.design_suggestions || [],
+    design_suggestions: llm.design_suggestions || { vs_right: [], vs_left: [] },
     game_log: numeric.game_log || [],
   };
 }
@@ -1061,10 +1061,21 @@ function renderCard(d){
         <div class="section-body">${pitchesHtml}</div>
       </div>` : ""}
 
-      ${d.design_suggestions?.length ? `
+      ${(d.design_suggestions?.vs_right?.length || d.design_suggestions?.vs_left?.length) ? `
       <div class="section section-design">
         ${sectionHeader({ bar:"var(--amber)", label:"ピッチングデザイン提案", labelColor:"var(--amber-text)" })}
-        <div class="section-body">${bulletsHtml(d.design_suggestions, "var(--amber)")}</div>
+        <div class="section-body">
+          ${d.design_suggestions?.vs_right?.length ? `
+          <div class="profile-sub">
+            <div class="profile-sub-title"><span class="bar" style="background:var(--amber)"></span><span class="label" style="color:var(--amber-text)">対右打者</span></div>
+            ${bulletsHtml(d.design_suggestions.vs_right, "var(--amber)")}
+          </div>` : ""}
+          ${d.design_suggestions?.vs_left?.length ? `
+          <div class="profile-sub">
+            <div class="profile-sub-title"><span class="bar" style="background:var(--amber)"></span><span class="label" style="color:var(--amber-text)">対左打者</span></div>
+            ${bulletsHtml(d.design_suggestions.vs_left, "var(--amber)")}
+          </div>` : ""}
+        </div>
       </div>` : ""}
 
       ${gameLogHtml}
