@@ -558,6 +558,7 @@ let currentLeague = "npb";
 let allPlayers = [];
 let selectedCategory = null; // カテゴリで絞り込み中の値（null=絞り込みなし）
 let activePlayerId = null;
+let activeCardData = null; // 現在表示中のカードのmerge済みデータ（投球回フィルタ変更時の再描画用）
 // デフォルトはK-BB%の降順・AIコメントがある選手のみ表示
 let sortField = "k_bb_pct";
 let sortDir = "desc"; // "asc" | "desc"
@@ -841,6 +842,7 @@ function mergeCardData(numeric, llm){
     k: numeric.k,
     bb: numeric.bb,
     season_pitch_detail: numeric.season_pitch_detail,
+    season_totals: numeric.season_totals || null,
     categories: numeric.categories,
     season_course_locs: numeric.season_course_locs,
     player_type: llm.player_type || null,
@@ -870,6 +872,7 @@ async function selectPlayer(id, name){
     const numeric = await res.json();
     const { data: llm, debugLog } = await findLlmDataForPlayer(name || numeric.name, numeric.team, numeric.role);
     const merged = mergeCardData(numeric, llm);
+    activeCardData = merged;
     renderCard(merged);
     if(!llm){
       mainContentEl.insertAdjacentHTML("afterbegin",
@@ -941,6 +944,7 @@ teamSelectEl.addEventListener("change", () => {
 
 minIpFilterEl.addEventListener("input", () => {
   renderPlayerList(applyFilters());
+  if(activeCardData) renderCard(activeCardData);
 });
 
 aiOnlyFilterEl.addEventListener("change", async () => {
@@ -1079,9 +1083,36 @@ function classifyPitcherType(d){
   return cats;
 }
 
+// KPIカードの「XX位/XX人中」を、サイドバーの投球回フィルタの値に応じてその場で計算し直す。
+// サーバー側（export_llm_input.py の compute_rankings）と同じロジック（役割で母集団を分ける、
+// 5指標）をクライアント側でも再現し、index.jsonに載っている全選手の一覧（allPlayers）から算出する。
+// 投球回フィルタの値を変えるたびに使うので、都度サーバーには問い合わせない。
+const LIVE_RANK_SPECS = [
+  ["era", false], ["k_bb_pct", true], ["k_pct", true], ["bb_pct", false], ["gb_pct", true],
+];
+function computeLiveRankings(playerId, minIp){
+  const target = allPlayers.find(p => p.id === playerId);
+  if(!target) return {};
+  const threshold = isNaN(minIp) ? 0 : minIp;
+  const pool = allPlayers.filter(p =>
+    p.role === target.role && p.innings_num != null && p.innings_num >= threshold
+  );
+  const result = {};
+  LIVE_RANK_SPECS.forEach(([key, higherIsBetter]) => {
+    const valid = pool
+      .filter(p => p[key] != null)
+      .map(p => [p.id, p[key]])
+      .sort((a, b) => higherIsBetter ? b[1] - a[1] : a[1] - b[1]);
+    const idx = valid.findIndex(([id]) => id === playerId);
+    if(idx >= 0) result[key] = { rank: idx + 1, total: valid.length };
+  });
+  return result;
+}
+
 function renderCard(d){
   const initial = (d.name || "?").trim().charAt(0);
-  const rk = d.rankings || {};
+  const minIp = parseFloat(minIpFilterEl.value);
+  const rk = activePlayerId ? computeLiveRankings(activePlayerId, minIp) : (d.rankings || {});
   const rankText = (key) => rk[key] ? `<div class="rank"><b>${rk[key].rank}</b>位 / ${rk[key].total}人中</div>` : "";
   // 決め球：専用フィールドが無い場合は、球種評価タグに「決め球」と付いている球種から補う。
   // タグが複数球種に付いていれば、2つまでは並べて表示して構わない。それも無ければ「なし」と明記する。
@@ -1421,7 +1452,7 @@ const TIER_COLOR = {
   mid: "", bot60: "rgba(238,122,151,0.10)", bot70: "rgba(238,122,151,0.18)", bot85: "rgba(238,122,151,0.38)"
 };
 
-function pitchDetailTableHtml(pitches){
+function pitchDetailTableHtml(pitches, trueTotal){
   if(!pitches || !pitches.length){
     return `<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:12px">データなし</div>`;
   }
@@ -1431,8 +1462,18 @@ function pitchDetailTableHtml(pitches){
   // 「ゾーン外投球数」で、どちらも投球数(count)そのものではない。それぞれ専用の
   // 実数フィールド（gb_n/oz_n）があればそちらで加重し、無い（古い形式の）データの
   // 場合のみ投球数で代用する。
+  // ただし本来は、球種別内訳から再度加重平均するより、シーズン全体を直接集計した
+  // 実数（trueTotal。season_totalsから渡される）をそのまま使う方が正確
+  // （一部の打席で球種が特定できず球種別内訳から漏れるケースがあっても影響を受けない）。
+  // trueTotalが無い場合（試合単位のログ表示など）のみ、フォールバックとして
+  // 球種別内訳からの加重平均を使う。
+  const TRUE_TOTAL_KEY = { swstr_pct: "空振り率", chase_pct: "ゾーン外スイング率", strike_pct: "ストライク率", zone_pct: "ゾーン率", gb_pct: "ゴロ率" };
   const WEIGHT_FIELD = { gb_pct: "gb_n", chase_pct: "oz_n" };
   const wavg = (key) => {
+    if(trueTotal){
+      const tKey = TRUE_TOTAL_KEY[key];
+      if(tKey && trueTotal[tKey] != null) return trueTotal[tKey];
+    }
     const wField = WEIGHT_FIELD[key];
     const withVal = pitches.filter(m => m[key] != null);
     const weightOf = (m) => {
@@ -1975,11 +2016,11 @@ function buildGameLogTable(d){
 // 選択中のキーに対応する {pitch_detail, course_locs, label, summary} を取得
 function getRowDataFor(d, gidx){
   if(gidx === "season"){
-    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs, summary: formatSeasonResult(d) };
+    return { label: "シーズン", pitchDetail: d.season_pitch_detail, courseLocs: d.season_course_locs, summary: formatSeasonResult(d), seasonTotals: d.season_totals || null };
   }
   const g = d.game_log[parseInt(gidx,10)];
   if(!g) return null;
-  return { label: `${formatDateShort(g.date)} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary: formatGameResult(g) };
+  return { label: `${formatDateShort(g.date)} ${g.opponent || ""}`.trim(), pitchDetail: g.pitch_detail, courseLocs: g.course_locs, summary: formatGameResult(g), seasonTotals: null };
 }
 
 function renderComparePanel(d){
@@ -2054,7 +2095,7 @@ function renderComparePanel(d){
         <button class="hand-btn" data-hand="vsR">対右</button>
         <button class="hand-btn" data-hand="vsL">対左</button>
       </div>
-      <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(rd.pitchDetail.all)}</div>
+      <div class="pmix-wrap" data-gidx="${gidx}">${pitchDetailTableHtml(rd.pitchDetail.all, rd.seasonTotals && rd.seasonTotals.all)}</div>
     `;
   })();
 
@@ -2165,7 +2206,7 @@ function wireComparePanelEvents(d){
       toggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       const wrap = panel.querySelector(`.pmix-wrap[data-gidx="${idx}"]`);
-      if(wrap) wrap.innerHTML = pitchDetailTableHtml(rd.pitchDetail[hand]);
+      if(wrap) wrap.innerHTML = pitchDetailTableHtml(rd.pitchDetail[hand], rd.seasonTotals && rd.seasonTotals[hand]);
     });
   });
 }
