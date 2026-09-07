@@ -130,7 +130,6 @@
   .section-strength{ background:var(--panel-alt); border:1px solid rgba(16,185,129,0.25); }
   .section-weakness{ background:#221417; border:1px solid rgba(248,113,113,0.25); }
   .section-pitches{ background:var(--panel); }
-  .section-design{ background:#1A140B; border:1px solid rgba(245,158,11,0.3); }
   .section-gamelog{ background:var(--panel); border:1px solid rgba(148,163,184,0.15); }
   .section-profile{ background:var(--panel); border:1px solid rgba(148,163,184,0.15); }
 
@@ -166,27 +165,6 @@
   .bullets div b{ color:var(--text-bright); }
   .bullets.tone-positive div b{ color:#A7F3D0; }
   .bullets.tone-negative div b{ color:#FECACA; }
-
-  /* ピッチングデザイン提案：球種ごとにグルーピングし、その下に「目的→コース」の
-     エントリを複数並べる。1球種が複数の役割（釣り球/決め球/回避など）を持つケースに
-     対応するための構造。優先度の高い球種のみ初期展開し、残りはヘッダーに1行プレビュー
-     を出したアコーディオンにして、全球種を載せても見づらくならないようにする。 */
-  .design-pitch-group{ border:1px solid rgba(148,163,184,0.16); border-radius:10px; overflow:hidden; margin-bottom:8px; background:rgba(15,17,21,0.35); }
-  .design-pitch-group:last-child{ margin-bottom:0; }
-  .design-pitch-row{ padding:11px 13px; display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; user-select:none; }
-  .design-pitch-row .name{ font-size:13px; font-weight:700; color:var(--text-bright); flex-shrink:0; }
-  .design-pitch-row .teaser{ font-size:11.5px; color:var(--text-dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; }
-  .design-pitch-row .name-wrap{ display:flex; align-items:center; gap:8px; min-width:0; flex:1; }
-  .design-pitch-row .chev{ flex-shrink:0; color:#64748B; font-size:14px; transition:transform 0.15s; }
-  .design-pitch-body{ padding:0 13px 11px; }
-  .design-entry{ padding:9px 0; border-top:1px solid rgba(148,163,184,0.12); text-align:left; }
-  .design-entry:first-child{ border-top:none; padding-top:2px; }
-  .design-entry-head{ display:flex; align-items:center; gap:7px; margin-bottom:6px; flex-wrap:wrap; }
-  .design-badge{ font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:6px; white-space:nowrap; }
-  .design-badge.course{ background:rgba(148,163,184,0.16); color:#CBD5E1; }
-  .design-badge.course.avoid{ background:rgba(248,113,113,0.14); color:#FCA5A5; }
-  .design-badge.course.recommend{ background:rgba(74,222,128,0.12); color:#BBF7D0; }
-  .design-text{ font-size:12.5px; line-height:1.65; color:var(--text); }
 
   /* 決め球スタッツボックス：複数球種が「・」区切りで入ると横幅に収まらず詰まって
      見えていたため、複数ある場合は球種ごとに改行して表示する。 */
@@ -386,6 +364,8 @@
   .pitch-row .ptag{ font-size:10px; font-weight:700; border-radius:5px; padding:2px 7px; margin-left:2px; }
   .pitch-row .chev{ margin-left:auto; color:#64748B; font-size:11px; transition:transform 0.15s; }
   .pitch-body{ padding:0 0 10px 15px; }
+  .pitch-body .hand-toggle{ margin-bottom:8px; }
+  .ptag-inline{ display:inline-block; font-size:10px; font-weight:700; border-radius:5px; padding:2px 7px; margin-bottom:8px; }
 
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
 
@@ -806,14 +786,19 @@ function mergeCardData(numeric, llm){
   const llmPitchByName = {};
   (llm.pitch_evaluations || []).forEach(pe => { llmPitchByName[pe.name] = pe; });
 
+  // 球種評価は「全体」「対右打者」「対左打者」の3タブぶん（tag+bullets）を持つ。
+  // 旧フォーマット（l.tag / l.bullets のフラットな1セットのみ）が来た場合は、
+  // 「全体」タブとして扱い、対右/対左タブは無し（タブ自体を出さない）扱いにする。
   const pitch_evaluations = pitchEvalsNumeric.map(p => {
     const l = llmPitchByName[p.name] || {};
+    const allData = l.all || ((l.tag || l.bullets) ? { tag: l.tag || "", bullets: l.bullets || [] } : { tag: "", bullets: [] });
     return {
       name: p.name,
       count: p.count,
       pct: p.pct,
-      tag: l.tag || "",
-      bullets: l.bullets || [],
+      all: allData,
+      vs_right: l.vs_right || null,
+      vs_left: l.vs_left || null,
     };
   });
 
@@ -849,7 +834,6 @@ function mergeCardData(numeric, llm){
     strengths: llm.strengths || [],
     weaknesses: llm.weaknesses || [],
     pitch_evaluations,
-    design_suggestions: llm.design_suggestions || { vs_right: [], vs_left: [] },
     game_log: numeric.game_log || [],
   };
 }
@@ -998,65 +982,14 @@ function bulletsHtml(items, dotColor, tone){
   `).join("")}</div>`;
 }
 
-// 目的（purpose）の文言から大まかなカテゴリを推定し、バッジの色と「推奨/回避」の
-// マーカー（○/✕）を決める。LLM側は自由記述のためキーワードマッチで判定し、
-// 該当がなければ中立色・マーカーなしにする。
-function designPurposeColor(purpose){
-  const p = purpose || "";
-  if(p.includes("回避")) return { bg: "rgba(248,113,113,0.16)", text: "#FCA5A5", isAvoid: true };
-  if(p.includes("空振り") || p.includes("釣り")) return { bg: "rgba(167,139,250,0.18)", text: "#C4B5FD", isAvoid: false };
-  if(p.includes("ゴロ")) return { bg: "rgba(251,146,60,0.18)", text: "#FDBA74", isAvoid: false };
-  if(p.includes("見逃し") || p.includes("ストライク")) return { bg: "rgba(74,222,128,0.16)", text: "#86EFAC", isAvoid: false };
-  return { bg: "rgba(245,158,11,0.16)", text: "var(--amber-text)", isAvoid: false };
-}
-
-// ピッチングデザイン提案：球種ごとにグルーピングして表示する。
-// 1球種が複数の役割（釣り球/決め球/回避など）を持つ場合に対応するため、
-// { pitch, entries:[{purpose, course, text}] } の配列を受け取る。
-// 球種の並び順は、球種評価（pitch_evaluations、既に使用数降順）の順番に合わせる。
-// 優先度トップの球種のみ初期展開し、残りはヘッダーに1行プレビューを出したアコーディオンにして、
-// 全球種を掲載しても見づらくならないようにする（クリックで開閉）。
-// 旧フォーマット（文字列の配列）が来た場合は、これまで通りbulletsHtmlで表示する。
-function designSideHtml(groups, pitchOrderIndex){
-  if(!groups || !groups.length) return "";
-  if(typeof groups[0] === "string") return bulletsHtml(groups, "var(--amber)");
-
-  const sorted = groups.slice().sort((a, b) => {
-    const ia = pitchOrderIndex.has(a.pitch) ? pitchOrderIndex.get(a.pitch) : 999;
-    const ib = pitchOrderIndex.has(b.pitch) ? pitchOrderIndex.get(b.pitch) : 999;
-    return ia - ib;
-  });
-
-  return sorted.map((g, gi) => {
-    const isOpen = gi === 0; // 優先度トップの球種のみ初期展開
-    const entries = g.entries || [];
-    const first = entries[0];
-    const firstColor = first ? designPurposeColor(first.purpose) : null;
-    const teaser = (!isOpen && first) ? `${escapeHtml(first.purpose || "")}${first.course ? ` ・ ${firstColor.isAvoid ? "✕" : "○"} ` + escapeHtml(first.course) : ""}` : "";
-    return `
-    <div class="design-pitch-group">
-      <div class="design-pitch-row">
-        <div class="name-wrap">
-          <span class="name">${escapeHtml(g.pitch || "")}</span>
-          ${teaser ? `<span class="teaser">${teaser}</span>` : ""}
-        </div>
-        <i class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</i>
-      </div>
-      <div class="design-pitch-body" style="display:${isOpen ? "block" : "none"}">
-        ${entries.map(e => {
-          const c = designPurposeColor(e.purpose);
-          return `
-          <div class="design-entry">
-            <div class="design-entry-head">
-              <span class="design-badge" style="background:${c.bg}; color:${c.text}">${escapeHtml(e.purpose || "")}</span>
-              ${e.course ? `<span class="design-badge course ${c.isAvoid ? 'avoid' : 'recommend'}">${c.isAvoid ? "✕" : "○"} ${escapeHtml(e.course)}</span>` : ""}
-            </div>
-            <div class="design-text">${escapeHtml(e.text || "")}</div>
-          </div>
-        `;}).join("")}
-      </div>
-    </div>
-  `;}).join("");
+// 球種評価カード内、1タブぶん（全体/対右/対左のいずれか）のtag+bulletsを描画する。
+// handDataがnull（例:対右・対左の解釈データがまだ無い旧フォーマット）の場合は空表示にする。
+function pitchTagBulletsHtml(handData, dotColor){
+  if(!handData) return `<div class="bullets" style="color:var(--text-dim); font-size:12px;">このタブのデータはありません</div>`;
+  return `
+    ${handData.tag ? `<span class="ptag-inline" style="background:rgba(59,130,246,0.18);color:var(--blue-text)">${escapeHtml(handData.tag)}</span>` : ""}
+    ${bulletsHtml(handData.bullets, dotColor)}
+  `;
 }
 
 // section-title (開閉ヘッダー) を統一生成
@@ -1114,9 +1047,12 @@ function renderCard(d){
   const minIp = parseFloat(minIpFilterEl.value);
   const rk = activePlayerId ? computeLiveRankings(activePlayerId, minIp) : (d.rankings || {});
   const rankText = (key) => rk[key] ? `<div class="rank"><b>${rk[key].rank}</b>位 / ${rk[key].total}人中</div>` : "";
-  // 決め球：専用フィールドが無い場合は、球種評価タグに「決め球」と付いている球種から補う。
+  // 決め球：専用フィールドが無い場合は、球種評価タグ（全体/対右/対左のいずれか）に
+  // 「決め球」と付いている球種から補う。
   // タグが複数球種に付いていれば、2つまでは並べて表示して構わない。それも無ければ「なし」と明記する。
-  const signaturePitchEntries = (d.pitch_evaluations || []).filter(p => p.tag && p.tag.includes("決め球"));
+  const signaturePitchEntries = (d.pitch_evaluations || []).filter(p =>
+    [p.all, p.vs_right, p.vs_left].some(h => h && h.tag && h.tag.includes("決め球"))
+  );
   // 決め球が複数ある場合、value側で単一文字列として結合すると狭いスタッツボックス内で
   // 詰まって見えるため、球種名のリストとして保持し、表示側で球種ごとに改行する。
   const signaturePitchList = d.signature_pitch
@@ -1133,24 +1069,33 @@ function renderCard(d){
 
   const pitchesHtml = (d.pitch_evaluations || []).map((p, i) => {
     const isOpen = i < 3; // 投球割合が高い上位3球種はデフォルトで開く（配列は既に使用数降順）
+    const headerTag = p.all?.tag || "";
+    // 対右・対左どちらかの解釈データがあるときだけ、球種本体内にタブを出す
+    // （旧フォーマットの「全体」データしか無い球種はタブ無しでそのまま表示）
+    const hasHandTabs = !!(p.vs_right || p.vs_left);
     return `
     <button class="pitch-row" data-idx="${i}">
       <span class="pdot" style="background:${pitchColor(i)}"></span>
       <span class="pname" style="color:${pitchColor(i)}">${escapeHtml(p.name)}</span>
       <span class="pcount">${p.count != null ? p.count + '球・' : ''}${p.pct != null ? p.pct + '%' : ''}</span>
-      ${p.tag ? `<span class="ptag" style="background:rgba(59,130,246,0.18);color:var(--blue-text)">${escapeHtml(p.tag)}</span>` : ""}
+      ${headerTag ? `<span class="ptag" style="background:rgba(59,130,246,0.18);color:var(--blue-text)">${escapeHtml(headerTag)}</span>` : ""}
       <span class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</span>
     </button>
     <div class="pitch-body" data-body="${i}" style="display:${isOpen ? 'block' : 'none'}">
-      ${bulletsHtml(p.bullets, "var(--text-dim)")}
+      ${hasHandTabs ? `
+      <div class="hand-toggle pitch-hand-toggle" data-pidx="${i}">
+        <button class="hand-btn active" data-hand="all">全体</button>
+        <button class="hand-btn" data-hand="vs_right">対右</button>
+        <button class="hand-btn" data-hand="vs_left">対左</button>
+      </div>` : ""}
+      <div class="pitch-hand-content" data-pidx="${i}">
+        ${pitchTagBulletsHtml(p.all, "var(--text-dim)")}
+      </div>
     </div>
   `;}).join("");
 
   const gameLogHtml = buildGameLogTable(d);
   const typeCats = (d.categories && d.categories.length) ? d.categories : classifyPitcherType(d);
-  // pitch_evaluationsは既に使用数降順のため、その並びをそのままピッチングデザイン提案の
-  // 球種グループの並び順（投球使用優先度が高い順）として流用する。
-  const pitchOrderIndex = new Map((d.pitch_evaluations || []).map((p, i) => [p.name, i]));
 
   // 選手特徴・強み・弱み を1つの枠にまとめる（区切り線つき）
   const profileHtml = `
@@ -1221,23 +1166,6 @@ function renderCard(d){
         <div class="section-body">${pitchesHtml}</div>
       </div>` : ""}
 
-      ${(d.design_suggestions?.vs_right?.length || d.design_suggestions?.vs_left?.length) ? `
-      <div class="section section-design">
-        ${sectionHeader({ bar:"var(--amber)", label:"ピッチングデザイン提案", labelColor:"var(--amber-text)" })}
-        <div class="section-body">
-          ${d.design_suggestions?.vs_right?.length ? `
-          <div class="profile-sub">
-            <div class="profile-sub-title"><span class="bar" style="background:var(--amber)"></span><span class="label" style="color:var(--amber-text)">対右打者</span></div>
-            ${designSideHtml(d.design_suggestions.vs_right, pitchOrderIndex)}
-          </div>` : ""}
-          ${d.design_suggestions?.vs_left?.length ? `
-          <div class="profile-sub">
-            <div class="profile-sub-title"><span class="bar" style="background:var(--amber)"></span><span class="label" style="color:var(--amber-text)">対左打者</span></div>
-            ${designSideHtml(d.design_suggestions.vs_left, pitchOrderIndex)}
-          </div>` : ""}
-        </div>
-      </div>` : ""}
-
       ${gameLogHtml}
     </div>
   `;
@@ -1254,17 +1182,19 @@ function renderCard(d){
     });
   });
 
-  // ピッチングデザイン提案: 球種ごとの開閉（優先度トップ以外は初期状態で折りたたみ、
-  // 見出しの1行プレビューをタップで全entry表示に切り替える）
-  mainContentEl.querySelectorAll(".design-pitch-row").forEach(row => {
-    row.addEventListener("click", () => {
-      const body = row.nextElementSibling;
-      const chev = row.querySelector(".chev");
-      const teaser = row.querySelector(".teaser");
-      const isOpen = body.style.display !== "none";
-      body.style.display = isOpen ? "none" : "block";
-      chev.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
-      if(teaser) teaser.style.display = isOpen ? "" : "none";
+  // 球種評価: 球種本体内の「全体/対右/対左」タブ切り替え
+  mainContentEl.querySelectorAll(".pitch-hand-toggle").forEach(toggle => {
+    toggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".hand-btn");
+      if(!btn) return;
+      const pidx = toggle.dataset.pidx;
+      const hand = btn.dataset.hand;
+      const p = (d.pitch_evaluations || [])[pidx];
+      if(!p) return;
+      toggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const content = mainContentEl.querySelector(`.pitch-hand-content[data-pidx="${pidx}"]`);
+      if(content) content.innerHTML = pitchTagBulletsHtml(p[hand], "var(--text-dim)");
     });
   });
 
