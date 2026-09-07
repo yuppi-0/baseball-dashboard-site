@@ -2275,6 +2275,9 @@ def _lr_stat(r: dict | None) -> dict | None:
     """試合別投手成績_左右別の1行 → JSON用dict"""
     if not r:
         return None
+    gb_n = _iv(r.get("GB")) or 0
+    ld_n = _iv(r.get("LD")) or 0
+    fb_n = _iv(r.get("FB")) or 0
     return {
         "pitches": _iv(r.get("投球数")),
         "tbf":     _iv(r.get("対戦打者数")),
@@ -2289,8 +2292,16 @@ def _lr_stat(r: dict | None) -> dict | None:
         "ldpct":   _fv(r.get("LD%")),
         "fbpct":   _fv(r.get("FB%")),
         "iffbpct": _fv(r.get("IFFB%")),
+        # ゴロ率などの打球割合系指標は「打球数」が分母（投球数ではない）。
+        # 複数試合・複数球種をまとめて加重平均する側（export_llm_input.py等）が
+        # 投球数で代用しなくて済むよう、分母の実数もここで一緒に持たせる。
+        "gb_n":       gb_n,
+        "bip_known":  gb_n + ld_n + fb_n,
         "zone":    _fv(r.get("ゾーン率")),
         "oSwing":  _fv(r.get("ゾーン外スイング率")),
+        # ゾーン外スイング率の分母は「ゾーン外投球数」（全投球数ではない）。
+        # gb_n/bip_knownと同じ理由で実数を一緒に持たせる。
+        "oz_n":    _iv(r.get("ゾーン外投球数")) or 0,
         "strike":  _fv(r.get("ストライク率")),
         "swstr":   _fv(r.get("空振り率")),
     }
@@ -2298,6 +2309,9 @@ def _lr_stat(r: dict | None) -> dict | None:
 
 def _mix_row(row) -> dict:
     """投球配球行 → mix要素辞書"""
+    gb_n = _iv(row.get("GB")) or 0
+    ld_n = _iv(row.get("LD")) or 0
+    fb_n = _iv(row.get("FB")) or 0
     return {
         "name":    _nv(row.get("球種名"), ""),
         "key":     _nv(row.get("球種コード"), ""),
@@ -2309,9 +2323,13 @@ def _mix_row(row) -> dict:
         "maxVel":  _fv(row.get("最高球速")),
         "swstr":   _fv(row.get("空振り率")),
         "oSwing":  _fv(row.get("ゾーン外スイング率")),
+        "oz_n":    _iv(row.get("ゾーン外投球数")) or 0,
         "zone":    _fv(row.get("ゾーン率")),
         "strike":  _fv(row.get("ストライク率")),
         "gbpct":   _fv(row.get("GB%")),
+        # gbpctの分母（打球数）の実数。加重平均用（_lr_statと同じ理由）。
+        "gb_n":       gb_n,
+        "bip_known":  gb_n + ld_n + fb_n,
         "heart":   _fv(row.get("Heart%")),
         "shadow":  _fv(row.get("Shadow%")),
         "chase":   _fv(row.get("Chase%")),
@@ -2461,6 +2479,9 @@ def _build_dashboard_data(datamart_path: str, pitch_locs: dict | None = None, cb
             "tbf":       _iv(pit_row.get("対戦打者数")),
             "kpct":      _fv(pit_row.get("K%")),
             "gbpct":     _fv(pit_row.get("GB%")),
+            "gb_n":      _iv(pit_row.get("GB")) or 0,
+            "bip_known": (_iv(pit_row.get("GB")) or 0) + (_iv(pit_row.get("LD")) or 0) + (_iv(pit_row.get("FB")) or 0),
+            "oz_n":      _iv(pit_row.get("ゾーン外投球数")) or 0,
             "bbpct":     _fv(pit_row.get("BB%")),
             "kbbpct":    _fv(pit_row.get("K-BB%")),
             "swstr":     _fv(pit_row.get("空振り率")),

@@ -2320,6 +2320,9 @@ def _build_game_json(dm_path: str, date: str,
 
     def _mix_obj(r, game_id: str = "", pitcher_name: str = "", bat_hand: str = "ALL"):
         pt  = _nv(r.get("球種コード"), "")
+        gb_n = _iv(r.get("GB")) or 0
+        ld_n = _iv(r.get("LD")) or 0
+        fb_n = _iv(r.get("FB")) or 0
         obj = {
             "name":       _nv(r.get("球種名"), ""),
             "key":        pt,
@@ -2332,6 +2335,11 @@ def _build_game_json(dm_path: str, date: str,
             "zone":       _fv(r.get("ゾーン率")),
             "strike":     _fv(r.get("ストライク率")),
             "gbpct":      _fv(r.get("GB%")),
+            # gbpctの分母（打球数）の実数。加重平均用。
+            "gb_n":       gb_n,
+            "bip_known":  gb_n + ld_n + fb_n,
+            # oSwingの分母（ゾーン外投球数）の実数。同じ理由。
+            "oz_n":       _iv(r.get("ゾーン外投球数")) or 0,
             "hits":       _iv(r.get("H")),
             "hr":         _iv(r.get("HR")),
             "xwoba":      _fv(r.get("xwOBA"), d=3),
@@ -2359,6 +2367,9 @@ def _build_game_json(dm_path: str, date: str,
     def _lr_stat(r):
         if not r:
             return None
+        gb_n = _iv(r.get("GB")) or 0
+        ld_n = _iv(r.get("LD")) or 0
+        fb_n = _iv(r.get("FB")) or 0
         return {
             "pitches": _iv(r.get("投球数")),
             "tbf":     _iv(r.get("対戦打者数")),
@@ -2373,12 +2384,18 @@ def _build_game_json(dm_path: str, date: str,
             "zone":    _fv(r.get("ゾーン率")),
             "strike":  _fv(r.get("ストライク率")),
             "gbpct":   _fv(r.get("GB%")),
+            "gb_n":       gb_n,
+            "bip_known":  gb_n + ld_n + fb_n,
+            "oz_n":       _iv(r.get("ゾーン外投球数")) or 0,
         }
 
     def _build_pitcher(r):
         gid  = str(r["試合ID"])
         name = str(r["選手名"])
         mix  = sorted(mix_idx.get((gid, name), []), key=lambda x: -_iv(x.get("投球数")))
+        gb_n = _iv(r.get("GB")) or 0
+        ld_n = _iv(r.get("LD")) or 0
+        fb_n = _iv(r.get("FB")) or 0
         return {
             "name":    name,
             "role":    _nv(r.get("役割"), ""),
@@ -2397,6 +2414,9 @@ def _build_game_json(dm_path: str, date: str,
             "bbpct":   _fv(r.get("BB%")),
             "kbbpct":  _fv(r.get("K-BB%")),
             "gbpct":   _fv(r.get("GB%")),
+            "gb_n":       gb_n,
+            "bip_known":  gb_n + ld_n + fb_n,
+            "oz_n":       _iv(r.get("ゾーン外投球数")) or 0,
             "swstr":   _fv(r.get("空振り率")),
             "oSwing":  _fv(r.get("ゾーン外スイング率")),
             "strike":  _fv(r.get("ストライク率")),
