@@ -213,22 +213,25 @@ def calc_season_stats(appearances: list[dict]) -> dict:
             if p.get("zone")   is not None: zone_sum   += p["zone"]   * n
         if p.get("oSwing") is not None:
             # ゾーン外スイング率の本来の分母は「ゾーン外投球数」（全投球数ではない）。
-            # oz_nがあればそちらを使い、無い（古い形式の）JSONの場合のみ投球数で代用する。
+            # 「0」は「ゾーン外投球が0球だった」という正当な値なのでそのまま使う。
+            # oz_n自体が無い（まだ再生成していない古い形式の）試合は、投球数で代用すると
+            # 単位が違う重み（投球数 vs ゾーン外投球数）が混在して古い試合が不当に重く
+            # 扱われてしまうため、その試合はこの指標の集計から除外する。
             ow = p.get("oz_n")
-            if not ow:
-                ow = n
-            oswing_sum += p["oSwing"] * ow
-            oswing_count += ow
+            if ow is not None:
+                oswing_sum += p["oSwing"] * ow
+                oswing_count += ow
         if p.get("gbpct") is not None:
             # ゴロ率は「試合ごとのGB数」「試合ごとの打球数(bip_known)」をそのまま合計して
-            # 割る（分子・分母の生の実数を積み上げる）。gbpct（丸めた%）を分母で掛け戻す
-            # 方式だと丸め誤差が乗るため、実数のgb_nがあればそちらを直接使う。
+            # 割る（分子・分母の生の実数を積み上げる）。
+            # bip_knownが「0」（その試合その球種で打球が1つも無かった）場合は正当な値
+            # なのでそのまま使う。bip_known自体が無い古い形式の試合は、投球数で代用すると
+            # 単位が違う重みが混ざって古い試合が不当に重く扱われるため、除外する。
             w = p.get("bip_known")
-            if not w:
-                w = n
-            gn = p.get("gb_n")
-            gb_sum += gn if gn is not None else p["gbpct"] * w
-            gb_count += w
+            if w is not None:
+                gn = p.get("gb_n")
+                gb_sum += gn if gn is not None else p["gbpct"] * w
+                gb_count += w
 
     # MLB限定の高度指標（avgEV/hardHitPct/barrelPct/xwoba/avgSpin/extension/vaa）
     # NPBデータには存在しないため、appearance側にキーがある分だけ拾う（単純平均。登板ごとの重みは球数ではなくフラットに）
@@ -305,14 +308,16 @@ def calc_season_stats_by_hand(appearances: list[dict]) -> dict:
                 if side.get("strike") is not None: strike_sum += side["strike"] * n
                 if side.get("zone")   is not None: zone_sum   += side["zone"]   * n
             if side.get("oSwing") is not None:
-                ow = side.get("oz_n") or n
-                oswing_sum += side["oSwing"] * ow
-                oswing_count += ow
+                ow = side.get("oz_n")
+                if ow is not None:
+                    oswing_sum += side["oSwing"] * ow
+                    oswing_count += ow
             if side.get("gbpct") is not None:
-                w = side.get("bip_known") or n
-                gn = side.get("gb_n")
-                gb_sum += gn if gn is not None else side["gbpct"] * w
-                gb_count += w
+                w = side.get("bip_known")
+                if w is not None:
+                    gn = side.get("gb_n")
+                    gb_sum += gn if gn is not None else side["gbpct"] * w
+                    gb_count += w
         out[side_key] = {
             "空振り率":  round(swstr_sum / tot_pitches, 1) if tot_pitches > 0 else None,
             "ゾーン外スイング率": round(oswing_sum / oswing_count, 1) if oswing_count > 0 else None,
@@ -380,10 +385,13 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
             k["zone_sum"]  += (m.get("zone")  or 0) * count
             if m.get("oSwing") is not None:
                 # ゾーン外スイング率の本来の分母は「その球種のゾーン外投球数」。
-                # oz_nがあればそちらを使い、無い場合のみ球種の投球数で代用する。
-                ow = m.get("oz_n") or count
-                k["oswing_sum"] += (m["oSwing"] or 0) * ow
-                k["oswing_cnt"] += ow
+                # 「0」（その球種でゾーン外投球が無かった）は正当な値なのでそのまま使う。
+                # oz_n自体が無い（まだ再生成していない古い形式の）試合は、投球数で代用すると
+                # 単位が違う重みが混在して古い試合が不当に重く扱われるため、除外する。
+                ow = m.get("oz_n")
+                if ow is not None:
+                    k["oswing_sum"] += (m["oSwing"] or 0) * ow
+                    k["oswing_cnt"] += ow
             if m.get("vel"):
                 k["vel_sum"] += m["vel"] * count
                 k["vel_cnt"] += count
@@ -395,12 +403,14 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
                 k["strike_sum"] += (m["strike"] or 0) * count
                 k["strike_cnt"] += count
             if m.get("gbpct") is not None:
+                # bip_knownが「0」（その球種で打球が1つも無かった）場合は正当な値なので
+                # そのまま使う。bip_known自体が無い古い形式の試合は、投球数で代用すると
+                # 単位が違う重みが混ざって古い試合が不当に重く扱われるため、除外する。
                 w = m.get("bip_known")
-                if not w:
-                    w = count
-                gn = m.get("gb_n")
-                k["gb_sum"] += gn if gn is not None else (m["gbpct"] or 0) * w
-                k["gb_cnt"] += w
+                if w is not None:
+                    gn = m.get("gb_n")
+                    k["gb_sum"] += gn if gn is not None else (m["gbpct"] or 0) * w
+                    k["gb_cnt"] += w
             # MLB独自指標（投球数加重平均。NPBはこれらのキーが無いので蓄積されずcnt=0のまま）
             if m.get("xwoba") is not None:
                 k["xwoba_sum"] += m["xwoba"] * count; k["xwoba_cnt"] += count
@@ -847,7 +857,9 @@ def _single_game_mix_rows(mix_list) -> list[dict]:
             "strike_pct": m.get("strike"),
             "zone_pct": m.get("zone"),
             "gb_pct": m.get("gbpct"),
-            "gb_n": m.get("gb_n") or m.get("bip_known"),
+            # gb_n: html側のwavg()フォールバックで「重み（分母）」として使われるフィールド。
+            # 分子（ゴロの個数）ではなく、必ずbip_known（打球数）を入れる。
+            "gb_n": m.get("bip_known"),
             "oz_n": m.get("oz_n"),
             "avg_vel": m.get("vel"),
             "max_vel": m.get("maxVel"),
