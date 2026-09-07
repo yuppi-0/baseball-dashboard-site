@@ -75,7 +75,7 @@
       "k_pct": 31.9,
       "bb_pct": 11.1,
       "swstr_pct": 12.9,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "aaron_brooks",
@@ -172,7 +172,7 @@
       "k_pct": 25.9,
       "bb_pct": 9.1,
       "swstr_pct": 11.3,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "adam_frazier",
@@ -210,7 +210,7 @@
       "k_pct": 22.3,
       "bb_pct": 9.9,
       "swstr_pct": 13.2,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "adam_tulloch",
@@ -220,7 +220,6 @@
       "innings": "0.1",
       "innings_num": 0.3,
       "categories": [
-        "フライピッチャー",
         "シンカーピッチャー",
         "スライダーピッチャー"
       ],
@@ -229,7 +228,7 @@
       "k_pct": 0.0,
       "bb_pct": 0.0,
       "swstr_pct": 0.0,
-      "gb_pct": 0.0
+      "gb_pct": null
     },
     {
       "id": "adrian_del_castillo",
@@ -381,7 +380,7 @@
       "k_pct": 12.8,
       "bb_pct": 20.5,
       "swstr_pct": 7.4,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "alex_cook",
@@ -801,7 +800,7 @@
       "k_pct": 38.3,
       "bb_pct": 9.3,
       "swstr_pct": 19.4,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "angel_chivilli",
@@ -840,7 +839,7 @@
       "k_pct": 14.3,
       "bb_pct": 10.7,
       "swstr_pct": 7.4,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "anthony_banda",
@@ -1032,7 +1031,7 @@
       "k_pct": 32.2,
       "bb_pct": 10.1,
       "swstr_pct": 15.7,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "austin_hedges",
@@ -1262,7 +1261,7 @@
       "k_pct": 35.1,
       "bb_pct": 13.5,
       "swstr_pct": 14.4,
-      "gb_pct": 0.1
+      "gb_pct": 0.5
     },
     {
       "id": "ben_peoples",
@@ -1281,7 +1280,7 @@
       "k_pct": 14.7,
       "bb_pct": 11.8,
       "swstr_pct": 12.4,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "ben_williamson",
@@ -1452,7 +1451,7 @@
       "k_pct": 20.8,
       "bb_pct": 2.1,
       "swstr_pct": 11.2,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "blane_abeyta",
@@ -1550,7 +1549,7 @@
       "k_pct": 26.2,
       "bb_pct": 6.9,
       "swstr_pct": 15.2,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "bradley_blalock",
@@ -1798,7 +1797,7 @@
       "k_pct": 32.1,
       "bb_pct": 6.3,
       "swstr_pct": 12.3,
-      "gb_pct": 0.4
+      "gb_pct": 0.7
     },
     {
       "id": "brant_hurter",
@@ -1993,7 +1992,7 @@
       "k_pct": 31.8,
       "bb_pct": 19.1,
       "swstr_pct": 16.0,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "brennan_bernardino",
@@ -2012,7 +2011,7 @@
       "k_pct": 16.9,
       "bb_pct": 5.8,
       "swstr_pct": 9.9,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "brent_headrick",
@@ -2031,7 +2030,7 @@
       "k_pct": 30.4,
       "bb_pct": 7.2,
       "swstr_pct": 17.3,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "brent_suter",
@@ -2167,7 +2166,7 @@
       "k_pct": 23.8,
       "bb_pct": 10.0,
       "swstr_pct": 13.9,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "brooks_kriske",
@@ -2206,7 +2205,7 @@
       "k_pct": 24.0,
       "bb_pct": 8.0,
       "swstr_pct": 11.0,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "bruce_zimmermann",
@@ -2243,7 +2242,7 @@
       "k_pct": 29.1,
       "bb_pct": 16.9,
       "swstr_pct": 14.0,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "bryan_baker",
@@ -2262,7 +2261,7 @@
       "k_pct": 27.4,
       "bb_pct": 9.1,
       "swstr_pct": 14.9,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "bryan_hudson",
@@ -2281,7 +2280,7 @@
       "k_pct": 22.1,
       "bb_pct": 6.8,
       "swstr_pct": 11.1,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "bryan_king",
@@ -2741,7 +2740,7 @@
       "k_pct": 25.1,
       "bb_pct": 12.7,
       "swstr_pct": 11.4,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "cam_booser",
@@ -2760,7 +2759,7 @@
       "k_pct": 30.1,
       "bb_pct": 4.4,
       "swstr_pct": 15.6,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "cam_sanders",
@@ -2779,7 +2778,7 @@
       "k_pct": 27.8,
       "bb_pct": 15.7,
       "swstr_pct": 16.4,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "cam_schlittler",
@@ -2877,7 +2876,7 @@
       "k_pct": 23.0,
       "bb_pct": 12.3,
       "swstr_pct": 12.4,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "carl_edwards_jr",
@@ -3973,7 +3972,7 @@
       "k_pct": 22.4,
       "bb_pct": 9.0,
       "swstr_pct": 11.9,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "colin_rea",
@@ -4067,7 +4066,7 @@
       "k_pct": 21.1,
       "bb_pct": 21.1,
       "swstr_pct": 10.8,
-      "gb_pct": 0.2
+      "gb_pct": 0.3
     },
     {
       "id": "connor_prielipp",
@@ -4332,7 +4331,7 @@
       "k_pct": 26.5,
       "bb_pct": 6.1,
       "swstr_pct": 12.6,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "daniel_espino",
@@ -4447,7 +4446,7 @@
       "k_pct": 27.7,
       "bb_pct": 7.2,
       "swstr_pct": 16.5,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "david_morgan",
@@ -4467,7 +4466,7 @@
       "k_pct": 24.0,
       "bb_pct": 12.8,
       "swstr_pct": 15.4,
-      "gb_pct": 0.4
+      "gb_pct": 0.6
     },
     {
       "id": "david_peterson",
@@ -4543,7 +4542,7 @@
       "k_pct": 20.5,
       "bb_pct": 15.4,
       "swstr_pct": 10.9,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "dean_kremer",
@@ -4600,7 +4599,7 @@
       "k_pct": 20.1,
       "bb_pct": 10.5,
       "swstr_pct": 12.4,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "derek_law",
@@ -4657,7 +4656,7 @@
       "k_pct": 28.3,
       "bb_pct": 11.7,
       "swstr_pct": 17.5,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "didier_fuentes",
@@ -5002,7 +5001,7 @@
       "k_pct": 29.7,
       "bb_pct": 10.9,
       "swstr_pct": 13.4,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "easton_mcgee",
@@ -5060,7 +5059,7 @@
       "k_pct": 29.5,
       "bb_pct": 10.3,
       "swstr_pct": 14.6,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "eduard_bazardo",
@@ -5306,7 +5305,7 @@
       "k_pct": 24.3,
       "bb_pct": 6.6,
       "swstr_pct": 14.0,
-      "gb_pct": 0.2
+      "gb_pct": 0.3
     },
     {
       "id": "emmet_sheehan",
@@ -5440,7 +5439,7 @@
       "k_pct": 19.0,
       "bb_pct": 11.1,
       "swstr_pct": 9.3,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "erick_fedde",
@@ -5478,7 +5477,7 @@
       "k_pct": 34.7,
       "bb_pct": 14.0,
       "swstr_pct": 14.0,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "erik_sabrowski",
@@ -5592,7 +5591,7 @@
       "k_pct": 26.5,
       "bb_pct": 6.0,
       "swstr_pct": 10.9,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "evan_sisk",
@@ -5611,7 +5610,7 @@
       "k_pct": 25.7,
       "bb_pct": 12.3,
       "swstr_pct": 10.9,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "fernando_cruz",
@@ -5630,7 +5629,7 @@
       "k_pct": 28.6,
       "bb_pct": 13.7,
       "swstr_pct": 16.9,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "fidel_ulloa",
@@ -5744,7 +5743,7 @@
       "k_pct": 21.6,
       "bb_pct": 8.6,
       "swstr_pct": 11.0,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "gabriel_hughes",
@@ -5956,7 +5955,7 @@
       "k_pct": 21.0,
       "bb_pct": 18.1,
       "swstr_pct": 10.0,
-      "gb_pct": 0.2
+      "gb_pct": 0.4
     },
     {
       "id": "gavin_hollowell",
@@ -6074,7 +6073,7 @@
       "k_pct": 23.1,
       "bb_pct": 11.4,
       "swstr_pct": 14.3,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "gerardo_carrillo",
@@ -6169,7 +6168,7 @@
       "k_pct": 29.1,
       "bb_pct": 14.5,
       "swstr_pct": 14.4,
-      "gb_pct": 0.4
+      "gb_pct": 0.6
     },
     {
       "id": "grant_anderson",
@@ -6227,7 +6226,7 @@
       "k_pct": 32.3,
       "bb_pct": 8.6,
       "swstr_pct": 13.1,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "grant_wolfram",
@@ -6246,7 +6245,7 @@
       "k_pct": 25.8,
       "bb_pct": 7.2,
       "swstr_pct": 11.7,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "grayson_rodriguez",
@@ -6322,7 +6321,7 @@
       "k_pct": 27.9,
       "bb_pct": 9.7,
       "swstr_pct": 12.2,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "griffin_canning",
@@ -6495,7 +6494,7 @@
       "k_pct": 7.4,
       "bb_pct": 9.9,
       "swstr_pct": 6.9,
-      "gb_pct": 0.2
+      "gb_pct": 0.3
     },
     {
       "id": "hayden_wesneski",
@@ -7787,7 +7786,7 @@
       "k_pct": 34.1,
       "bb_pct": 9.4,
       "swstr_pct": 18.6,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "jeffrey_springs",
@@ -7980,7 +7979,7 @@
       "k_pct": 19.3,
       "bb_pct": 11.9,
       "swstr_pct": 11.3,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "jojo_romero",
@@ -8367,7 +8366,7 @@
       "k_pct": 17.4,
       "bb_pct": 11.0,
       "swstr_pct": 9.8,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "jonah_tong",
@@ -8557,7 +8556,7 @@
       "k_pct": 23.1,
       "bb_pct": 10.3,
       "swstr_pct": 13.5,
-      "gb_pct": 0.2
+      "gb_pct": 0.3
     },
     {
       "id": "jordan_montgomery",
@@ -8652,7 +8651,7 @@
       "k_pct": 18.8,
       "bb_pct": 3.5,
       "swstr_pct": 13.7,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "jose_cabrera",
@@ -8845,7 +8844,7 @@
       "k_pct": 37.1,
       "bb_pct": 7.7,
       "swstr_pct": 19.5,
-      "gb_pct": 0.3
+      "gb_pct": 0.5
     },
     {
       "id": "josh_rojas",
@@ -8905,7 +8904,7 @@
       "k_pct": 24.5,
       "bb_pct": 8.5,
       "swstr_pct": 11.3,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "josh_white",
@@ -8962,7 +8961,7 @@
       "k_pct": 26.4,
       "bb_pct": 9.8,
       "swstr_pct": 12.9,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "josé_buttó",
@@ -9155,7 +9154,7 @@
       "k_pct": 28.1,
       "bb_pct": 9.1,
       "swstr_pct": 14.2,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "julian_fernández",
@@ -9575,7 +9574,7 @@
       "k_pct": 28.0,
       "bb_pct": 13.4,
       "swstr_pct": 13.0,
-      "gb_pct": 0.2
+      "gb_pct": 0.3
     },
     {
       "id": "kent_emanuel",
@@ -9863,7 +9862,7 @@
       "k_pct": 21.3,
       "bb_pct": 6.4,
       "swstr_pct": 8.2,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "kyle_bradish",
@@ -9999,7 +9998,7 @@
       "k_pct": 29.2,
       "bb_pct": 12.0,
       "swstr_pct": 17.7,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "kyle_leahy",
@@ -10244,7 +10243,7 @@
       "k_pct": 22.7,
       "bb_pct": 0.0,
       "swstr_pct": 12.5,
-      "gb_pct": 0.2
+      "gb_pct": 0.4
     },
     {
       "id": "logan_webb",
@@ -10340,7 +10339,7 @@
       "k_pct": 14.8,
       "bb_pct": 13.9,
       "swstr_pct": 9.6,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "lucas_giolito",
@@ -10706,7 +10705,7 @@
       "k_pct": 25.0,
       "bb_pct": 15.0,
       "swstr_pct": 9.8,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "luke_weaver",
@@ -10839,7 +10838,7 @@
       "k_pct": 26.0,
       "bb_pct": 7.5,
       "swstr_pct": 13.8,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "mark_manfredi",
@@ -10972,7 +10971,7 @@
       "k_pct": 25.5,
       "bb_pct": 10.7,
       "swstr_pct": 14.0,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "mason_miller",
@@ -11009,7 +11008,7 @@
       "k_pct": 38.1,
       "bb_pct": 9.2,
       "swstr_pct": 15.9,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "matt_brash",
@@ -11047,7 +11046,7 @@
       "k_pct": 24.5,
       "bb_pct": 6.8,
       "swstr_pct": 13.4,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "matt_gage",
@@ -11542,7 +11541,7 @@
       "k_pct": 28.3,
       "bb_pct": 11.0,
       "swstr_pct": 14.5,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "michael_rucker",
@@ -11562,7 +11561,7 @@
       "k_pct": 26.1,
       "bb_pct": 8.3,
       "swstr_pct": 11.3,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "michael_soroka",
@@ -11843,7 +11842,7 @@
       "k_pct": 31.8,
       "bb_pct": 6.8,
       "swstr_pct": 14.0,
-      "gb_pct": 0.3
+      "gb_pct": 0.5
     },
     {
       "id": "nate_pearson",
@@ -11872,7 +11871,6 @@
       "innings": "0.1",
       "innings_num": 0.3,
       "categories": [
-        "フライピッチャー",
         "シンカーピッチャー"
       ],
       "era": 0.0,
@@ -11880,7 +11878,7 @@
       "k_pct": 0.0,
       "bb_pct": 0.0,
       "swstr_pct": 0.0,
-      "gb_pct": 0.0
+      "gb_pct": null
     },
     {
       "id": "nathan_eovaldi",
@@ -11997,7 +11995,7 @@
       "k_pct": 18.6,
       "bb_pct": 12.8,
       "swstr_pct": 8.7,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "nick_pivetta",
@@ -12512,7 +12510,7 @@
       "k_pct": 20.8,
       "bb_pct": 7.8,
       "swstr_pct": 8.2,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "payton_tolle",
@@ -13053,7 +13051,7 @@
       "k_pct": 26.1,
       "bb_pct": 8.4,
       "swstr_pct": 15.8,
-      "gb_pct": 0.3
+      "gb_pct": 0.5
     },
     {
       "id": "riley_cornelio",
@@ -13082,7 +13080,6 @@
       "innings": "0.1",
       "innings_num": 0.3,
       "categories": [
-        "フライピッチャー",
         "スライダーピッチャー",
         "チェンジアップピッチャー",
         "フォーシームピッチャー"
@@ -13092,7 +13089,7 @@
       "k_pct": 0.0,
       "bb_pct": 0.0,
       "swstr_pct": 20.0,
-      "gb_pct": 0.0
+      "gb_pct": null
     },
     {
       "id": "riley_martin",
@@ -13556,7 +13553,7 @@
       "k_pct": 15.8,
       "bb_pct": 6.6,
       "swstr_pct": 9.3,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "ryan_walker",
@@ -13786,7 +13783,7 @@
       "k_pct": 22.6,
       "bb_pct": 14.8,
       "swstr_pct": 11.9,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "sam_moll",
@@ -13805,7 +13802,7 @@
       "k_pct": 21.7,
       "bb_pct": 11.6,
       "swstr_pct": 9.3,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "sammy_peralta",
@@ -13976,7 +13973,7 @@
       "k_pct": 22.4,
       "bb_pct": 8.5,
       "swstr_pct": 10.5,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "sean_sullivan",
@@ -14241,7 +14238,7 @@
       "k_pct": 22.4,
       "bb_pct": 12.9,
       "swstr_pct": 11.7,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "shohei_ohtani",
@@ -14835,7 +14832,7 @@
       "k_pct": 24.5,
       "bb_pct": 7.7,
       "swstr_pct": 12.6,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "thomas_pannone",
@@ -14874,7 +14871,7 @@
       "k_pct": 21.1,
       "bb_pct": 12.2,
       "swstr_pct": 13.9,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "tim_hill",
@@ -14930,7 +14927,7 @@
       "k_pct": 16.7,
       "bb_pct": 6.6,
       "swstr_pct": 9.3,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "tom_cosgrove",
@@ -15392,7 +15389,7 @@
       "k_pct": 20.3,
       "bb_pct": 7.1,
       "swstr_pct": 9.9,
-      "gb_pct": 0.5
+      "gb_pct": 0.6
     },
     {
       "id": "tyler_callihan",
@@ -15449,7 +15446,7 @@
       "k_pct": 26.9,
       "bb_pct": 5.1,
       "swstr_pct": 13.6,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "tyler_gilbert",
@@ -15794,7 +15791,7 @@
       "k_pct": 23.3,
       "bb_pct": 9.2,
       "swstr_pct": 15.0,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "victor_robles",
@@ -16425,7 +16422,7 @@
       "k_pct": 26.8,
       "bb_pct": 14.0,
       "swstr_pct": 16.3,
-      "gb_pct": 0.3
+      "gb_pct": 0.4
     },
     {
       "id": "yunior_marte",
@@ -16693,7 +16690,7 @@
       "k_pct": 19.7,
       "bb_pct": 9.9,
       "swstr_pct": 9.2,
-      "gb_pct": 0.4
+      "gb_pct": 0.5
     },
     {
       "id": "zack_littell",
