@@ -1571,9 +1571,16 @@ function buildPitchCompareTable(entries){
 // ============================================================
 
 const HM_RESULT_OPTIONS = [
-  { key:"all",    label:"全て" }, { key:"swing",  label:"スイング" }, { key:"swstr",  label:"空振り" },
-  { key:"ground", label:"ゴロアウト" }, { key:"fly",    label:"フライアウト" }, { key:"hit",    label:"単打" },
-  { key:"xbh",    label:"長打" }, { key:"hr",     label:"HR" }, { key:"take",   label:"見逃し" }
+  { key:"all",           label:"全て" },
+  { key:"swing",         label:"スイング" },
+  { key:"swstr",         label:"空振り（/全て）" },
+  { key:"swstr_vs_swing",label:"空振り（/スイング）" },
+  { key:"take",          label:"見逃し" },
+  { key:"ground",        label:"ゴロアウト" },
+  { key:"fly",           label:"フライアウト" },
+  { key:"hit",           label:"被打" },
+  { key:"xbh",           label:"長打" },
+  { key:"hr",            label:"HR" },
 ];
 
 // グローバルなフィルター状態（比較パネル内の全ブロックで共有）
@@ -1581,16 +1588,21 @@ window._hmResultFilter = window._hmResultFilter || "all";
 window._hmSplitMode = window._hmSplitMode || "25";
 window._hmSelectedPitchKeys = window._hmSelectedPitchKeys || null; // null=全球種
 
+// 各resultFilterの「率の分母」に使うフィルター。指定が無いものは"all"（全投球に対する率）。
+// swstr_vs_swingだけ、分母を「スイングした球」に絞る（=空振り/スイング数）。
+const HM_RATE_DENOM_FILTER = { swstr_vs_swing: "swing" };
+
 function hmFilterLocs(locs, resultFilter){
   return (locs || []).filter(loc => {
     const [x, y, flag, inZone, rtype] = loc;
     if(resultFilter === "all") return true;
-    if(resultFilter === "swstr")  return flag === 1;
+    if(resultFilter === "swstr")          return flag === 1;
+    if(resultFilter === "swstr_vs_swing") return flag === 1;
     if(resultFilter === "swing")  return flag >= 0;
     if(resultFilter === "take")   return flag === -1;
     if(resultFilter === "ground") return rtype === 1;
     if(resultFilter === "fly")    return rtype === 2;
-    if(resultFilter === "hit")    return rtype === 3;
+    if(resultFilter === "hit")    return rtype === 3 || rtype === 4 || rtype === 5;
     if(resultFilter === "xbh")    return rtype === 4 || rtype === 5;
     if(resultFilter === "hr")     return rtype === 5;
     return true;
@@ -2054,8 +2066,9 @@ function renderComparePanel(d){
     const locsR = hmCombinedLocs(courseLocs, true);
     const locsL = hmCombinedLocs(courseLocs, false);
     const isAllFilter = window._hmResultFilter === "all";
-    const allLocsR = isAllFilter ? null : hmCombinedLocs(courseLocs, true, "all");
-    const allLocsL = isAllFilter ? null : hmCombinedLocs(courseLocs, false, "all");
+    const denomFilter = HM_RATE_DENOM_FILTER[window._hmResultFilter] || "all";
+    const allLocsR = isAllFilter ? null : hmCombinedLocs(courseLocs, true, denomFilter);
+    const allLocsL = isAllFilter ? null : hmCombinedLocs(courseLocs, false, denomFilter);
     const canvasIdR = `hmcanvas-${gidx}-R`, canvasIdL = `hmcanvas-${gidx}-L`;
     return `
       <div class="course-entry" data-cmp-gidx="${gidx}">
