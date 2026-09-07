@@ -220,12 +220,14 @@ def calc_season_stats(appearances: list[dict]) -> dict:
             oswing_sum += p["oSwing"] * ow
             oswing_count += ow
         if p.get("gbpct") is not None:
-            # ゴロ率の本来の分母は「打球数」。bip_knownがあればそちらを使い、
-            # 無い（古い形式の）JSONの場合のみ投球数で代用する。
+            # ゴロ率は「試合ごとのGB数」「試合ごとの打球数(bip_known)」をそのまま合計して
+            # 割る（分子・分母の生の実数を積み上げる）。gbpct（丸めた%）を分母で掛け戻す
+            # 方式だと丸め誤差が乗るため、実数のgb_nがあればそちらを直接使う。
             w = p.get("bip_known")
             if not w:
                 w = n
-            gb_sum += p["gbpct"] * w
+            gn = p.get("gb_n")
+            gb_sum += gn if gn is not None else p["gbpct"] * w
             gb_count += w
 
     # MLB限定の高度指標（avgEV/hardHitPct/barrelPct/xwoba/avgSpin/extension/vaa）
@@ -308,7 +310,8 @@ def calc_season_stats_by_hand(appearances: list[dict]) -> dict:
                 oswing_count += ow
             if side.get("gbpct") is not None:
                 w = side.get("bip_known") or n
-                gb_sum += side["gbpct"] * w
+                gn = side.get("gb_n")
+                gb_sum += gn if gn is not None else side["gbpct"] * w
                 gb_count += w
         out[side_key] = {
             "空振り率":  round(swstr_sum / tot_pitches, 1) if tot_pitches > 0 else None,
@@ -395,7 +398,8 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
                 w = m.get("bip_known")
                 if not w:
                     w = count
-                k["gb_sum"] += (m["gbpct"] or 0) * w
+                gn = m.get("gb_n")
+                k["gb_sum"] += gn if gn is not None else (m["gbpct"] or 0) * w
                 k["gb_cnt"] += w
             # MLB独自指標（投球数加重平均。NPBはこれらのキーが無いので蓄積されずcnt=0のまま）
             if m.get("xwoba") is not None:
