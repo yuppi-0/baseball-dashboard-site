@@ -364,7 +364,7 @@
   .pitch-row .ptag{ font-size:10px; font-weight:700; border-radius:5px; padding:2px 7px; margin-left:2px; }
   .pitch-row .chev{ margin-left:auto; color:#64748B; font-size:11px; transition:transform 0.15s; }
   .pitch-body{ padding:0 0 10px 15px; }
-  .pitch-body .hand-toggle{ margin-bottom:8px; }
+  .pitch-eval-hand-toggle{ margin-bottom:14px; }
   .ptag-inline{ display:inline-block; font-size:10px; font-weight:700; border-radius:5px; padding:2px 7px; margin-bottom:8px; }
 
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
@@ -1070,24 +1070,15 @@ function renderCard(d){
   const pitchesHtml = (d.pitch_evaluations || []).map((p, i) => {
     const isOpen = i < 3; // 投球割合が高い上位3球種はデフォルトで開く（配列は既に使用数降順）
     const headerTag = p.all?.tag || "";
-    // 対右・対左どちらかの解釈データがあるときだけ、球種本体内にタブを出す
-    // （旧フォーマットの「全体」データしか無い球種はタブ無しでそのまま表示）
-    const hasHandTabs = !!(p.vs_right || p.vs_left);
     return `
     <button class="pitch-row" data-idx="${i}">
       <span class="pdot" style="background:${pitchColor(i)}"></span>
       <span class="pname" style="color:${pitchColor(i)}">${escapeHtml(p.name)}</span>
       <span class="pcount">${p.count != null ? p.count + '球・' : ''}${p.pct != null ? p.pct + '%' : ''}</span>
-      ${headerTag ? `<span class="ptag" style="background:rgba(59,130,246,0.18);color:var(--blue-text)">${escapeHtml(headerTag)}</span>` : ""}
+      <span class="ptag" data-pidx-tag="${i}" style="background:rgba(59,130,246,0.18);color:var(--blue-text); display:${headerTag ? 'inline-block' : 'none'}">${escapeHtml(headerTag)}</span>
       <span class="chev" style="transform:rotate(${isOpen ? '180deg' : '0deg'})">︾</span>
     </button>
     <div class="pitch-body" data-body="${i}" style="display:${isOpen ? 'block' : 'none'}">
-      ${hasHandTabs ? `
-      <div class="hand-toggle pitch-hand-toggle" data-pidx="${i}">
-        <button class="hand-btn active" data-hand="all">全体</button>
-        <button class="hand-btn" data-hand="vs_right">対右</button>
-        <button class="hand-btn" data-hand="vs_left">対左</button>
-      </div>` : ""}
       <div class="pitch-hand-content" data-pidx="${i}">
         ${pitchTagBulletsHtml(p.all, "var(--text-dim)")}
       </div>
@@ -1163,7 +1154,14 @@ function renderCard(d){
       ${d.pitch_evaluations?.length ? `
       <div class="section section-pitches">
         ${sectionHeader({ bar:"var(--blue)", label:"球種評価", labelColor:"var(--text-bright)" })}
-        <div class="section-body">${pitchesHtml}</div>
+        <div class="section-body">
+          <div class="hand-toggle pitch-eval-hand-toggle">
+            <button class="hand-btn active" data-hand="all">全体</button>
+            <button class="hand-btn" data-hand="vs_right">対右</button>
+            <button class="hand-btn" data-hand="vs_left">対左</button>
+          </div>
+          ${pitchesHtml}
+        </div>
       </div>` : ""}
 
       ${gameLogHtml}
@@ -1182,21 +1180,29 @@ function renderCard(d){
     });
   });
 
-  // 球種評価: 球種本体内の「全体/対右/対左」タブ切り替え
-  mainContentEl.querySelectorAll(".pitch-hand-toggle").forEach(toggle => {
-    toggle.addEventListener("click", (e) => {
+  // 球種評価: 全球種共通の「全体/対右/対左」タブ切り替え（1つのトグルで全球種が連動）
+  const pitchEvalToggle = mainContentEl.querySelector(".pitch-eval-hand-toggle");
+  if(pitchEvalToggle){
+    pitchEvalToggle.addEventListener("click", (e) => {
       const btn = e.target.closest(".hand-btn");
       if(!btn) return;
-      const pidx = toggle.dataset.pidx;
       const hand = btn.dataset.hand;
-      const p = (d.pitch_evaluations || [])[pidx];
-      if(!p) return;
-      toggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
+      pitchEvalToggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
-      const content = mainContentEl.querySelector(`.pitch-hand-content[data-pidx="${pidx}"]`);
-      if(content) content.innerHTML = pitchTagBulletsHtml(p[hand], "var(--text-dim)");
+      (d.pitch_evaluations || []).forEach((p, pidx) => {
+        const content = mainContentEl.querySelector(`.pitch-hand-content[data-pidx="${pidx}"]`);
+        if(content) content.innerHTML = pitchTagBulletsHtml(p[hand], "var(--text-dim)");
+        // 行頭のタグバッジも選択中のタブに合わせて切り替える
+        const tagEl = mainContentEl.querySelector(`.ptag[data-pidx-tag="${pidx}"]`);
+        if(tagEl){
+          const handData = p[hand];
+          const tag = handData?.tag || "";
+          tagEl.textContent = tag;
+          tagEl.style.display = tag ? "inline-block" : "none";
+        }
+      });
     });
-  });
+  }
 
   // 各セクション枠（選手プロフィール／球種評価／提案／試合成績）の開閉
   mainContentEl.querySelectorAll(".section-title[data-toggle]").forEach(title => {
