@@ -1427,10 +1427,20 @@ function pitchDetailTableHtml(pitches){
   }
   const metrics = currentPmixMetrics();
   const tc = pitches.reduce((s,m)=>s+(m.count||0), 0);
+  // ゴロ率(gb_pct)の本来の分母は「打球数」、ボール球SW%(chase_pct)の本来の分母は
+  // 「ゾーン外投球数」で、どちらも投球数(count)そのものではない。それぞれ専用の
+  // 実数フィールド（gb_n/oz_n）があればそちらで加重し、無い（古い形式の）データの
+  // 場合のみ投球数で代用する。
+  const WEIGHT_FIELD = { gb_pct: "gb_n", chase_pct: "oz_n" };
   const wavg = (key) => {
+    const wField = WEIGHT_FIELD[key];
     const withVal = pitches.filter(m => m[key] != null);
-    const wsum = withVal.reduce((s,m)=>s+(m.count||0), 0);
-    return wsum > 0 ? withVal.reduce((s,m)=>s+(m[key]*(m.count||0)), 0) / wsum : null;
+    const weightOf = (m) => {
+      if(wField && m[wField] != null) return m[wField];
+      return m.count || 0;
+    };
+    const wsum = withVal.reduce((s,m)=>s+weightOf(m), 0);
+    return wsum > 0 ? withVal.reduce((s,m)=>s+(m[key]*weightOf(m)), 0) / wsum : null;
   };
   const maxVel = pitches.reduce((mx,m) => (m.max_vel != null && m.max_vel > mx) ? m.max_vel : mx, 0);
   // table-layout:fixedは、テーブル自身の幅がautoのままだと内容の長さに引っ張られて列幅がズレてしまう
