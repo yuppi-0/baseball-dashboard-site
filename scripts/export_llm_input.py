@@ -272,6 +272,54 @@ def calc_season_stats(appearances: list[dict]) -> dict:
     }
 
 
+def calc_season_stats_by_hand(appearances: list[dict]) -> dict:
+    """
+    対右打者・対左打者それぞれの「本当のシーズン実数」を、試合ごとのpitStatVsR/pitStatVsL
+    （各試合で計算済みの正しい分母＝bip_known/oz_nを持つ）を積み上げて算出する。
+
+    球種比較テーブルの「合計」行に使う値。球種別内訳（season_pitch_detail）から
+    再度加重平均するのではなく、この関数の値をそのまま使うことで、「一部の打席で球種が
+    特定できず球種別テーブルには反映されない」といったケースでも実際のシーズン数値と
+    ズレないようにする。
+
+    戻り値: {"vsR": {"空振り率":..., "ゾーン外スイング率":..., "ストライク率":..., "ゾーン率":..., "ゴロ率":...}, "vsL": {...}}
+    """
+    out = {}
+    for side_key in ("vsR", "vsL"):
+        tot_pitches = swstr_sum = strike_sum = zone_sum = 0.0
+        oswing_sum, oswing_count = 0.0, 0.0
+        gb_sum, gb_count = 0.0, 0.0
+        for ap in appearances:
+            p = ap["player"]
+            if not isinstance(p, dict):
+                continue
+            side = p.get("pitStatVsR" if side_key == "vsR" else "pitStatVsL")
+            if not isinstance(side, dict):
+                continue
+            n = side.get("pitches", 0) or 0
+            if n > 0:
+                tot_pitches += n
+                if side.get("swstr")  is not None: swstr_sum  += side["swstr"]  * n
+                if side.get("strike") is not None: strike_sum += side["strike"] * n
+                if side.get("zone")   is not None: zone_sum   += side["zone"]   * n
+            if side.get("oSwing") is not None:
+                ow = side.get("oz_n") or n
+                oswing_sum += side["oSwing"] * ow
+                oswing_count += ow
+            if side.get("gbpct") is not None:
+                w = side.get("bip_known") or n
+                gb_sum += side["gbpct"] * w
+                gb_count += w
+        out[side_key] = {
+            "空振り率":  round(swstr_sum / tot_pitches, 1) if tot_pitches > 0 else None,
+            "ゾーン外スイング率": round(oswing_sum / oswing_count, 1) if oswing_count > 0 else None,
+            "ストライク率": round(strike_sum / tot_pitches, 1) if tot_pitches > 0 else None,
+            "ゾーン率":  round(zone_sum / tot_pitches, 1) if tot_pitches > 0 else None,
+            "ゴロ率":   round(gb_sum / gb_count, 1) if gb_count > 0 else None,
+        }
+    return out
+
+
 # ==================================================
 # Section 3. 球種別シーズン集計（_aggregateSeasonMix のポート）
 # ==================================================
@@ -1089,6 +1137,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
 
             season = calc_season_stats(appearances)
             season["選手名"] = name  # 表記ゆれ正規化後の名前で統一
+            season_by_hand = calc_season_stats_by_hand(appearances)
 
             # 投球回フィルタ（例: 10回以上登板した投手のみ対象）
             ip_num = _ip_to_outs(season["投球回"]) / 3
@@ -1189,6 +1238,19 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
                     "bb_pct_season": season["BB%"],
                     "pitch_evaluations_numeric": pitch_numeric_rows,
                     "season_pitch_detail": season_pitch_detail,
+                    # 球種比較テーブルの「合計」行用の、本当のシーズン実数（球種別内訳からの
+                    # 再加重平均ではない）。all は season（calc_season_stats）と同じ値。
+                    "season_totals": {
+                        "all": {
+                            "空振り率": season["空振り率"],
+                            "ゾーン外スイング率": season["ゾーン外スイング率"],
+                            "ストライク率": season["ストライク率"],
+                            "ゾーン率": season["ゾーン率"],
+                            "ゴロ率": season["ゴロ率"],
+                        },
+                        "vsR": season_by_hand["vsR"],
+                        "vsL": season_by_hand["vsL"],
+                    },
                     "season_course_detail": season_course_detail,
                     "season_course_locs": season_course_locs,
                     "game_log": game_log_dicts,
