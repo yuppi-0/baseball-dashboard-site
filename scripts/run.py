@@ -3168,6 +3168,18 @@ def parse_args():
         metavar="PATH",
         help="ダッシュボードHTML埋め込み先テンプレート（例: game_dashboard_v111.html）",
     )
+    parser.add_argument(
+        "--skip-llm-input",
+        action="store_true",
+        help=(
+            "datamart等で自動付与されるllm_inputステップを止める。\n"
+            "複数の日付範囲を並列実行する際、各ジョブが同時にシーズン全体のxlsx・数値JSONを\n"
+            "書き換えようとして競合する（バイナリxlsxはgitが自動マージできず、rebaseが\n"
+            "失敗して全ジョブがエラー終了する）ことがあるため、そのようなケースで使う。\n"
+            "並列ジョブすべてが完了した後、--steps llm_input を単独で1回実行して\n"
+            "シーズンデータを最終的に揃えること。"
+        ),
+    )
 
     return parser.parse_args()
 
@@ -3256,7 +3268,8 @@ def _check_datamart_quality(datamart_path: str) -> None:
 
 
 def run_steps(steps: list[str], target_game_ids: list[str] | None = None,
-              league: str = "ichi", date: str | None = None):
+              league: str = "ichi", date: str | None = None,
+              skip_llm_input: bool = False):
     """
     ステップ順:
       Step1: games     → raw/all_games_{date}.xlsx
@@ -3269,6 +3282,12 @@ def run_steps(steps: list[str], target_game_ids: list[str] | None = None,
       games/pitch/highlights → datamart を自動付与
       season                 → players を自動付与
       players 単独           → 他ステップ付与なし
+
+    skip_llm_input=True にすると、datamart等による llm_input の自動付与を止める。
+    複数の日付範囲を並列実行する際、各ジョブが同時にシーズン全体のxlsx・数値JSONを
+    書き換えようとして競合する（バイナリxlsxはgitが自動マージできず、rebaseが失敗して
+    全ジョブがエラー終了する）ことがあるため、そのようなケースで使う。並列ジョブすべてが
+    完了した後、--steps llm_input を単独で1回実行してシーズンデータを最終的に揃えること。
     """
     _run_date = date if date else TARGET_DATE
     set_league_dirs(league, _run_date)
@@ -3292,8 +3311,10 @@ def run_steps(steps: list[str], target_game_ids: list[str] | None = None,
         if "datamart" not in steps:
             steps.append("datamart")
     # datamart がある → llm_input も自動付与（シーズン全体のxlsx/数値JSONを最新化するため）
+    # ただしskip_llm_input指定時は、明示的に"llm_input"がstepsに含まれている場合を除き付与しない
     if "datamart" in steps and "llm_input" not in steps:
-        steps.append("llm_input")
+        if not skip_llm_input:
+            steps.append("llm_input")
     # 並び替え
     steps = [s for s in FULL_ORDER if s in set(steps)]
 
@@ -3512,11 +3533,11 @@ if __name__ == "__main__":
             print("▶ 1軍 & 2軍 両方実行モード")
             print("=" * 50)
             print()
-            run_steps(_steps, target_game_ids=_target_game_ids, league="ichi", date=_date)
+            run_steps(_steps, target_game_ids=_target_game_ids, league="ichi", date=_date, skip_llm_input=args.skip_llm_input)
             print()
-            run_steps(_steps, target_game_ids=_target_game_ids, league="ni",   date=_date)
+            run_steps(_steps, target_game_ids=_target_game_ids, league="ni",   date=_date, skip_llm_input=args.skip_llm_input)
         else:
-            run_steps(_steps, target_game_ids=_target_game_ids, league=_league_flag, date=_date)
+            run_steps(_steps, target_game_ids=_target_game_ids, league=_league_flag, date=_date, skip_llm_input=args.skip_llm_input)
 
     if len(_date_list) > 1:
         print(f"\n{'=' * 50}")

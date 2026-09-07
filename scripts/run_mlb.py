@@ -2691,6 +2691,18 @@ def main():
             "  例) --steps llm_input"
         ),
     )
+    parser.add_argument(
+        "--skip-llm-input",
+        action="store_true",
+        help=(
+            "datamart/games/highlights実行時に自動付与されるllm_inputステップを止める。\n"
+            "複数の日付範囲を並列実行する際、各ジョブが同時にシーズン全体のxlsx・数値JSONを\n"
+            "書き換えようとして競合する（バイナリxlsxはgitが自動マージできず、rebaseが\n"
+            "失敗して全ジョブがエラー終了する）ことがあるため、そのようなケースで使う。\n"
+            "並列ジョブすべてが完了した後、--steps llm_input を単独で1回実行して\n"
+            "シーズンデータを最終的に揃えること。"
+        ),
+    )
     args = parser.parse_args()
 
     try:
@@ -2717,6 +2729,8 @@ def main():
         run_all or run_games or run_highlights or run_datamart
         or "llm_input" in raw_steps
     )
+    if args.skip_llm_input and "llm_input" not in raw_steps:
+        run_llm_input = False
 
     label = date_list[0] if len(date_list)==1 else f"{date_list[0]} 〜 {date_list[-1]}"
     # ステップ名を日本語に
