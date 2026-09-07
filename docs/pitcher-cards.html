@@ -365,7 +365,6 @@
   .pitch-row .chev{ margin-left:auto; color:#64748B; font-size:11px; transition:transform 0.15s; }
   .pitch-body{ padding:0 0 10px 15px; }
   .pitch-eval-hand-toggle{ margin-bottom:14px; }
-  .ptag-inline{ display:inline-block; font-size:10px; font-weight:700; border-radius:5px; padding:2px 7px; margin-bottom:8px; }
 
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
 
@@ -982,14 +981,12 @@ function bulletsHtml(items, dotColor, tone){
   `).join("")}</div>`;
 }
 
-// 球種評価カード内、1タブぶん（全体/対右/対左のいずれか）のtag+bulletsを描画する。
+// 球種評価カード内、1タブぶん（全体/対右/対左のいずれか）のbulletsを描画する。
+// タグは球種行ヘッダーの.ptagバッジ側だけに表示するため、ここでは出さない。
 // handDataがnull（例:対右・対左の解釈データがまだ無い旧フォーマット）の場合は空表示にする。
 function pitchTagBulletsHtml(handData, dotColor){
   if(!handData) return `<div class="bullets" style="color:var(--text-dim); font-size:12px;">このタブのデータはありません</div>`;
-  return `
-    ${handData.tag ? `<span class="ptag-inline" style="background:rgba(59,130,246,0.18);color:var(--blue-text)">${escapeHtml(handData.tag)}</span>` : ""}
-    ${bulletsHtml(handData.bullets, dotColor)}
-  `;
+  return bulletsHtml(handData.bullets, dotColor);
 }
 
 // section-title (開閉ヘッダー) を統一生成
