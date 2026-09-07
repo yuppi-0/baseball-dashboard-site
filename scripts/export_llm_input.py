@@ -230,7 +230,7 @@ def calc_season_stats(appearances: list[dict]) -> dict:
             w = p.get("bip_known")
             if w is not None:
                 gn = p.get("gb_n")
-                gb_sum += gn if gn is not None else p["gbpct"] * w
+                gb_sum += gn if gn is not None else (p["gbpct"] / 100) * w
                 gb_count += w
 
     # MLB限定の高度指標（avgEV/hardHitPct/barrelPct/xwoba/avgSpin/extension/vaa）
@@ -266,7 +266,7 @@ def calc_season_stats(appearances: list[dict]) -> dict:
         "ゾーン外スイング率": round(oswing_sum / oswing_count, 1) if oswing_count > 0 else None,
         "ストライク率": round(strike_sum / tot_pitches, 1) if tot_pitches > 0 else None,
         "ゾーン率":  round(zone_sum / tot_pitches, 1) if tot_pitches > 0 else None,
-        "ゴロ率":   round(gb_sum / gb_count, 1) if gb_count > 0 else None,
+        "ゴロ率":   round(gb_sum / gb_count * 100, 1) if gb_count > 0 else None,
         "平均被打球速度": adv_out["season_avgEV"],       # MLBのみ。NPBはNone
         "ハードヒット率": adv_out["season_hardHitPct"],   # MLBのみ
         "バレル率":      adv_out["season_barrelPct"],     # MLBのみ
@@ -316,14 +316,14 @@ def calc_season_stats_by_hand(appearances: list[dict]) -> dict:
                 w = side.get("bip_known")
                 if w is not None:
                     gn = side.get("gb_n")
-                    gb_sum += gn if gn is not None else side["gbpct"] * w
+                    gb_sum += gn if gn is not None else (side["gbpct"] / 100) * w
                     gb_count += w
         out[side_key] = {
             "空振り率":  round(swstr_sum / tot_pitches, 1) if tot_pitches > 0 else None,
             "ゾーン外スイング率": round(oswing_sum / oswing_count, 1) if oswing_count > 0 else None,
             "ストライク率": round(strike_sum / tot_pitches, 1) if tot_pitches > 0 else None,
             "ゾーン率":  round(zone_sum / tot_pitches, 1) if tot_pitches > 0 else None,
-            "ゴロ率":   round(gb_sum / gb_count, 1) if gb_count > 0 else None,
+            "ゴロ率":   round(gb_sum / gb_count * 100, 1) if gb_count > 0 else None,
         }
     return out
 
@@ -409,7 +409,7 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
                 w = m.get("bip_known")
                 if w is not None:
                     gn = m.get("gb_n")
-                    k["gb_sum"] += gn if gn is not None else (m["gbpct"] or 0) * w
+                    k["gb_sum"] += gn if gn is not None else ((m["gbpct"] or 0) / 100) * w
                     k["gb_cnt"] += w
             # MLB独自指標（投球数加重平均。NPBはこれらのキーが無いので蓄積されずcnt=0のまま）
             if m.get("xwoba") is not None:
@@ -454,7 +454,7 @@ def aggregate_season_mix(appearances: list[dict], mix_key: str = "mix") -> list[
             "ゾーン率": round(m["zone_sum"] / m["count"], 1) if m["count"] > 0 else 0.0,
             "ゾーン外スイング率": round(m["oswing_sum"] / m["oswing_cnt"], 1) if m["oswing_cnt"] > 0 else None,
             "ストライク率": round(m["strike_sum"] / m["strike_cnt"], 1) if m["strike_cnt"] > 0 else None,
-            "GB%": round(m["gb_sum"] / m["gb_cnt"], 1) if m["gb_cnt"] > 0 else None,
+            "GB%": round(m["gb_sum"] / m["gb_cnt"] * 100, 1) if m["gb_cnt"] > 0 else None,
             # ゴロ率・ゾーン外スイング率それぞれの本来の分母（打球数／ゾーン外投球数）の
             # 実数。この球種の複数試合分をすでに正しく加重した合計値なので、これをさらに
             # 別の場所（球種比較テーブルの「合計」行など）で加重平均する際の重みに使える。
