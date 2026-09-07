@@ -984,11 +984,25 @@ def build_game_log_rows(name: str, appearances: list[dict], role_key: str, pitch
     return rows
 
 
-def compute_rankings(season_rows: list[dict]) -> dict:
+def compute_rankings(season_rows: list[dict],
+                      rank_min_ip: dict[str, float] | None = None) -> dict:
     """
-    シーズン集計の全投手分から、防御率・K-BB%・K%・BB%・ゴロ率の順位を算出する。
+    シーズン集計の投手分から、防御率・K-BB%・K%・BB%・ゴロ率の順位を算出する。
+
+    役割（先発/中継ぎ）ごとに母集団を分けて順位を出す（「先発の中での順位」「中継ぎの中での
+    順位」になる。全投手混合の順位は出さない）。
+    さらに、役割ごとの資格投球回（rank_min_ip）未満の投手は順位の母集団そのものから除外する
+    （xlsx自体への掲載可否＝min_ip引数とは別軸。min_ipで出力対象になっていても、
+    投球回が少なければ順位は付与されずrankingsに現れない＝カード側では非表示になる）。
+    デフォルトの資格投球回は、対象選手の絞り込みで使っているのと同じ基準
+    （先発=投球回50回以上、中継ぎ=投球回20回以上）に揃えている。
+
     戻り値: {選手名: {"era":{"rank":n,"total":m}, "k_bb_pct":{...}, "k_pct":{...}, "bb_pct":{...}, "gb_pct":{...}}}
+    （資格投球回に満たない選手のエントリは空辞書 {} のまま＝どの指標も順位が付かない）
     """
+    if rank_min_ip is None:
+        rank_min_ip = {"先発": 50.0, "中継ぎ": 20.0}
+
     specs = [
         ("防御率", "era", False),      # 低いほど良い
         ("K-BB%", "k_bb_pct", True),   # 高いほど良い
@@ -997,12 +1011,18 @@ def compute_rankings(season_rows: list[dict]) -> dict:
         ("ゴロ率", "gb_pct", True),    # 高いほど良い
     ]
     result = {row["選手名"]: {} for row in season_rows}
-    for jp_key, out_key, higher_is_better in specs:
-        valid = [(row["選手名"], row[jp_key]) for row in season_rows if row.get(jp_key) is not None]
-        valid.sort(key=lambda x: -x[1] if higher_is_better else x[1])
-        total = len(valid)
-        for rank, (name, _) in enumerate(valid, start=1):
-            result[name][out_key] = {"rank": rank, "total": total}
+
+    for role, threshold in rank_min_ip.items():
+        role_rows = [
+            row for row in season_rows
+            if row.get("役割") == role and (_ip_to_outs(row.get("投球回")) / 3) >= threshold
+        ]
+        for jp_key, out_key, higher_is_better in specs:
+            valid = [(row["選手名"], row[jp_key]) for row in role_rows if row.get(jp_key) is not None]
+            valid.sort(key=lambda x: -x[1] if higher_is_better else x[1])
+            total = len(valid)
+            for rank, (name, _) in enumerate(valid, start=1):
+                result[name][out_key] = {"rank": rank, "total": total, "role": role}
     return result
 
 
