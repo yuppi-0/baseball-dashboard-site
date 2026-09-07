@@ -19,7 +19,7 @@ on:
         required: false
         default: ''
       skip_llm_input:
-        description: '複数の日付範囲を並列実行する時だけON。datamartに自動付与されるllm_input（シーズン全体xlsx・数値JSON更新）を止め、job同士のバイナリxlsx競合を防ぐ。ONにした場合、並列ジョブが全部終わった後に別途 --steps llm_input を1回実行すること'
+        description: '複数の日付範囲を並列実行する時だけチェックを付ける。OFFのままだと、並列実行中にエラーになることがある。並列ジョブが全部終わったら、実行ステップに「llm_input」とだけ入れて単独でもう1回実行してシーズン全体を最新化すること。'
         required: false
         type: boolean
         default: false
