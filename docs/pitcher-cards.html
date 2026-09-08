@@ -223,6 +223,19 @@
   .gamelog-detail{ display:flex; flex-wrap:wrap; gap:14px; font-size:11px; color:var(--text-dim); margin-bottom:10px; }
   .gamelog-detail b{ color:var(--text-bright); font-size:12px; }
 
+  /* スマホ（狭い画面）では、比較・日付・結果の3列（合計280px）を固定すると
+     指標列がほとんど見えなくなる（結果列180pxが特に大きい）。「結果」は
+     試合ごとの見出し情報であり指標列ほど並べて見比べる必要性が低いため、
+     スマホでは固定を解除して通常のスクロール対象に戻し、指標列を早く見えるようにする。
+     固定範囲の境界線（box-shadow）は結果列から日付列側に付け替える。 */
+  @media (max-width: 480px){
+    .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){
+      position:static; left:auto; box-shadow:none; z-index:auto;
+    }
+    .gamelog-table th:nth-child(2){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
+    .gamelog-table td:nth-child(2){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
+  }
+
   /* 球種詳細テーブル（本家と同じ列構成） */
   .hand-toggle{ display:flex; gap:4px; margin-bottom:10px; }
   .hand-toggle button{
@@ -272,11 +285,13 @@
 
   /* 年グループ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備）。
      「シーズン成績」の見出し（section-title）と同じ左端に揃え、開閉シェブロンも
-     同じように行の右端に配置する形に統一した。横スクロールに追従する必要はないため、
-     固定列を使わず全カラムぶんのcolspan1セルにして中身をflexで組んでいる。 */
+     同じように行の右端に配置する形に統一した。横スクロール時に見出しが流れて見えなくなると
+     どの年を見ているか分かりづらくなるため、他の固定列と同様にposition:stickyで
+     左端に固定表示する（全カラムぶんのcolspan1セルの中身をflexで組んでいる）。 */
   .gamelog-table tr.row-folder{ cursor:pointer; }
   .gamelog-table tr.row-folder td.folder-cell{
     background:var(--panel); padding:10px 0; border-bottom:1px solid rgba(148,163,184,0.12);
+    position:sticky; left:0; z-index:4;
   }
   .gamelog-table tr.row-folder:hover td.folder-cell{ background:rgba(148,163,184,0.06); }
   .folder-row-inner{ display:flex; align-items:center; gap:6px; width:100%; }
