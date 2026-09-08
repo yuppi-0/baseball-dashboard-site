@@ -205,12 +205,15 @@
      以前は各セルにtransform:translateZ(0)を付けてレイヤー化していたが、
      試合数ぶんのセル全部が個別の合成レイヤーになってしまい、スクロール時の
      カクつき（この表の部分だけ動きが不自然に感じる）の原因になっていたため外した。
-     position:stickyはこのtransformが無くても問題なく機能する。 */
+     position:stickyはこのtransformが無くても問題なく機能する。
+     固定列の右端の境界線は、以前はぼかし付きbox-shadowを2枚重ねる方式（本影+
+     継ぎ目を隠すための8px幅の同色板）を使っていたが、(1)ぼかし計算がスクロール毎に
+     再描画コストになる、(2)8px幅の板が不透明で右隣の列の内容に重なって見切れて
+     見える、という2つの問題があったため、border-rightのみのシンプルな方式に変更した。 */
   .gamelog-table th:nth-child(1), .gamelog-table td:nth-child(1){ position:sticky; left:0; width:36px; z-index:2; }
   .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ position:sticky; left:36px; width:64px; z-index:2; }
   .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ position:sticky; left:100px; width:180px; z-index:2; }
-  .gamelog-table th:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
-  .gamelog-table td:nth-child(3){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
+  .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){ border-right:1px solid rgba(0,0,0,0.4); }
   /* 4列目以降（指標カラム）も table-layout:fixed 用に幅を明示しておく。
      ここが未指定だとブラウザ側の自動配分がsticky列の想定left位置とズレて、
      固定列の間に他の列の値が透けて見える不具合が再発するため。
@@ -227,13 +230,12 @@
      指標列がほとんど見えなくなる（結果列180pxが特に大きい）。「結果」は
      試合ごとの見出し情報であり指標列ほど並べて見比べる必要性が低いため、
      スマホでは固定を解除して通常のスクロール対象に戻し、指標列を早く見えるようにする。
-     固定範囲の境界線（box-shadow）は結果列から日付列側に付け替える。 */
+     固定範囲の境界線（border-right）は結果列から日付列側に付け替える。 */
   @media (max-width: 480px){
     .gamelog-table th:nth-child(3), .gamelog-table td:nth-child(3){
-      position:static; left:auto; box-shadow:none; z-index:auto;
+      position:static; left:auto; border-right:none; z-index:auto;
     }
-    .gamelog-table th:nth-child(2){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel-alt); }
-    .gamelog-table td:nth-child(2){ box-shadow:2px 0 4px rgba(0,0,0,0.25), 8px 0 0 0 var(--panel); }
+    .gamelog-table th:nth-child(2), .gamelog-table td:nth-child(2){ border-right:1px solid rgba(0,0,0,0.4); }
   }
 
   /* 球種詳細テーブル（本家と同じ列構成） */
@@ -279,26 +281,31 @@
   .course-cell-bot{ font-size:9px; line-height:1.1; }
   .gamelog-table .cell-good{ background:rgba(16,185,129,0.18); color:var(--green-text); border-radius:4px; }
   .gamelog-table .cell-bad{ background:rgba(248,113,113,0.18); color:var(--red-text); border-radius:4px; }
-  .gamelog-scroll{ overflow-x:auto; overscroll-behavior-x:contain; }
+  .gamelog-scroll{ overflow-x:auto; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; }
   .gamelog-table .cmp-checkbox{ accent-color:var(--blue); cursor:pointer; }
   .gamelog-table th:first-child, .gamelog-table td:first-child{ text-align:center; }
 
   /* 年グループ行：シーズン成績テーブル内で試合行を年ごとにまとめる（複数シーズン対応の準備）。
-     「シーズン成績」の見出し（section-title）と同じ左端に揃え、開閉シェブロンも
-     同じように行の右端に配置する形に統一した。横スクロール時に見出しが流れて見えなくなると
-     どの年を見ているか分かりづらくなるため、他の固定列と同様にposition:stickyで
-     左端に固定表示する（全カラムぶんのcolspan1セルの中身をflexで組んでいる）。 */
+     横スクロール時に見出しが流れて見えなくなるとどの年を見ているか分かりづらくなるため、
+     他の固定列と同様に左端へ固定表示する。ただし、この行はcolspanで全カラムぶんを
+     1セルにまとめているため、td自体にposition:stickyを付けるとSafari/WebKit系で
+     正しく効かないことがある（colspanセルへのstickyはブラウザによって挙動が不安定）。
+     そのためtd自体は固定せず、中の.folder-row-inner（flexの中身）側にstickyを付けて
+     回避している。また、開閉シェブロンは以前セル右端（横スクロールしないと見えない位置）に
+     押し出していたが、固定表示にする意味が薄れるため、ラベルのすぐ右に置くよう変更した。 */
   .gamelog-table tr.row-folder{ cursor:pointer; }
   .gamelog-table tr.row-folder td.folder-cell{
-    background:var(--panel); padding:10px 0; border-bottom:1px solid rgba(148,163,184,0.12);
-    position:sticky; left:0; z-index:4;
+    background:var(--panel); padding:0; border-bottom:1px solid rgba(148,163,184,0.12);
   }
-  .gamelog-table tr.row-folder:hover td.folder-cell{ background:rgba(148,163,184,0.06); }
-  .folder-row-inner{ display:flex; align-items:center; gap:6px; width:100%; }
+  .gamelog-table tr.row-folder:hover td.folder-cell .folder-row-inner{ background:rgba(148,163,184,0.06); }
+  .folder-row-inner{
+    display:flex; align-items:center; gap:6px; width:fit-content;
+    position:sticky; left:0; z-index:4; background:var(--panel); padding:10px 8px 10px 0;
+  }
   .folder-bar{ width:3px; height:12px; border-radius:2px; background:var(--blue); flex-shrink:0; }
   .folder-label{ font-size:10px; font-weight:700; letter-spacing:0.06em; color:#CBD5E1; }
   .folder-count{ font-weight:400; color:var(--text-dim); font-size:10.5px; }
-  .folder-chevron{ margin-left:auto; color:#64748B; font-size:11px; transition:transform 0.15s ease; }
+  .folder-chevron{ color:#64748B; font-size:11px; transition:transform 0.15s ease; }
 
 
   /* 比較パネル（試合ログの下部に表示） */
