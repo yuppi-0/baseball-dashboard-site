@@ -20,7 +20,11 @@ Pythonに移植し、Claudeへ渡すLLM入力用xlsx（縦持ち・複数シー�
 出力:
   1つのxlsxに以下のシートを縦持ち（long形式）で書き出す。
     - シーズン集計       : 1行 = 1投手（選手名・投球成績に加え「所属チーム」「役割」列を含む）
-    - 球種別詳細         : 1行 = 1投手 × 1球種
+    - 球種別詳細         : 1行 = 1投手 × 1球種。全体/対右/対左それぞれの空振り率・
+                          ゾーン外スイング率・ストライク率・ゾーン率・GB%(ゴロ率)に加え、
+                          指標ごとの{指標}_順位・{指標}_順位_母数を含む（役割別・
+                          全体は投球回条件、対右/対左はさらに対戦数条件を満たす投手の
+                          中での順位。compute_pitch_rankings()参照）
     - コース分布         : 1行 = 1投手 × 対戦打者(右/左) × ゾーン(1-9、全球種合算)
     - コースグリッド25分割 : 1行 = 1投手 × 球種 × 対戦打者(右/左) × セル(5x5、ボール域込み)
     - カウント別パターン : 1行 = 1投手 × 球種 × カウント状況
@@ -783,6 +787,10 @@ def merge_lr_split(mix_all: list[dict], mix_vs_r: list[dict], mix_vs_l: list[dic
     """
     球種ごとの対右/対左スタッツを、全体集計(mix_all)の行にマージする。
     球種評価で「この球種は対左打者にどうか」まで言及できるようにするための追加情報。
+
+    空振り率・ゴロ率・H・HRに加え、ゾーン外スイング率・ストライク率・ゾーン率も
+    対右/対左それぞれ追加する（compute_pitch_rankings() で対右/対左の順位を
+    算出するために必要な指標一式を揃えるため）。
     """
     r_by_key = {m["球種コード"]: m for m in mix_vs_r}
     l_by_key = {m["球種コード"]: m for m in mix_vs_l}
@@ -794,11 +802,17 @@ def merge_lr_split(mix_all: list[dict], mix_vs_r: list[dict], mix_vs_l: list[dic
         l = l_by_key.get(m["球種コード"])
         row["対右_投球数"] = r["投球数"] if r else 0
         row["対右_空振り率"] = r["空振り率"] if r else None
+        row["対右_ゾーン外スイング率"] = r["ゾーン外スイング率"] if r else None
+        row["対右_ストライク率"] = r["ストライク率"] if r else None
+        row["対右_ゾーン率"] = r["ゾーン率"] if r else None
         row["対右_ゴロ率"] = r["GB%"] if r else None
         row["対右_H"] = r["H"] if r else 0
         row["対右_HR"] = r["HR"] if r else 0
         row["対左_投球数"] = l["投球数"] if l else 0
         row["対左_空振り率"] = l["空振り率"] if l else None
+        row["対左_ゾーン外スイング率"] = l["ゾーン外スイング率"] if l else None
+        row["対左_ストライク率"] = l["ストライク率"] if l else None
+        row["対左_ゾーン率"] = l["ゾーン率"] if l else None
         row["対左_ゴロ率"] = l["GB%"] if l else None
         row["対左_H"] = l["H"] if l else 0
         row["対左_HR"] = l["HR"] if l else 0
@@ -1090,6 +1104,94 @@ def compute_rankings(season_rows: list[dict],
     return result
 
 
+# ==================================================
+# Section 6.5. 球種別順位（全体/対右/対左）
+#   xlsx「球種別詳細」シート向け。旧tier方式（_ランク列、pitch_scale_stats／
+#   get_scale_tier）を置き換えるもの。
+#   ※ pitch_scale_stats を使ったtier方式は、numeric_json_dir（ダッシュボードの
+#     カードJSON。season_pitch_detail・game_logの色分け表示用）では引き続き
+#     使うため、build_pitch_color_scale_stats/get_scale_tier/
+#     annotate_mix_rows_with_tiers 自体は削除しない。
+# ==================================================
+
+# 順位算出の対象条件。自動実行パイプラインのためCLI引数にはせず定数で固定する。
+RANK_MIN_IP = {"先発": 15.0, "中継ぎ": 10.0}      # 全体側の順位: 役割別の資格投球回
+RANK_MIN_PITCHES_VS_HAND = 20                          # 対右/対左側の順位: 球種ごとの対戦数条件（役割共通）
+
+# 順位を出す指標。(全体側のフィールド名, 高いほど良いか)
+# 対右/対左側は同名の接頭辞（対右_/対左_）を付けたフィールドを見る。
+# GB%だけ対右/対左側は「ゴロ率」という列名でマージされている点に注意（merge_lr_split参照）。
+_PITCH_RANK_METRICS_ALL = [
+    ("空振り率", True), ("ゾーン外スイング率", True),
+    ("ストライク率", True), ("ゾーン率", True), ("GB%", True),
+]
+_PITCH_RANK_METRICS_HAND = [
+    ("空振り率", True), ("ゾーン外スイング率", True),
+    ("ストライク率", True), ("ゾーン率", True), ("ゴロ率", True),
+]
+
+
+def compute_pitch_rankings(mix_rows: list[dict], role_map: dict[str, str], ip_map: dict[str, str]) -> None:
+    """
+    mix_rows（球種別詳細シートの全選手ぶんの行）に、全体/対右/対左それぞれの
+    「{指標}_順位」「{指標}_順位_母数」列をin-placeで追加する。
+
+    母集団は 役割（先発/中継ぎ）× 球種コード ごとに分ける
+    （先発の中での順位、中継ぎの中での順位。役割混合の順位は出さない）。
+
+    _順位:
+        以下の条件を満たす投手だけの母集団内で計算する順位。満たさない投手はnull。
+          - 役割別の資格投球回（RANK_MIN_IP、シーズン通算投球回で判定）以上
+          - 対右/対左側はさらに、その球種の対右_投球数/対左_投球数が
+            RANK_MIN_PITCHES_VS_HAND 以上
+    _順位_母数:
+        上記の条件でフィルタせず、同じ役割内でその指標の値を持つ投手全員を母数にする
+        （投球回や対戦数の条件を満たすかどうかは問わない）。
+    """
+
+    def ip_float(name: str) -> float:
+        return _ip_to_outs(ip_map.get(name)) / 3
+
+    groups: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for row in mix_rows:
+        name = row.get("選手名")
+        role = role_map.get(name)
+        pitch_key = row.get("球種コード")
+        if role is None or pitch_key is None:
+            continue
+        groups[(role, pitch_key)].append(row)
+
+    def assign(rows: list[dict], value_field: str, min_ip: float | None,
+               higher_is_better: bool, count_field: str | None) -> None:
+        all_pairs = [(r, r.get(value_field)) for r in rows if r.get(value_field) is not None]
+        total_all = len(all_pairs)
+
+        qualified = []
+        for r, v in all_pairs:
+            if min_ip is None or ip_float(r["選手名"]) < min_ip:
+                continue
+            if count_field is not None and (r.get(count_field) or 0) < RANK_MIN_PITCHES_VS_HAND:
+                continue
+            qualified.append((r, v))
+        qualified.sort(key=lambda x: -x[1] if higher_is_better else x[1])
+
+        rank_field = f"{value_field}_順位"
+        total_field = f"{value_field}_順位_母数"
+        for r in rows:
+            r[rank_field] = None
+            r[total_field] = total_all
+        for i, (r, _v) in enumerate(qualified, start=1):
+            r[rank_field] = i
+
+    for (role, _pitch_key), rows in groups.items():
+        min_ip = RANK_MIN_IP.get(role)
+        for field, higher in _PITCH_RANK_METRICS_ALL:
+            assign(rows, field, min_ip, higher, count_field=None)
+        for side_prefix, count_field in (("対右", "対右_投球数"), ("対左", "対左_投球数")):
+            for field, higher in _PITCH_RANK_METRICS_HAND:
+                assign(rows, f"{side_prefix}_{field}", min_ip, higher, count_field=count_field)
+
+
 def determine_pitcher_role(appearances: list[dict]) -> str:
     """登板ごとのroleの最頻値で、その投手のシーズンを通した役割を決める"""
     from collections import Counter
@@ -1143,8 +1245,6 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
     course_grid_rows = []
     numeric_cards: dict[str, dict] = {}  # {選手名: numeric card dict}（xlsx書き出し後、rankings付与してからJSON化）
 
-    tier_fields = ["空振り率", "ゾーン外スイング率", "ストライク率", "ゾーン率", "GB%"]
-
     for name in sorted(names):
         try:
             appearances = build_appearances(all_data, name)
@@ -1180,9 +1280,10 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             pitch_numeric_rows = []
             for m in season_mix_merged:
                 tiers = m.get("_rank_tier", {})
+                # xlsx（球種別詳細シート）側の _ランク（tier）列は廃止。
+                # 全体/対右/対左の _順位・_順位_母数 は、全選手ぶん集まった後に
+                # compute_pitch_rankings() でまとめて付与する。
                 row = {"選手名": name, **{k: v for k, v in m.items() if k not in ("_cbs", "_rank_tier")}}
-                for f in tier_fields:
-                    row[f + "_ランク"] = tiers.get(f)
                 mix_rows.append(row)
                 pitch_numeric_rows.append({
                     "name": m.get("球種名"),
@@ -1290,6 +1391,11 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
         row["BB%_順位_母数"] = rk.get("bb_pct", {}).get("total")
         row["ゴロ率_順位"] = rk.get("gb_pct", {}).get("rank")
         row["ゴロ率_順位_母数"] = rk.get("gb_pct", {}).get("total")
+
+    # 球種別詳細シート向け：全体/対右/対左の球種別順位を算出し、mix_rowsに列として付与
+    role_map = {row["選手名"]: row.get("役割") for row in season_rows}
+    ip_map = {row["選手名"]: row.get("投球回") for row in season_rows}
+    compute_pitch_rankings(mix_rows, role_map, ip_map)
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with pd.ExcelWriter(out_path, engine="openpyxl") as writer:
