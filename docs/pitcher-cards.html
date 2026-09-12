@@ -130,6 +130,7 @@
   .section-strength{ background:var(--panel-alt); border:1px solid rgba(16,185,129,0.25); }
   .section-weakness{ background:#221417; border:1px solid rgba(248,113,113,0.25); }
   .section-pitches{ background:var(--panel); }
+  .section-pitchdetail{ background:var(--panel); }
   .section-gamelog{ background:var(--panel); border:1px solid rgba(148,163,184,0.15); }
   .section-profile{ background:var(--panel); border:1px solid rgba(148,163,184,0.15); }
 
@@ -1107,6 +1108,22 @@ function renderCard(d){
   const gameLogHtml = buildGameLogTable(d);
   const typeCats = (d.categories && d.categories.length) ? d.categories : classifyPitcherType(d);
 
+  // スクリーンショットの球種別成績表（本家ダッシュボードと同じ列構成）を、
+  // シーズン成績セクション（試合ログ）とは別に、選手プロフィールより上に単独表示する。
+  const seasonPitchDetailHtml = (d.season_pitch_detail && d.season_pitch_detail.all && d.season_pitch_detail.all.length) ? `
+    <div class="section section-pitchdetail">
+      ${sectionHeader({ bar:"var(--blue)", label:"球種別成績", labelColor:"var(--text-bright)" })}
+      <div class="section-body">
+        <div class="hand-toggle season-pmix-hand-toggle">
+          <button class="hand-btn active" data-hand="all">全体</button>
+          <button class="hand-btn" data-hand="vsR">対右</button>
+          <button class="hand-btn" data-hand="vsL">対左</button>
+        </div>
+        <div class="pmix-wrap" data-season-pmix>${pitchDetailTableHtml(d.season_pitch_detail.all, d.season_totals && d.season_totals.all)}</div>
+      </div>
+    </div>
+  ` : "";
+
   // 選手特徴・強み・弱み を1つの枠にまとめる（区切り線つき）
   const profileHtml = `
     <div class="section section-profile">
@@ -1168,6 +1185,8 @@ function renderCard(d){
         </div>
       </div>
 
+      ${seasonPitchDetailHtml}
+
       ${profileHtml}
 
       ${d.pitch_evaluations?.length ? `
@@ -1220,6 +1239,20 @@ function renderCard(d){
           tagEl.style.display = tag ? "inline-block" : "none";
         }
       });
+    });
+  }
+
+  // 球種別成績（プロフィール上の単独セクション）: 全体/対右/対左タブ切り替え
+  const seasonPmixToggle = mainContentEl.querySelector(".season-pmix-hand-toggle");
+  if(seasonPmixToggle){
+    seasonPmixToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".hand-btn");
+      if(!btn) return;
+      const hand = btn.dataset.hand;
+      seasonPmixToggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const wrap = mainContentEl.querySelector("[data-season-pmix]");
+      if(wrap && d.season_pitch_detail) wrap.innerHTML = pitchDetailTableHtml(d.season_pitch_detail[hand], d.season_totals && d.season_totals[hand]);
     });
   }
 
