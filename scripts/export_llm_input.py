@@ -1072,14 +1072,14 @@ def compute_rankings(season_rows: list[dict],
     さらに、役割ごとの資格投球回（rank_min_ip）未満の投手は順位の母集団そのものから除外する
     （xlsx自体への掲載可否＝min_ip引数とは別軸。min_ipで出力対象になっていても、
     投球回が少なければ順位は付与されずrankingsに現れない＝カード側では非表示になる）。
-    デフォルトの資格投球回は、対象選手の絞り込みで使っているのと同じ基準
-    （先発=投球回50回以上、中継ぎ=投球回20回以上）に揃えている。
+    デフォルトの資格投球回は、球種別詳細側の順位（RANK_MIN_IP）と同じ
+    先発=投球回15回以上、中継ぎ=投球回10回以上に揃えている。
 
     戻り値: {選手名: {"era":{"rank":n,"total":m}, "k_bb_pct":{...}, "k_pct":{...}, "bb_pct":{...}, "gb_pct":{...}}}
     （資格投球回に満たない選手のエントリは空辞書 {} のまま＝どの指標も順位が付かない）
     """
     if rank_min_ip is None:
-        rank_min_ip = {"先発": 50.0, "中継ぎ": 20.0}
+        rank_min_ip = {"先発": 15.0, "中継ぎ": 10.0}
 
     specs = [
         ("防御率", "era", False),      # 低いほど良い
@@ -1378,7 +1378,7 @@ def export_llm_input_xlsx(games_json_dir: str, out_path: str, min_ip: float = 0.
             continue
 
     # 順位（防御率・K-BB%・K%・BB%・ゴロ率）を算出し、シーズン集計に列として付与
-    rankings = compute_rankings(season_rows)
+    rankings = compute_rankings(season_rows, rank_min_ip=RANK_MIN_IP)
     for row in season_rows:
         rk = rankings.get(row["選手名"], {})
         row["防御率_順位"] = rk.get("era", {}).get("rank")
