@@ -1110,16 +1110,20 @@ function renderCard(d){
 
   // スクリーンショットの球種別成績表（本家ダッシュボードと同じ列構成）を、
   // シーズン成績セクション（試合ログ）とは別に、選手プロフィールより上に単独表示する。
+  // MLBはxwOBA・回転数などの追加指標が本来の列構成に含まれており、そのまま出すと
+  // 列数が増えて表全体がNPBより横に大きく広がって見えてしまうため、この単独セクションだけは
+  // リーグによらず基本指標（空振り率〜最高球速）のみに固定し、NPBと同じサイズ感に揃える。
+  const SEASON_PMIX_METRICS = [...PMIX_METRICS_BASE, ...PMIX_METRICS_VEL];
   const seasonPitchDetailHtml = (d.season_pitch_detail && d.season_pitch_detail.all && d.season_pitch_detail.all.length) ? `
     <div class="section section-pitchdetail">
-      ${sectionHeader({ bar:"var(--blue)", label:"球種別成績", labelColor:"var(--text-bright)" })}
+      ${sectionHeader({ bar:"var(--blue)", label:"シーズン球種別成績", labelColor:"var(--text-bright)" })}
       <div class="section-body">
         <div class="hand-toggle season-pmix-hand-toggle">
           <button class="hand-btn active" data-hand="all">全体</button>
           <button class="hand-btn" data-hand="vsR">対右</button>
           <button class="hand-btn" data-hand="vsL">対左</button>
         </div>
-        <div class="pmix-wrap" data-season-pmix>${pitchDetailTableHtml(d.season_pitch_detail.all, d.season_totals && d.season_totals.all)}</div>
+        <div class="pmix-wrap" data-season-pmix>${pitchDetailTableHtml(d.season_pitch_detail.all, d.season_totals && d.season_totals.all, SEASON_PMIX_METRICS)}</div>
       </div>
     </div>
   ` : "";
@@ -1252,7 +1256,7 @@ function renderCard(d){
       seasonPmixToggle.querySelectorAll(".hand-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       const wrap = mainContentEl.querySelector("[data-season-pmix]");
-      if(wrap && d.season_pitch_detail) wrap.innerHTML = pitchDetailTableHtml(d.season_pitch_detail[hand], d.season_totals && d.season_totals[hand]);
+      if(wrap && d.season_pitch_detail) wrap.innerHTML = pitchDetailTableHtml(d.season_pitch_detail[hand], d.season_totals && d.season_totals[hand], SEASON_PMIX_METRICS);
     });
   }
 
@@ -1440,11 +1444,11 @@ const TIER_COLOR = {
   mid: "", bot60: "rgba(238,122,151,0.10)", bot70: "rgba(238,122,151,0.18)", bot85: "rgba(238,122,151,0.38)"
 };
 
-function pitchDetailTableHtml(pitches, trueTotal){
+function pitchDetailTableHtml(pitches, trueTotal, metricsOverride){
   if(!pitches || !pitches.length){
     return `<div style="padding:16px;text-align:center;color:var(--text-dim);font-size:12px">データなし</div>`;
   }
-  const metrics = currentPmixMetrics();
+  const metrics = metricsOverride || currentPmixMetrics();
   const tc = pitches.reduce((s,m)=>s+(m.count||0), 0);
   // ゴロ率(gb_pct)の本来の分母は「打球数」、ボール球SW%(chase_pct)の本来の分母は
   // 「ゾーン外投球数」で、どちらも投球数(count)そのものではない。それぞれ専用の
