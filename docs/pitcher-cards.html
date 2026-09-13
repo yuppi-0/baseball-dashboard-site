@@ -291,12 +291,10 @@
   .pmix-scroll-compact .pmix-table th:nth-child(2), .pmix-scroll-compact .pmix-table td:nth-child(2){
     position:static; left:auto; box-shadow:none; white-space:normal; overflow:visible; text-overflow:clip; line-height:1.3;
   }
-  /* 「特徴」列（末尾列）も同様に、長いタグ文言が途中で見切れないよう折り返しを許可する。
-     末尾の列なので横スクロールしても続きを追えず、途切れるとそのまま情報が欠けてしまうため。 */
-  .pmix-scroll-compact .pmix-table td.pmix-tag-cell, .pmix-scroll-compact .pmix-table th.pmix-tag-cell{
-    white-space:normal; overflow:visible; text-overflow:clip;
-  }
-  .pmix-scroll-compact .pmix-tag{ white-space:normal; }
+  /* 「特徴」列（末尾列）は、折り返すと縦に間延びして見づらいという声があったため折り返しは
+     やめ、代わりにpitchDetailTableHtml側でその表に実際に出てくるタグ文字列の最大文字数から
+     列幅を都度計算し、1行のまま見切れずに収まる幅を確保している（列幅は表ごとに可変）。
+     はみ出す分は表全体の横スクロールで見られるようにするだけで、折り返し・省略はしない。 */
 
   /* コース分布グリッド（本家と同じ強度スケール） */
   .course-wrap{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
@@ -1530,12 +1528,18 @@ function pitchDetailTableHtml(pitches, trueTotal, metricsOverride, tagsByName){
   const C1 = compact ? 82 : 104;
   const C2 = compact ? 54 : 52; // compact時は投球数セルに割合も同居させるので若干広げる
   const C3 = sw(60);
-  // 「特徴」タグ列は、スマホでは幅を切り詰めた分、長いタグ文言（例:「ストライク先行の遊び球」）が
-  // 途中で見切れてしまっていた。他の列と違って「特徴」は末尾の列で、隠れても横スクロールで
-  // 追いつけない（末尾なので見切れた分がそのまま欠けて見える）ため、切り詰めずに2行まで
-  // 折り返して全文表示できるよう、縮小率(WSCALE)の対象から外し、CSS側でも折り返しを許可する
-  // （.pmix-scroll-compact側のCSSを参照）。
-  const TAG_COL_WIDTH = compact ? 108 : 130;
+  // 「特徴」タグ列は、折り返しも省略もせず1行のまま全文を見せたいので、固定幅にせず、
+  // 実際にこの表に出てくるタグ文字列のうち最長のものが1行に収まる幅を都度計算する
+  // （タグは選手・球種によって長さがまちまちなので、決め打ちの固定幅だと長いタグで
+  // 見切れたり、逆に短いタグしか無いのに無駄に広くなったりする）。収まりきらない分は
+  // 表全体の横スクロールで見られればよく、この列自体では折り返し・省略はしない。
+  const TAG_FONT_PX = compact ? ((typeof isLandscapeNarrow === "function" && isLandscapeNarrow()) ? 8.5 : 9) : 10;
+  const TAG_CHAR_PX = TAG_FONT_PX; // 和文フォントはおおよそ全角=1em幅とみなす
+  const TAG_PAD_PX = compact ? 22 : 26; // タグ（バッジ）自体の左右padding＋セルpaddingの合計
+  const maxTagLen = showTagCol
+    ? Math.max(0, ...pitches.map(p => (tagsByName[p.name] || "").length))
+    : 0;
+  const TAG_COL_WIDTH = showTagCol ? Math.max(compact ? 74 : 90, Math.ceil(maxTagLen * TAG_CHAR_PX) + TAG_PAD_PX) : 0;
   const countCellHtml = (count, pct) => compact
     ? `<span class="pmix-count-main">${count ?? "—"}</span>${pct != null ? `<span class="pmix-count-sub">(${pct}%)</span>` : ""}`
     : `${count ?? "—"}`;
