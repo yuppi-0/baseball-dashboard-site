@@ -463,6 +463,24 @@
     .course-pair{ flex-wrap:nowrap; gap:6px; }
     .hm-canvas-block{ width:108px; }
   }
+
+  /* スマホを横向きにした場合、画面の高さが400px前後しかなく、上の縦長スマホ向け設定
+     （タイトルバー＋選手名＋KPI縦2段）のままだと固定表示領域だけで画面の大半を
+     占めてしまう。横向き時は横幅に余裕がある分、KPIを6列1段に戻すなどして
+     上部固定領域の高さそのものを大きく削る。 */
+  @media (orientation: landscape) and (max-height: 500px){
+    header{ padding:10px 20px; }
+    header h1{ font-size:15px; }
+    .p-avatar{ width:36px; height:36px; font-size:14px; border-radius:8px; }
+    .p-name{ font-size:15px; }
+    .p-meta{ font-size:11px; }
+    .p-sticky-header{ padding:8px 0; }
+    .stat-grid{ grid-template-columns:repeat(6,1fr); gap:6px; margin-top:8px; }
+    .stat-box{ padding:5px 3px; }
+    .stat-box .label{ font-size:8.5px; margin-bottom:1px; }
+    .stat-box .value{ font-size:12px; }
+    .stat-box .rank{ font-size:8px; margin-top:1px; }
+  }
 </style>
 </head>
 <body>
@@ -558,6 +576,12 @@ let sortField = "k_bb_pct";
 let sortDir = "desc"; // "asc" | "desc"
 
 const el = (sel) => document.querySelector(sel);
+// スマホ用レイアウトの判定はCSS側の @media (max-width:720px), (orientation: landscape) and
+// (max-height: 500px) と完全に一致させる（幅だけで判定すると、横向きスマホ（幅は720pxを
+// 超えるが高さが低い）でCSSはスマホ用レイアウトなのにJS側は「PC」と誤判定し、
+// サイドバー（選手一覧）が畳まれないままスクロールで出てきてしまう不具合が起きるため）。
+const MOBILE_LAYOUT_MQ = window.matchMedia("(max-width:720px), (orientation: landscape) and (max-height: 500px)");
+const isMobileLayout = () => MOBILE_LAYOUT_MQ.matches;
 const playerListEl = el("#playerList");
 const mainContentEl = el("#mainContent");
 const searchInputEl = el("#searchInput");
@@ -586,6 +610,11 @@ function updateHeaderHeightVar(){
 updateHeaderHeightVar();
 window.addEventListener("resize", updateHeaderHeightVar);
 window.addEventListener("orientationchange", () => setTimeout(updateHeaderHeightVar, 100));
+// 画面回転などでスマホ用レイアウトに切り替わったとき、すでに選手を選択済みなら
+// サイドバー（選手一覧）を畳み直す（逆にPC用レイアウトに戻ったときは常に展開でよいので触らない）
+MOBILE_LAYOUT_MQ.addEventListener("change", (e) => {
+  if(e.matches && bodyLayoutEl.classList.contains("has-selection")) sidebarEl.classList.add("collapsed");
+});
 
 // モバイル：選手を選んだら検索欄・一覧を畳んでカード本体をすぐ見せる。「選手を変更」で開閉。
 function updateSidebarSummary(name, meta){
@@ -593,7 +622,7 @@ function updateSidebarSummary(name, meta){
   sidebarSummaryTeamEl.textContent = meta || "";
 }
 function collapseSidebarOnMobile(){
-  if(window.innerWidth <= 720) sidebarEl.classList.add("collapsed");
+  if(isMobileLayout()) sidebarEl.classList.add("collapsed");
 }
 // 「選手を変更」：カード表示をやめて選手選択画面（検索・一覧）に戻る
 el("#sidebarToggleBtn").addEventListener("click", () => {
@@ -1625,7 +1654,7 @@ function hmBuildGridHtml(label, locs, flipX, allLocs){
   }
 
   // スマホ幅では「グリッド＋配球キャンバス」を横並びのまま収めたいので、セルを一回り小さくする
-  const isNarrow = window.innerWidth <= 720;
+  const isNarrow = isMobileLayout();
   const CW = mode === "9" ? (isNarrow ? 44 : 54) : (isNarrow ? 26 : 34);
   const CH = mode === "9" ? (isNarrow ? 36 : 44) : (isNarrow ? 22 : 28);
   const fs = mode === "9" ? (isNarrow ? "10.5px" : "12px") : "10px", fsSub = mode === "9" ? "8.5px" : "8px";
