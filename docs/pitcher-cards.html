@@ -291,6 +291,12 @@
   .pmix-scroll-compact .pmix-table th:nth-child(2), .pmix-scroll-compact .pmix-table td:nth-child(2){
     position:static; left:auto; box-shadow:none; white-space:normal; overflow:visible; text-overflow:clip; line-height:1.3;
   }
+  /* 「特徴」列（末尾列）も同様に、長いタグ文言が途中で見切れないよう折り返しを許可する。
+     末尾の列なので横スクロールしても続きを追えず、途切れるとそのまま情報が欠けてしまうため。 */
+  .pmix-scroll-compact .pmix-table td.pmix-tag-cell, .pmix-scroll-compact .pmix-table th.pmix-tag-cell{
+    white-space:normal; overflow:visible; text-overflow:clip;
+  }
+  .pmix-scroll-compact .pmix-tag{ white-space:normal; }
 
   /* コース分布グリッド（本家と同じ強度スケール） */
   .course-wrap{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:12px; }
@@ -1515,14 +1521,21 @@ function pitchDetailTableHtml(pitches, trueTotal, metricsOverride, tagsByName){
   // さらに「投球割合」列を独立させず「投球数」列の下にカッコ書きで統合して列数自体を減らす
   // （横スクロール量そのものを減らす）。PC表示は従来通り2列に分けたまま。
   // 球種名・投球数の2列は、縮小率(WSCALE)の対象にせず縦向きスマホの実測サイズに合わせて
-  // 直接小さめの固定値にすることで、その分メトリクス列がもう1列多く画面に入るようにしている。
+  // 直接小さめの固定値にする。ただし球種名は「ストレート」「スライダー」「ツーシーム」など
+  // 5文字までの代表的な球種名は絶対に見切れないよう、5文字＋色丸アイコンが収まる幅を確保する
+  // （6文字以上の長い球種名は見切れても許容する）。
   const compact = isMobileLayout();
   const WSCALE = compact ? 0.7 : 1;
   const sw = (px) => Math.round(px * WSCALE);
-  const C1 = compact ? 68 : 104;
+  const C1 = compact ? 82 : 104;
   const C2 = compact ? 54 : 52; // compact時は投球数セルに割合も同居させるので若干広げる
   const C3 = sw(60);
-  const TAG_COL_WIDTH = sw(130);
+  // 「特徴」タグ列は、スマホでは幅を切り詰めた分、長いタグ文言（例:「ストライク先行の遊び球」）が
+  // 途中で見切れてしまっていた。他の列と違って「特徴」は末尾の列で、隠れても横スクロールで
+  // 追いつけない（末尾なので見切れた分がそのまま欠けて見える）ため、切り詰めずに2行まで
+  // 折り返して全文表示できるよう、縮小率(WSCALE)の対象から外し、CSS側でも折り返しを許可する
+  // （.pmix-scroll-compact側のCSSを参照）。
+  const TAG_COL_WIDTH = compact ? 108 : 130;
   const countCellHtml = (count, pct) => compact
     ? `<span class="pmix-count-main">${count ?? "—"}</span>${pct != null ? `<span class="pmix-count-sub">(${pct}%)</span>` : ""}`
     : `${count ?? "—"}`;
@@ -1541,7 +1554,7 @@ function pitchDetailTableHtml(pitches, trueTotal, metricsOverride, tagsByName){
         const bg = tier ? (TIER_COLOR[tier] || "") : "";
         return `<td style="width:${sw(m.width)}px;background:${bg}">${fmtMetricVal(m, v)}</td>`;
       }).join("")}
-      ${showTagCol ? `<td style="width:${TAG_COL_WIDTH}px">${tagsByName[p.name] ? `<span class="pmix-tag">${escapeHtml(tagsByName[p.name])}</span>` : "—"}</td>` : ""}
+      ${showTagCol ? `<td class="pmix-tag-cell" style="width:${TAG_COL_WIDTH}px">${tagsByName[p.name] ? `<span class="pmix-tag">${escapeHtml(tagsByName[p.name])}</span>` : "—"}</td>` : ""}
     </tr>
   `).join("");
   return `
