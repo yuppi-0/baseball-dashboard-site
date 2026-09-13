@@ -401,7 +401,9 @@
 
     /* ヘッダー（タイトル・チーム/リーグ切替）は画面上部に固定表示する。
        ヘッダーの実際の高さはJS側で測って --header-h に反映する。 */
-    header{ position:sticky; top:0; z-index:20; background:var(--bg); }
+    header{ position:sticky; top:0; z-index:20; background:var(--bg); padding:12px 16px; }
+    header h1{ font-size:15px; }
+    .league-toggle button{ padding:5px 11px; font-size:11px; }
 
     /* 選手選択前は「選手を選択してください」バーは不要なので非表示。
        選手を選んだあとは、名前・チームはカード側のsticky見出し（.p-sticky-header）に
@@ -428,10 +430,14 @@
        ここには含めない）。 */
     .p-sticky-header{
       top: var(--sticky-stack-h, 108px);
-      padding: 10px 0;
+      padding: 8px 0;
       margin: 0;
       z-index: 15;
     }
+    .p-avatar{ width:36px; height:36px; font-size:14px; border-radius:8px; }
+    .p-name{ font-size:16px; }
+    .p-meta{ font-size:11px; }
+    .p-header{ gap:10px; }
 
     /* 検索・フィルタ・並び替えをまとめたパネル：並び替え/降順昇順、全チーム/全カテゴリ、
        投球回/AIコメントのみ、をそれぞれ1行に収める。検索欄はiOSでの自動ズームを避けるため
@@ -445,11 +451,11 @@
 
     /* KPI（防御率〜決め球）は横6列のままだとスマホでは狭すぎて数字や順位が詰まって見づらいので、
        3列×2段に組み替える。タイプタグの行が無くなった分、縦幅も詰めている。 */
-    .stat-grid{ grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; }
-    .stat-box{ padding:6px 4px; }
-    .stat-box .label{ font-size:10px; margin-bottom:2px; }
-    .stat-box .value{ font-size:14px; }
-    .stat-box .rank{ font-size:9px; margin-top:2px; }
+    .stat-grid{ grid-template-columns:repeat(3,1fr); gap:6px; margin-top:8px; }
+    .stat-box{ padding:5px 4px; }
+    .stat-box .label{ font-size:9.5px; margin-bottom:1px; }
+    .stat-box .value{ font-size:13px; }
+    .stat-box .rank{ font-size:8.5px; margin-top:1px; }
 
     /* 結果／球種／分割タブと、フィルタ（全チーム・全カテゴリ・並び替え）はPC版と同じ大きさだと
        ボタンが窮屈に折り返して縦に長くなりがちなので、文字とパディングを一回り小さくする */
@@ -469,20 +475,35 @@
      占めてしまう。横向き時は横幅に余裕がある分、KPIを6列1段に戻すなどして
      上部固定領域の高さそのものを大きく削る。 */
   @media (orientation: landscape) and (max-height: 500px){
-    header{ padding:10px 20px; }
-    header h1{ font-size:15px; }
-    .p-avatar{ width:36px; height:36px; font-size:14px; border-radius:8px; }
-    .p-name{ font-size:15px; }
-    .p-meta{ font-size:11px; }
-    .p-sticky-header{ padding:8px 0; }
+    header{ padding:7px 16px; }
+    header h1{ font-size:13px; }
+    .league-toggle button{ padding:4px 10px; font-size:11px; }
+    .p-avatar{ width:30px; height:30px; font-size:12px; border-radius:7px; }
+    .p-name{ font-size:13px; }
+    .p-meta{ font-size:10px; }
+    .p-header{ gap:8px; }
+    .p-sticky-header{ padding:6px 0; }
     /* 決め球は横向きでは非表示にし、残り5つのKPIを1段で横並びにすることで
        上部固定領域の高さをさらに削る */
-    .stat-grid{ grid-template-columns:repeat(5,1fr); gap:6px; margin-top:8px; }
+    .stat-grid{ grid-template-columns:repeat(5,1fr); gap:5px; margin-top:6px; }
     .stat-grid .stat-box:last-child{ display:none; }
-    .stat-box{ padding:5px 3px; }
-    .stat-box .label{ font-size:8.5px; margin-bottom:1px; }
-    .stat-box .value{ font-size:12px; }
-    .stat-box .rank{ font-size:8px; margin-top:1px; }
+    .stat-box{ padding:4px 3px; }
+    .stat-box .label{ font-size:8px; margin-bottom:1px; }
+    .stat-box .value{ font-size:11px; }
+    .stat-box .rank{ font-size:7.5px; margin-top:1px; }
+
+    /* 「シーズン球種別成績」など、セクション全体の余白・見出し・タブも横向きでは
+       縦横ともに詰める（表自体の列幅・文字サイズはpitchDetailTableHtmlがJS側で
+       isLandscapeNarrow()を見て別途縮小しているので、ここではその外側の余白を詰める）。 */
+    .section{ padding:8px 10px; margin-bottom:6px; }
+    .section-title{ margin-bottom:6px; }
+    .hand-toggle{ margin-bottom:6px; gap:3px; }
+    .hand-toggle .hand-btn{ padding:4px 9px; font-size:10px; }
+    .pmix-scroll{ margin-bottom:6px; }
+    .pmix-scroll-compact .pmix-table th{ padding:4px 5px; font-size:9.5px; }
+    .pmix-scroll-compact .pmix-table td{ padding:4px 5px; font-size:10px; }
+    .pmix-scroll-compact .pmix-table tfoot td{ padding:3px 5px; font-size:9.5px; }
+    .pmix-scroll-compact .pmix-tag{ font-size:8.5px; padding:1px 5px; }
   }
 </style>
 </head>
@@ -585,6 +606,10 @@ const el = (sel) => document.querySelector(sel);
 // サイドバー（選手一覧）が畳まれないままスクロールで出てきてしまう不具合が起きるため）。
 const MOBILE_LAYOUT_MQ = window.matchMedia("(max-width:720px), (orientation: landscape) and (max-height: 500px)");
 const isMobileLayout = () => MOBILE_LAYOUT_MQ.matches;
+// スマホを横向きにした場合だけの追加判定（CSS側の横向き専用ブロックと同じ条件）。
+// シーズン球種別成績の表など、横向き時だけさらに詰めたい箇所で使う。
+const LANDSCAPE_NARROW_MQ = window.matchMedia("(orientation: landscape) and (max-height: 500px)");
+const isLandscapeNarrow = () => LANDSCAPE_NARROW_MQ.matches;
 const playerListEl = el("#playerList");
 const mainContentEl = el("#mainContent");
 const searchInputEl = el("#searchInput");
@@ -1411,7 +1436,6 @@ function pitchDetailTableHtml(pitches, trueTotal, metricsOverride, tagsByName){
   }
   const metrics = metricsOverride || currentPmixMetrics();
   const showTagCol = !!tagsByName;
-  const TAG_COL_WIDTH = 130;
   const tc = pitches.reduce((s,m)=>s+(m.count||0), 0);
   // ゴロ率(gb_pct)の本来の分母は「打球数」、ボール球SW%(chase_pct)の本来の分母は
   // 「ゾーン外投球数」で、どちらも投球数(count)そのものではない。それぞれ専用の
@@ -1439,32 +1463,39 @@ function pitchDetailTableHtml(pitches, trueTotal, metricsOverride, tagsByName){
     return wsum > 0 ? withVal.reduce((s,m)=>s+(m[key]*weightOf(m)), 0) / wsum : null;
   };
   const maxVel = pitches.reduce((mx,m) => (m.max_vel != null && m.max_vel > mx) ? m.max_vel : mx, 0);
+  // スマホを横向きにした場合は、画面の高さがただでさえ厳しいので、この表の列幅・行間・文字も
+  // 一回り詰める（横スクロール自体はそのまま許容しつつ、詰めた分だけスクロール量を減らす）。
+  const compact = (typeof isLandscapeNarrow === "function") && isLandscapeNarrow();
+  const WSCALE = compact ? 0.78 : 1;
+  const sw = (px) => Math.round(px * WSCALE);
+  const C1 = sw(104), C2 = sw(52), C3 = sw(60);
+  const TAG_COL_WIDTH = sw(130);
   // table-layout:fixedは、テーブル自身の幅がautoのままだと内容の長さに引っ張られて列幅がズレてしまう
   // （固定列の位置計算の前提が崩れ、スクロール時に他の値が透けて見える原因になる）ため、
   // 列幅の合計と完全に一致する幅をここで計算してテーブルに明示的に指定する。
-  const totalWidth = 104 + 52 + 60 + metrics.reduce((s,m) => s + m.width, 0) + (showTagCol ? TAG_COL_WIDTH : 0);
+  const totalWidth = C1 + C2 + C3 + metrics.reduce((s,m) => s + sw(m.width), 0) + (showTagCol ? TAG_COL_WIDTH : 0);
   const rows = pitches.map((p,i) => `
     <tr>
-      <td style="width:104px"><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(i)}"></span>${escapeHtml(p.name)}</span></td>
-      <td style="width:52px">${p.count ?? "—"}</td>
-      <td style="width:60px">${p.pct != null ? p.pct + "%" : "—"}</td>
+      <td style="width:${C1}px"><span class="pmix-pname"><span class="pmix-dot" style="background:${pitchColor(i)}"></span>${escapeHtml(p.name)}</span></td>
+      <td style="width:${C2}px">${p.count ?? "—"}</td>
+      <td style="width:${C3}px">${p.pct != null ? p.pct + "%" : "—"}</td>
       ${metrics.map(m => {
         const v = p[m.key];
         const tier = p[m.tierKey];
         const bg = tier ? (TIER_COLOR[tier] || "") : "";
-        return `<td style="width:${m.width}px;background:${bg}">${fmtMetricVal(m, v)}</td>`;
+        return `<td style="width:${sw(m.width)}px;background:${bg}">${fmtMetricVal(m, v)}</td>`;
       }).join("")}
       ${showTagCol ? `<td style="width:${TAG_COL_WIDTH}px">${tagsByName[p.name] ? `<span class="pmix-tag">${escapeHtml(tagsByName[p.name])}</span>` : "—"}</td>` : ""}
     </tr>
   `).join("");
   return `
-    <div class="pmix-scroll">
+    <div class="pmix-scroll${compact ? ' pmix-scroll-compact' : ''}">
       <table class="pmix-table" style="width:${totalWidth}px">
-        <thead><tr><th style="width:104px">球種</th><th style="width:52px">投球数</th><th style="width:60px">投球割合</th>${metrics.map(m => `<th style="width:${m.width}px">${m.label}</th>`).join("")}${showTagCol ? `<th style="width:${TAG_COL_WIDTH}px">特徴</th>` : ""}</tr></thead>
+        <thead><tr><th style="width:${C1}px">球種</th><th style="width:${C2}px">投球数</th><th style="width:${C3}px">投球割合</th>${metrics.map(m => `<th style="width:${sw(m.width)}px">${m.label}</th>`).join("")}${showTagCol ? `<th style="width:${TAG_COL_WIDTH}px">特徴</th>` : ""}</tr></thead>
         <tbody>${rows}</tbody>
-        <tfoot><tr><td style="width:104px">合計</td><td style="width:52px">${tc}</td><td style="width:60px">100%</td>${metrics.map(m => {
-          if(m.key === "max_vel") return `<td style="width:${m.width}px">${maxVel > 0 ? maxVel + "km/h" : "—"}</td>`;
-          return `<td style="width:${m.width}px">${fmtMetricVal(m, wavg(m.key))}</td>`;
+        <tfoot><tr><td style="width:${C1}px">合計</td><td style="width:${C2}px">${tc}</td><td style="width:${C3}px">100%</td>${metrics.map(m => {
+          if(m.key === "max_vel") return `<td style="width:${sw(m.width)}px">${maxVel > 0 ? maxVel + "km/h" : "—"}</td>`;
+          return `<td style="width:${sw(m.width)}px">${fmtMetricVal(m, wavg(m.key))}</td>`;
         }).join("")}${showTagCol ? `<td style="width:${TAG_COL_WIDTH}px"></td>` : ""}</tr></tfoot>
       </table>
     </div>
