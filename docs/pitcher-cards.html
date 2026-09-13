@@ -23,6 +23,12 @@
     --amber-text: #FCD34D;
   }
   * { box-sizing: border-box; }
+  /* iOS/Androidのモバイルブラウザには、2〜3行に渡る段落だけを「読みやすいように」自動的に
+     拡大表示する機能（text size adjust / font boosting）があり、これが原因で選手プロフィールの
+     箇条書きのうち折り返して2行になったものだけ他より大きく表示されてしまっていた
+     （1行に収まる短い箇条書きは対象にならず、指定通りの小さいサイズのまま）。
+     明示的に100%指定してこの自動拡大を無効化し、指定したfont-sizeが常にそのまま使われるようにする。 */
+  html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   html, body{ height:100%; margin:0; overflow:hidden; overscroll-behavior-x:none; }
   body{
     background:var(--bg); color:var(--text);
@@ -1508,11 +1514,13 @@ function pitchDetailTableHtml(pitches, trueTotal, metricsOverride, tagsByName){
   // スマホ（縦・横どちらも）は画面が限られるので、この表の列幅・行間・文字を一回り詰め、
   // さらに「投球割合」列を独立させず「投球数」列の下にカッコ書きで統合して列数自体を減らす
   // （横スクロール量そのものを減らす）。PC表示は従来通り2列に分けたまま。
+  // 球種名・投球数の2列は、縮小率(WSCALE)の対象にせず縦向きスマホの実測サイズに合わせて
+  // 直接小さめの固定値にすることで、その分メトリクス列がもう1列多く画面に入るようにしている。
   const compact = isMobileLayout();
-  const WSCALE = compact ? 0.78 : 1;
+  const WSCALE = compact ? 0.7 : 1;
   const sw = (px) => Math.round(px * WSCALE);
-  const C1 = sw(104);
-  const C2 = compact ? sw(70) : sw(52); // compact時は投球数セルに割合も同居させるので少し広げる
+  const C1 = compact ? 68 : 104;
+  const C2 = compact ? 54 : 52; // compact時は投球数セルに割合も同居させるので若干広げる
   const C3 = sw(60);
   const TAG_COL_WIDTH = sw(130);
   const countCellHtml = (count, pct) => compact
