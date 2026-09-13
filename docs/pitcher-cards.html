@@ -475,7 +475,10 @@
     .p-name{ font-size:15px; }
     .p-meta{ font-size:11px; }
     .p-sticky-header{ padding:8px 0; }
-    .stat-grid{ grid-template-columns:repeat(6,1fr); gap:6px; margin-top:8px; }
+    /* 決め球は横向きでは非表示にし、残り5つのKPIを1段で横並びにすることで
+       上部固定領域の高さをさらに削る */
+    .stat-grid{ grid-template-columns:repeat(5,1fr); gap:6px; margin-top:8px; }
+    .stat-grid .stat-box:last-child{ display:none; }
     .stat-box{ padding:5px 3px; }
     .stat-box .label{ font-size:8.5px; margin-bottom:1px; }
     .stat-box .value{ font-size:12px; }
