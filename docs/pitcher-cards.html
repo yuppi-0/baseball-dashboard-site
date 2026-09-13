@@ -102,11 +102,11 @@
   .placeholder{ color:var(--text-dim); font-size:13px; padding-top:60px; text-align:center; width:100%; }
 
   .card{ width:100%; max-width:1120px; text-align:left; }
-  /* 選手名ヘッダー（アバター・名前・タイプタグ）とKPIのスタッツ行までは
+  /* 選手名ヘッダー（アバター・名前）とKPIのスタッツ行までは
      スクロールしても常に見えるように、まとめて1つのsticky領域にしている */
   .p-sticky-header{
     position:sticky; top:-20px; z-index:5; background:var(--bg);
-    padding:20px 0 16px; margin:-20px 0 0;
+    padding:18px 0 14px; margin:-20px 0 0;
   }
   .p-header{ display:flex; align-items:center; gap:12px; text-align:left; }
   .p-avatar{
@@ -114,16 +114,8 @@
     display:flex; align-items:center; justify-content:center; font-size:17px; font-weight:700; flex-shrink:0;
   }
   .p-name{ font-size:18px; font-weight:700; color:var(--text-bright); line-height:1.25; }
-  /* チーム/登板情報とタイプタグを同じ行に並べ、固定ヘッダーの高さを抑える */
   .p-meta-row{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:3px; }
   .p-meta{ font-size:12px; color:var(--text-dim); }
-  .p-type-tags{ display:flex; flex-wrap:wrap; gap:6px; }
-  .p-type-tag{
-    display:inline-block; padding:2px 9px; border-radius:20px; cursor:pointer;
-    font-size:10.5px; font-weight:700; color:var(--blue-text);
-    background:rgba(59,130,246,0.14); border:1px solid rgba(59,130,246,0.3);
-  }
-  .p-type-tag:hover{ background:rgba(59,130,246,0.24); }
 
   .stat-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-top:14px; }
   .stat-box{ background:var(--panel); border-radius:8px; padding:10px 6px; text-align:center; }
@@ -387,7 +379,11 @@
 
   .error{ color:var(--red-text); font-size:13px; padding-top:40px; text-align:center; width:100%; }
 
-  @media (max-width:720px){
+  /* 横向き（ランドスケープ）のスマホは幅が720pxを超えることが多く、下の"スマホ用"
+     ブロックが適用されずPC同様にサイドバーとカードが横並びのまま出て狭苦しくなって
+     いた。画面が低く横長（=スマホを横に持っている）の場合もスマホ用レイアウトを
+     適用し、選手選択後はサイドバーを隠してカードだけを表示するようにする。 */
+  @media (max-width:720px), (orientation: landscape) and (max-height: 500px){
     html, body{ height:auto; overflow:visible; }
     body{ overflow-x:hidden; }
     .app{ height:auto; min-height:100vh; }
@@ -432,7 +428,7 @@
        ここには含めない）。 */
     .p-sticky-header{
       top: var(--sticky-stack-h, 108px);
-      padding: 14px 0;
+      padding: 10px 0;
       margin: 0;
       z-index: 15;
     }
@@ -448,12 +444,12 @@
     .player-item{ padding:13px 12px; }
 
     /* KPI（防御率〜決め球）は横6列のままだとスマホでは狭すぎて数字や順位が詰まって見づらいので、
-       3列×2段に組み替える */
-    .stat-grid{ grid-template-columns:repeat(3,1fr); gap:6px; }
-    .stat-box{ padding:8px 4px; }
-    .stat-box .label{ font-size:10.5px; }
-    .stat-box .value{ font-size:15px; }
-    .stat-box .rank{ font-size:9.5px; }
+       3列×2段に組み替える。タイプタグの行が無くなった分、縦幅も詰めている。 */
+    .stat-grid{ grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; }
+    .stat-box{ padding:6px 4px; }
+    .stat-box .label{ font-size:10px; margin-bottom:2px; }
+    .stat-box .value{ font-size:14px; }
+    .stat-box .rank{ font-size:9px; margin-top:2px; }
 
     /* 結果／球種／分割タブと、フィルタ（全チーム・全カテゴリ・並び替え）はPC版と同じ大きさだと
        ボタンが窮屈に折り返して縦に長くなりがちなので、文字とパディングを一回り小さくする */
@@ -798,6 +794,23 @@ async function findLlmDataForPlayer(playerName, team, role){
 
 // ── 数値データ(numeric) + LLM解釈テキスト(llm) をブラウザ内でマージする ──
 // merge_card_json.py と同じ役割をJSで行う（Pythonの手動実行を不要にするため）
+
+// player_type.bulletsは「球種構成／指標評価（シーズン合計）／球種指標評価（球種ごと）」の
+// 3グループ構成に対応させる。旧フォーマット（bulletsがフラットな配列）が来た場合は、
+// 見出し無しの1グループとして扱い、表示が壊れないようにする。
+function normalizePlayerType(pt){
+  if(!pt) return null;
+  const hasGrouped = pt.pitch_mix || pt.season_metrics || pt.pitch_metrics;
+  const groups = hasGrouped
+    ? [
+        { label: "球種構成", bullets: pt.pitch_mix || [] },
+        { label: "指標評価", bullets: pt.season_metrics || [] },
+        { label: "球種指標評価", bullets: pt.pitch_metrics || [] },
+      ].filter(g => g.bullets.length)
+    : [{ label: null, bullets: pt.bullets || [] }];
+  return { tag: pt.tag || "", groups };
+}
+
 function mergeCardData(numeric, llm){
   llm = llm || {};
   const pitchEvalsNumeric = numeric.pitch_evaluations_numeric || [];
@@ -853,7 +866,7 @@ function mergeCardData(numeric, llm){
     season_totals: numeric.season_totals || null,
     categories: numeric.categories,
     season_course_locs: numeric.season_course_locs,
-    player_type: llm.player_type || null,
+    player_type: normalizePlayerType(llm.player_type),
     strengths: llm.strengths || [],
     weaknesses: llm.weaknesses || [],
     pitch_evaluations,
@@ -1017,17 +1030,6 @@ function sectionHeader({bar, label, labelColor, sub}){
   `;
 }
 
-// ── 球種構成とゴロ/フライ傾向から、カテゴリタグ配列を組み立てる（サーバー側で計算済みのd.categoriesが無い場合のフォールバック）──
-function classifyPitcherType(d){
-  const cats = [];
-  if(d.gb_pct_season != null){
-    if(d.gb_pct_season >= 50) cats.push("ゴロピッチャー");
-    else if(d.gb_pct_season <= 38) cats.push("フライピッチャー");
-  }
-  const pitches = (d.season_pitch_detail && d.season_pitch_detail.all) || [];
-  pitches.forEach(p => { if(p.pct != null && p.pct >= 20) cats.push(`${p.name}ピッチャー`); });
-  return cats;
-}
 
 // KPIカードの「XX位/XX人中」を、サイドバーの投球回フィルタの値に応じてその場で計算し直す。
 // サーバー側（export_llm_input.py の compute_rankings）と同じロジック（役割で母集団を分ける、
@@ -1081,7 +1083,6 @@ function renderCard(d){
   ];
 
   const gameLogHtml = buildGameLogTable(d);
-  const typeCats = (d.categories && d.categories.length) ? d.categories : classifyPitcherType(d);
 
   // 球種評価セクション（旧・全体/対右/対左タブ＋説明文）は廃止し、球種ごとの特徴タグだけを
   // 「シーズン球種別成績」表の最終列に載せる。表側のタブ（all/vsR/vsL）と、
@@ -1121,7 +1122,10 @@ function renderCard(d){
         ${d.player_type ? `
         <div class="profile-sub">
           <div class="tag" style="background:rgba(148,163,184,0.15);border:1px solid rgba(148,163,184,0.35);color:var(--text)">${escapeHtml(d.player_type.tag || "")}</div>
-          ${bulletsHtml(d.player_type.bullets, "var(--text-dim)")}
+          ${d.player_type.groups.map((g, gi) => `
+            ${g.label ? `<div class="profile-sub-title" style="margin-top:${gi > 0 ? '12px' : '10px'}"><span class="bar" style="background:var(--text-dim)"></span><span class="label" style="color:#CBD5E1">${escapeHtml(g.label)}</span></div>` : ""}
+            ${bulletsHtml(g.bullets, "var(--text-dim)")}
+          `).join("")}
         </div>` : ""}
 
         ${d.strengths?.length ? `
@@ -1153,7 +1157,6 @@ function renderCard(d){
             <div class="p-name">${escapeHtml(d.name)}</div>
             <div class="p-meta-row">
               <span class="p-meta">${escapeHtml(d.team || "")}・${escapeHtml(d.throws_bats || "")}・${escapeHtml(d.role || "")}・${d.games ?? "-"}登板 ${d.innings ?? "-"}回</span>
-              ${typeCats.length ? `<div class="p-type-tags">${typeCats.map(c => `<button class="p-type-tag" data-category="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("")}</div>` : ""}
             </div>
           </div>
         </div>
@@ -1204,17 +1207,6 @@ function renderCard(d){
       const chev = title.querySelector(".chev");
       const isCollapsed = body.classList.toggle("collapsed");
       chev.style.transform = isCollapsed ? "rotate(-90deg)" : "rotate(0deg)";
-    });
-  });
-
-  // タイプタグをクリック → サイドバーのカテゴリ絞り込みに反映して一覧を開く
-  mainContentEl.querySelectorAll(".p-type-tag").forEach(tag => {
-    tag.addEventListener("click", () => {
-      selectedCategory = tag.dataset.category;
-      categorySelectEl.value = selectedCategory;
-      sidebarEl.classList.remove("collapsed");
-      renderPlayerList(applyFilters());
-      sidebarEl.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 
