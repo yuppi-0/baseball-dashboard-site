@@ -320,37 +320,37 @@
       "name": "セベリーノ",
       "team": "阪神",
       "role": "中継ぎ",
-      "innings": "14.1",
-      "innings_num": 14.3,
+      "innings": "15.1",
+      "innings_num": 15.3,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.77,
-      "k_bb_pct": 14.3,
-      "k_pct": 21.4,
-      "bb_pct": 7.1,
-      "swstr_pct": 11.7,
-      "gb_pct": 70.0
+      "era": 3.52,
+      "k_bb_pct": 11.5,
+      "k_pct": 19.7,
+      "bb_pct": 8.2,
+      "swstr_pct": 11.1,
+      "gb_pct": 66.7
     },
     {
       "id": "ターノック",
       "name": "ターノック",
       "team": "広島",
       "role": "先発",
-      "innings": "47.1",
-      "innings_num": 47.3,
+      "innings": "48.1",
+      "innings_num": 48.3,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー"
       ],
-      "era": 4.37,
-      "k_bb_pct": 15.9,
-      "k_pct": 24.0,
-      "bb_pct": 8.2,
-      "swstr_pct": 9.4,
-      "gb_pct": 59.8
+      "era": 4.28,
+      "k_bb_pct": 15.5,
+      "k_pct": 23.5,
+      "bb_pct": 8.0,
+      "swstr_pct": 9.2,
+      "gb_pct": 60.4
     },
     {
       "id": "デュプランティエ",
@@ -375,20 +375,20 @@
       "name": "ドリス",
       "team": "阪神",
       "role": "中継ぎ",
-      "innings": "43.2",
-      "innings_num": 43.7,
+      "innings": "44.2",
+      "innings_num": 44.7,
       "categories": [
         "ゴロピッチャー",
         "ツーシームピッチャー",
         "スライダーピッチャー",
         "スプリットピッチャー"
       ],
-      "era": 1.85,
-      "k_bb_pct": 22.0,
-      "k_pct": 31.1,
-      "bb_pct": 9.0,
-      "swstr_pct": 20.0,
-      "gb_pct": 52.8
+      "era": 2.22,
+      "k_bb_pct": 20.8,
+      "k_pct": 30.1,
+      "bb_pct": 9.3,
+      "swstr_pct": 19.3,
+      "gb_pct": 54.7
     },
     {
       "id": "ハワード",
@@ -543,19 +543,19 @@
       "name": "マラー",
       "team": "中日",
       "role": "先発",
-      "innings": "108.1",
-      "innings_num": 108.3,
+      "innings": "117.1",
+      "innings_num": 117.3,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 2.66,
-      "k_bb_pct": 14.8,
-      "k_pct": 20.2,
-      "bb_pct": 5.4,
+      "era": 2.45,
+      "k_bb_pct": 15.1,
+      "k_pct": 20.4,
+      "bb_pct": 5.3,
       "swstr_pct": 10.3,
-      "gb_pct": 59.5
+      "gb_pct": 61.7
     },
     {
       "id": "マルセリーノ",
@@ -711,19 +711,19 @@
       "name": "リランソ",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "32.0",
-      "innings_num": 32.0,
+      "innings": "33.1",
+      "innings_num": 33.3,
       "categories": [
         "フライピッチャー",
         "ストレートピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 1.41,
-      "k_bb_pct": 11.9,
-      "k_pct": 26.1,
-      "bb_pct": 14.2,
+      "era": 1.62,
+      "k_bb_pct": 12.2,
+      "k_pct": 25.9,
+      "bb_pct": 13.7,
       "swstr_pct": 12.1,
-      "gb_pct": 35.0
+      "gb_pct": 34.9
     },
     {
       "id": "ルイーズ",
@@ -806,19 +806,19 @@
       "name": "レイノルズ",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "56.0",
-      "innings_num": 56.0,
+      "innings": "57.0",
+      "innings_num": 57.0,
       "categories": [
         "ゴロピッチャー",
         "カットボールピッチャー",
         "ストレートピッチャー"
       ],
-      "era": 1.45,
-      "k_bb_pct": 25.3,
+      "era": 1.42,
+      "k_bb_pct": 25.4,
       "k_pct": 33.9,
-      "bb_pct": 8.6,
-      "swstr_pct": 15.4,
-      "gb_pct": 56.7
+      "bb_pct": 8.5,
+      "swstr_pct": 15.3,
+      "gb_pct": 56.1
     },
     {
       "id": "ロング",
@@ -996,19 +996,19 @@
       "name": "中川 皓太",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "32.2",
-      "innings_num": 32.7,
+      "innings": "33.2",
+      "innings_num": 33.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "フォークピッチャー"
       ],
-      "era": 2.48,
-      "k_bb_pct": 21.9,
-      "k_pct": 26.6,
-      "bb_pct": 4.7,
+      "era": 2.41,
+      "k_bb_pct": 21.2,
+      "k_pct": 25.8,
+      "bb_pct": 4.5,
       "swstr_pct": 12.6,
-      "gb_pct": 66.7
+      "gb_pct": 67.6
     },
     {
       "id": "中川_虎大",
@@ -1259,19 +1259,19 @@
       "name": "代木 大和",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "21.1",
-      "innings_num": 21.3,
+      "innings": "22.1",
+      "innings_num": 22.3,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 2.95,
-      "k_bb_pct": 12.2,
+      "era": 2.82,
+      "k_bb_pct": 11.6,
       "k_pct": 21.1,
-      "bb_pct": 8.9,
-      "swstr_pct": 7.8,
-      "gb_pct": 67.4
+      "bb_pct": 9.5,
+      "swstr_pct": 7.7,
+      "gb_pct": 66.7
     },
     {
       "id": "仲地_礼亜",
@@ -1298,19 +1298,18 @@
       "name": "伊勢 大夢",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "41.1",
-      "innings_num": 41.3,
+      "innings": "42.1",
+      "innings_num": 42.3,
       "categories": [
-        "ゴロピッチャー",
         "ストレートピッチャー",
         "フォークピッチャー"
       ],
-      "era": 2.83,
-      "k_bb_pct": 14.5,
-      "k_pct": 22.7,
-      "bb_pct": 8.1,
-      "swstr_pct": 11.0,
-      "gb_pct": 50.0
+      "era": 2.76,
+      "k_bb_pct": 14.9,
+      "k_pct": 22.9,
+      "bb_pct": 8.0,
+      "swstr_pct": 10.9,
+      "gb_pct": 48.9
     },
     {
       "id": "伊原_陵人",
@@ -1372,18 +1371,18 @@
       "name": "伊藤 将司",
       "team": "阪神",
       "role": "先発",
-      "innings": "46.0",
-      "innings_num": 46.0,
+      "innings": "51.0",
+      "innings_num": 51.0,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー"
       ],
-      "era": 2.54,
-      "k_bb_pct": 13.1,
-      "k_pct": 19.1,
-      "bb_pct": 6.0,
-      "swstr_pct": 9.8,
-      "gb_pct": 56.7
+      "era": 3.0,
+      "k_bb_pct": 14.4,
+      "k_pct": 19.8,
+      "bb_pct": 5.4,
+      "swstr_pct": 10.1,
+      "gb_pct": 56.4
     },
     {
       "id": "伊藤_樹",
@@ -1422,6 +1421,26 @@
       "bb_pct": 4.3,
       "swstr_pct": 5.9,
       "gb_pct": 52.5
+    },
+    {
+      "id": "佐々木_千隼",
+      "name": "佐々木 千隼",
+      "team": "DeNA",
+      "role": "中継ぎ",
+      "innings": "0.1",
+      "innings_num": 0.3,
+      "categories": [
+        "フライピッチャー",
+        "シュートピッチャー",
+        "フォークピッチャー",
+        "カットボールピッチャー"
+      ],
+      "era": 0.0,
+      "k_bb_pct": 0.0,
+      "k_pct": 0.0,
+      "bb_pct": 0.0,
+      "swstr_pct": 0.0,
+      "gb_pct": 0.0
     },
     {
       "id": "佐藤_一磨",
@@ -1575,18 +1594,18 @@
       "name": "則本 昂大",
       "team": "巨人",
       "role": "先発",
-      "innings": "57.2",
-      "innings_num": 57.7,
+      "innings": "58.2",
+      "innings_num": 58.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー"
       ],
-      "era": 4.99,
-      "k_bb_pct": 9.2,
-      "k_pct": 16.0,
-      "bb_pct": 6.8,
+      "era": 4.91,
+      "k_bb_pct": 9.1,
+      "k_pct": 15.8,
+      "bb_pct": 6.7,
       "swstr_pct": 6.4,
-      "gb_pct": 51.5
+      "gb_pct": 51.1
     },
     {
       "id": "前田_健太",
@@ -1966,17 +1985,17 @@
       "name": "吉野 光樹",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "23.0",
-      "innings_num": 23.0,
+      "innings": "23.1",
+      "innings_num": 23.3,
       "categories": [
         "ストレートピッチャー"
       ],
-      "era": 2.74,
-      "k_bb_pct": 14.9,
-      "k_pct": 24.5,
-      "bb_pct": 9.6,
-      "swstr_pct": 13.3,
-      "gb_pct": 43.2
+      "era": 3.09,
+      "k_bb_pct": 13.4,
+      "k_pct": 23.7,
+      "bb_pct": 10.3,
+      "swstr_pct": 13.0,
+      "gb_pct": 42.2
     },
     {
       "id": "唐川_侑己",
@@ -2075,18 +2094,18 @@
       "name": "堀田 賢慎",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "35.1",
-      "innings_num": 35.3,
+      "innings": "36.1",
+      "innings_num": 36.3,
       "categories": [
         "ストレートピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 0.76,
-      "k_bb_pct": 10.4,
-      "k_pct": 18.5,
-      "bb_pct": 8.1,
+      "era": 0.74,
+      "k_bb_pct": 10.1,
+      "k_pct": 18.0,
+      "bb_pct": 7.9,
       "swstr_pct": 9.3,
-      "gb_pct": 42.5
+      "gb_pct": 42.2
     },
     {
       "id": "堀越_啓太",
@@ -2131,18 +2150,18 @@
       "name": "増居 翔太",
       "team": "ヤクルト",
       "role": "先発",
-      "innings": "33.0",
-      "innings_num": 33.0,
+      "innings": "37.0",
+      "innings_num": 37.0,
       "categories": [
         "ストレートピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.0,
+      "era": 3.16,
       "k_bb_pct": 6.3,
-      "k_pct": 16.7,
-      "bb_pct": 10.3,
-      "swstr_pct": 8.9,
-      "gb_pct": 39.7
+      "k_pct": 15.4,
+      "bb_pct": 9.1,
+      "swstr_pct": 8.6,
+      "gb_pct": 40.4
     },
     {
       "id": "大勢",
@@ -2243,19 +2262,19 @@
       "name": "大瀬良 大地",
       "team": "広島",
       "role": "中継ぎ",
-      "innings": "13.0",
-      "innings_num": 13.0,
+      "innings": "13.2",
+      "innings_num": 13.7,
       "categories": [
         "ゴロピッチャー",
-        "ストレートピッチャー",
-        "カットボールピッチャー"
+        "カットボールピッチャー",
+        "ストレートピッチャー"
       ],
-      "era": 6.23,
-      "k_bb_pct": 19.3,
-      "k_pct": 24.6,
-      "bb_pct": 5.3,
-      "swstr_pct": 11.3,
-      "gb_pct": 54.2
+      "era": 5.93,
+      "k_bb_pct": 20.3,
+      "k_pct": 25.4,
+      "bb_pct": 5.1,
+      "swstr_pct": 11.0,
+      "gb_pct": 52.0
     },
     {
       "id": "大竹_耕太郎",
@@ -2317,18 +2336,17 @@
       "name": "大西 広樹",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "9.0",
-      "innings_num": 9.0,
+      "innings": "10.0",
+      "innings_num": 10.0,
       "categories": [
-        "シュートピッチャー",
-        "スライダーピッチャー"
+        "シュートピッチャー"
       ],
-      "era": 10.0,
-      "k_bb_pct": 2.3,
-      "k_pct": 11.4,
-      "bb_pct": 9.1,
+      "era": 9.0,
+      "k_bb_pct": 2.1,
+      "k_pct": 10.4,
+      "bb_pct": 8.3,
       "swstr_pct": 8.8,
-      "gb_pct": 40.0
+      "gb_pct": 44.8
     },
     {
       "id": "大道_温貴",
@@ -3001,19 +3019,18 @@
       "name": "岡留 英貴",
       "team": "阪神",
       "role": "中継ぎ",
-      "innings": "5.1",
-      "innings_num": 5.3,
+      "innings": "6.1",
+      "innings_num": 6.3,
       "categories": [
-        "ゴロピッチャー",
         "スライダーピッチャー",
         "ストレートピッチャー"
       ],
       "era": 0.0,
-      "k_bb_pct": 31.6,
-      "k_pct": 42.1,
-      "bb_pct": 10.5,
-      "swstr_pct": 18.8,
-      "gb_pct": 60.0
+      "k_bb_pct": 31.8,
+      "k_pct": 40.9,
+      "bb_pct": 9.1,
+      "swstr_pct": 18.3,
+      "gb_pct": 42.9
     },
     {
       "id": "岩井_俊介",
@@ -3094,19 +3111,19 @@
       "name": "岩田 将貴",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "22.0",
-      "innings_num": 22.0,
+      "innings": "22.1",
+      "innings_num": 22.3,
       "categories": [
         "ゴロピッチャー",
         "スライダーピッチャー",
         "ツーシームピッチャー",
         "ストレートピッチャー"
       ],
-      "era": 2.05,
-      "k_bb_pct": 10.1,
-      "k_pct": 15.7,
-      "bb_pct": 5.6,
-      "swstr_pct": 12.3,
+      "era": 2.01,
+      "k_bb_pct": 11.0,
+      "k_pct": 16.5,
+      "bb_pct": 5.5,
+      "swstr_pct": 12.1,
       "gb_pct": 70.0
     },
     {
@@ -3299,17 +3316,17 @@
       "name": "平良 拳太郎",
       "team": "DeNA",
       "role": "先発",
-      "innings": "90.1",
-      "innings_num": 90.3,
+      "innings": "95.1",
+      "innings_num": 95.3,
       "categories": [
         "ストレートピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 3.39,
-      "k_bb_pct": 21.0,
-      "k_pct": 25.7,
-      "bb_pct": 4.8,
-      "swstr_pct": 11.7,
+      "era": 3.4,
+      "k_bb_pct": 19.7,
+      "k_pct": 24.9,
+      "bb_pct": 5.2,
+      "swstr_pct": 11.6,
       "gb_pct": 49.2
     },
     {
@@ -3986,17 +4003,17 @@
       "name": "松本 健吾",
       "team": "ヤクルト",
       "role": "先発",
-      "innings": "99.0",
-      "innings_num": 99.0,
+      "innings": "100.0",
+      "innings_num": 100.0,
       "categories": [
         "ストレートピッチャー"
       ],
-      "era": 3.82,
-      "k_bb_pct": 14.6,
+      "era": 3.78,
+      "k_bb_pct": 14.7,
       "k_pct": 20.4,
       "bb_pct": 5.8,
-      "swstr_pct": 10.0,
-      "gb_pct": 47.5
+      "swstr_pct": 9.9,
+      "gb_pct": 47.7
     },
     {
       "id": "松本_凌人",
@@ -4336,38 +4353,38 @@
       "name": "森浦 大輔",
       "team": "広島",
       "role": "中継ぎ",
-      "innings": "50.2",
-      "innings_num": 50.7,
+      "innings": "51.2",
+      "innings_num": 51.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "チェンジアップピッチャー"
       ],
-      "era": 2.49,
-      "k_bb_pct": 27.6,
-      "k_pct": 35.2,
-      "bb_pct": 7.5,
+      "era": 2.44,
+      "k_bb_pct": 27.7,
+      "k_pct": 35.1,
+      "bb_pct": 7.4,
       "swstr_pct": 18.3,
-      "gb_pct": 57.8
+      "gb_pct": 58.8
     },
     {
       "id": "森田_駿哉",
       "name": "森田 駿哉",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "35.1",
-      "innings_num": 35.3,
+      "innings": "36.1",
+      "innings_num": 36.3,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "カットボールピッチャー"
       ],
-      "era": 2.8,
-      "k_bb_pct": 12.5,
-      "k_pct": 19.4,
-      "bb_pct": 6.9,
-      "swstr_pct": 11.1,
-      "gb_pct": 60.0
+      "era": 2.97,
+      "k_bb_pct": 11.4,
+      "k_pct": 18.8,
+      "bb_pct": 7.4,
+      "swstr_pct": 10.9,
+      "gb_pct": 61.4
     },
     {
       "id": "森脇_亮介",
@@ -4766,20 +4783,20 @@
       "name": "浜地 真澄",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "23.2",
-      "innings_num": 23.7,
+      "innings": "24.2",
+      "innings_num": 24.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "カットボールピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 0.76,
-      "k_bb_pct": 17.9,
-      "k_pct": 19.0,
-      "bb_pct": 1.2,
-      "swstr_pct": 7.8,
-      "gb_pct": 67.3
+      "era": 0.73,
+      "k_bb_pct": 17.2,
+      "k_pct": 18.4,
+      "bb_pct": 1.1,
+      "swstr_pct": 7.9,
+      "gb_pct": 66.7
     },
     {
       "id": "浜屋_将太",
@@ -5076,18 +5093,18 @@
       "name": "玉村 昇悟",
       "team": "広島",
       "role": "先発",
-      "innings": "62.0",
-      "innings_num": 62.0,
+      "innings": "67.1",
+      "innings_num": 67.3,
       "categories": [
         "ストレートピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 2.9,
-      "k_bb_pct": 13.5,
-      "k_pct": 19.2,
-      "bb_pct": 5.7,
+      "era": 2.67,
+      "k_bb_pct": 13.1,
+      "k_pct": 18.7,
+      "bb_pct": 5.6,
       "swstr_pct": 10.1,
-      "gb_pct": 48.2
+      "gb_pct": 47.3
     },
     {
       "id": "生田目_翼",
@@ -5187,19 +5204,19 @@
       "name": "田中 瑛斗",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "49.2",
-      "innings_num": 49.7,
+      "innings": "50.2",
+      "innings_num": 50.7,
       "categories": [
         "ゴロピッチャー",
         "シュートピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 1.63,
-      "k_bb_pct": 7.0,
-      "k_pct": 15.6,
-      "bb_pct": 8.5,
-      "swstr_pct": 8.4,
-      "gb_pct": 72.3
+      "era": 1.6,
+      "k_bb_pct": 7.4,
+      "k_pct": 16.2,
+      "bb_pct": 8.8,
+      "swstr_pct": 8.9,
+      "gb_pct": 71.7
     },
     {
       "id": "田口_麗斗",
@@ -5393,19 +5410,19 @@
       "name": "石原 勇輝",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "14.2",
-      "innings_num": 14.7,
+      "innings": "15.2",
+      "innings_num": 15.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "スライダーピッチャー"
       ],
-      "era": 4.3,
-      "k_bb_pct": 9.7,
-      "k_pct": 19.4,
-      "bb_pct": 9.7,
+      "era": 4.02,
+      "k_bb_pct": 10.8,
+      "k_pct": 20.0,
+      "bb_pct": 9.2,
       "swstr_pct": 7.9,
-      "gb_pct": 55.9
+      "gb_pct": 58.3
     },
     {
       "id": "石川_柊太",
@@ -5468,20 +5485,19 @@
       "name": "石田 健大",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "7.1",
-      "innings_num": 7.3,
+      "innings": "9.1",
+      "innings_num": 9.3,
       "categories": [
-        "フライピッチャー",
         "ストレートピッチャー",
-        "カットボールピッチャー",
-        "チェンジアップピッチャー"
+        "チェンジアップピッチャー",
+        "カットボールピッチャー"
       ],
-      "era": 2.45,
-      "k_bb_pct": 13.8,
-      "k_pct": 20.7,
-      "bb_pct": 6.9,
-      "swstr_pct": 10.9,
-      "gb_pct": 35.3
+      "era": 1.93,
+      "k_bb_pct": 19.4,
+      "k_pct": 25.0,
+      "bb_pct": 5.6,
+      "swstr_pct": 10.7,
+      "gb_pct": 45.0
     },
     {
       "id": "石田_裕太郎",
@@ -5525,20 +5541,20 @@
       "name": "神宮 僚介",
       "team": "阪神",
       "role": "中継ぎ",
-      "innings": "11.2",
-      "innings_num": 11.7,
+      "innings": "12.2",
+      "innings_num": 12.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "スライダーピッチャー",
         "ツーシームピッチャー"
       ],
-      "era": 1.54,
-      "k_bb_pct": 22.2,
-      "k_pct": 28.9,
-      "bb_pct": 6.7,
-      "swstr_pct": 11.2,
-      "gb_pct": 54.2
+      "era": 1.42,
+      "k_bb_pct": 22.9,
+      "k_pct": 29.2,
+      "bb_pct": 6.2,
+      "swstr_pct": 12.3,
+      "gb_pct": 53.8
     },
     {
       "id": "福_敬登",
@@ -5785,37 +5801,36 @@
       "name": "船迫 大雅",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "31.0",
-      "innings_num": 31.0,
+      "innings": "32.0",
+      "innings_num": 32.0,
       "categories": [
         "スライダーピッチャー",
         "ストレートピッチャー"
       ],
-      "era": 2.03,
-      "k_bb_pct": 5.9,
-      "k_pct": 16.8,
-      "bb_pct": 10.9,
-      "swstr_pct": 12.4,
-      "gb_pct": 40.6
+      "era": 1.97,
+      "k_bb_pct": 6.5,
+      "k_pct": 17.7,
+      "bb_pct": 11.3,
+      "swstr_pct": 12.0,
+      "gb_pct": 40.0
     },
     {
       "id": "若松_尚輝",
       "name": "若松 尚輝",
       "team": "DeNA",
       "role": "中継ぎ",
-      "innings": "32.2",
-      "innings_num": 32.7,
+      "innings": "33.0",
+      "innings_num": 33.0,
       "categories": [
-        "ゴロピッチャー",
         "ストレートピッチャー",
         "フォークピッチャー"
       ],
-      "era": 2.76,
-      "k_bb_pct": 9.7,
-      "k_pct": 20.1,
+      "era": 2.73,
+      "k_bb_pct": 9.6,
+      "k_pct": 20.0,
       "bb_pct": 10.4,
       "swstr_pct": 11.0,
-      "gb_pct": 50.0
+      "gb_pct": 49.3
     },
     {
       "id": "茨木_秀俊",
@@ -6140,17 +6155,17 @@
       "name": "西舘 勇陽",
       "team": "巨人",
       "role": "先発",
-      "innings": "46.2",
-      "innings_num": 46.7,
+      "innings": "49.2",
+      "innings_num": 49.7,
       "categories": [
         "ストレートピッチャー"
       ],
-      "era": 2.31,
+      "era": 2.54,
       "k_bb_pct": 14.3,
-      "k_pct": 25.5,
-      "bb_pct": 11.2,
-      "swstr_pct": 11.1,
-      "gb_pct": 44.7
+      "k_pct": 24.8,
+      "bb_pct": 10.5,
+      "swstr_pct": 11.0,
+      "gb_pct": 44.1
     },
     {
       "id": "西舘_昂汰",
@@ -6212,18 +6227,19 @@
       "name": "赤星 優志",
       "team": "巨人",
       "role": "中継ぎ",
-      "innings": "49.1",
-      "innings_num": 49.3,
+      "innings": "50.1",
+      "innings_num": 50.3,
       "categories": [
         "ゴロピッチャー",
-        "ストレートピッチャー"
+        "ストレートピッチャー",
+        "フォークピッチャー"
       ],
-      "era": 2.74,
-      "k_bb_pct": 9.4,
-      "k_pct": 15.8,
-      "bb_pct": 6.4,
-      "swstr_pct": 7.4,
-      "gb_pct": 64.2
+      "era": 2.68,
+      "k_bb_pct": 9.7,
+      "k_pct": 16.0,
+      "bb_pct": 6.3,
+      "swstr_pct": 7.8,
+      "gb_pct": 64.0
     },
     {
       "id": "赤木_晴哉",
@@ -6494,19 +6510,19 @@
       "name": "阪口 皓亮",
       "team": "ヤクルト",
       "role": "中継ぎ",
-      "innings": "27.0",
-      "innings_num": 27.0,
+      "innings": "27.2",
+      "innings_num": 27.7,
       "categories": [
         "ゴロピッチャー",
         "ストレートピッチャー",
         "スイーパーピッチャー"
       ],
-      "era": 3.0,
-      "k_bb_pct": 13.6,
-      "k_pct": 20.9,
-      "bb_pct": 7.3,
-      "swstr_pct": 7.8,
-      "gb_pct": 55.0
+      "era": 2.93,
+      "k_bb_pct": 11.5,
+      "k_pct": 20.4,
+      "bb_pct": 8.8,
+      "swstr_pct": 7.7,
+      "gb_pct": 55.7
     },
     {
       "id": "阿部_翔太",
@@ -6679,17 +6695,17 @@
       "name": "髙 太一",
       "team": "広島",
       "role": "中継ぎ",
-      "innings": "45.2",
-      "innings_num": 45.7,
+      "innings": "46.2",
+      "innings_num": 46.7,
       "categories": [
         "ストレートピッチャー"
       ],
-      "era": 2.17,
-      "k_bb_pct": 16.1,
-      "k_pct": 24.2,
-      "bb_pct": 8.1,
+      "era": 2.12,
+      "k_bb_pct": 16.4,
+      "k_pct": 24.3,
+      "bb_pct": 7.9,
       "swstr_pct": 12.3,
-      "gb_pct": 46.0
+      "gb_pct": 44.9
     },
     {
       "id": "髙島_泰都",
